@@ -37,6 +37,7 @@
       <itemPath>timers.h</itemPath>
       <itemPath>uart.h</itemPath>
       <itemPath>rgb_led_matrix.h</itemPath>
+      <itemPath>pixel.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LibraryFiles"
                    displayName="Library Files"
@@ -73,6 +74,7 @@
       <itemPath>timers.c</itemPath>
       <itemPath>uart.c</itemPath>
       <itemPath>rgb_led_matrix.c</itemPath>
+      <itemPath>pixel.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -93,25 +95,45 @@
         <developmentServer>localhost</developmentServer>
         <targetDevice>PIC24FJ128DA106</targetDevice>
         <targetHeader></targetHeader>
+        <targetPluginBoard></targetPluginBoard>
         <platformTool>PICkit3PlatformTool</platformTool>
         <languageToolchain>C30</languageToolchain>
-        <languageToolchainVersion>3_30b</languageToolchainVersion>
-        <platform>3</platform>
+        <languageToolchainVersion>3_30</languageToolchainVersion>
+        <platform>4</platform>
       </toolsSet>
       <compileType>
         <linkerTool>
           <linkerLibItems>
           </linkerLibItems>
         </linkerTool>
+        <loading>
+          <makeArtifact PL="../bootloader"
+                        CT="1"
+                        CN="MINT0010"
+                        AC="true"
+                        BL="true"
+                        WD="../bootloader"
+                        BC="${MAKE}  -f Makefile CONF=MINT0010"
+                        DBC="${MAKE}  -f Makefile CONF=MINT0010 TYPE_IMAGE=DEBUG_RUN"
+                        CC="${MAKE}  -f Makefile CONF=MINT0010 clean"
+                        OP="dist/MINT0010/production/bootloader.production.hex"
+                        DOP="dist/MINT0010/debug/bootloader.debug.cof"
+                        FL="dist/MINT0010/production/bootloader.production.hex"
+                        PD="dist/MINT0010/production/bootloader.production.cof"
+                        DD="dist/MINT0010/debug/bootloader.debug.cof">
+          </makeArtifact>
+          <useAlternateLoadableFile>false</useAlternateLoadableFile>
+          <alternateLoadableFile></alternateLoadableFile>
+        </loading>
       </compileType>
       <makeCustomizationType>
         <makeCustomizationPreStepEnabled>false</makeCustomizationPreStepEnabled>
         <makeCustomizationPreStep></makeCustomizationPreStep>
         <makeCustomizationPostStepEnabled>false</makeCustomizationPostStepEnabled>
         <makeCustomizationPostStep></makeCustomizationPostStep>
-        <makeCustomizationAlternativeFileToLoadEnabled>false</makeCustomizationAlternativeFileToLoadEnabled>
-        <makeCustomizationAlternativeFileToLoad></makeCustomizationAlternativeFileToLoad>
         <makeCustomizationPutChecksumInUserID>false</makeCustomizationPutChecksumInUserID>
+        <makeCustomizationEnableLongLines>false</makeCustomizationEnableLongLines>
+        <makeCustomizationNormalizeHexFile>false</makeCustomizationNormalizeHexFile>
       </makeCustomizationType>
       <C30>
         <property key="code-model" value="default"/>
@@ -232,15 +254,18 @@
         <property key="TIMER4" value="true"/>
         <property key="TIMER5" value="true"/>
         <property key="ToolFirmwareFilePath" value=""/>
+        <property key="ToolFirmwareOption.UseLatestFirmware" value="true"/>
         <property key="UART 1" value="true"/>
         <property key="UART 2" value="true"/>
         <property key="UART 3" value="true"/>
         <property key="UART 4" value="true"/>
         <property key="UCNFG1" value="true"/>
         <property key="hwtoolclock.frcindebug" value="false"/>
-        <property key="hwtoolclock.instructionspeed" value=""/>
-        <property key="hwtoolclock.units" value="mips"/>
+        <property key="memories.aux" value="false"/>
+        <property key="memories.bootflash" value="false"/>
+        <property key="memories.configurationmemory" value="false"/>
         <property key="memories.eeprom" value="false"/>
+        <property key="memories.flashdata" value="true"/>
         <property key="memories.id" value="false"/>
         <property key="memories.programmemory" value="true"/>
         <property key="memories.programmemory.end" value="0x157f7"/>
@@ -248,11 +273,15 @@
         <property key="poweroptions.powerenable" value="false"/>
         <property key="programmertogo.imagename" value=""/>
         <property key="programoptions.eraseb4program" value="true"/>
+        <property key="programoptions.pgmspeed" value="2"/>
         <property key="programoptions.preserveeeprom" value="false"/>
         <property key="programoptions.preserveprogramrange" value="false"/>
         <property key="programoptions.preserveprogramrange.end" value="0xff"/>
         <property key="programoptions.preserveprogramrange.start" value="0x0"/>
+        <property key="programoptions.preserveuserid" value="false"/>
+        <property key="programoptions.testmodeentrymethod" value="VPPFirst"/>
         <property key="programoptions.usehighvoltageonmclr" value="false"/>
+        <property key="programoptions.uselvpprogramming" value="false"/>
         <property key="voltagevalue" value="3.25"/>
       </PICkit3PlatformTool>
     </conf>
@@ -261,25 +290,45 @@
         <developmentServer>localhost</developmentServer>
         <targetDevice>PIC24FJ128DA206</targetDevice>
         <targetHeader></targetHeader>
+        <targetPluginBoard></targetPluginBoard>
         <platformTool>PICkit3PlatformTool</platformTool>
         <languageToolchain>C30</languageToolchain>
-        <languageToolchainVersion>3_30b</languageToolchainVersion>
-        <platform>3</platform>
+        <languageToolchainVersion>3_30</languageToolchainVersion>
+        <platform>4</platform>
       </toolsSet>
       <compileType>
         <linkerTool>
           <linkerLibItems>
           </linkerLibItems>
         </linkerTool>
+        <loading>
+          <makeArtifact PL="../bootloader"
+                        CT="1"
+                        CN="MINT0010"
+                        AC="true"
+                        BL="true"
+                        WD="../bootloader"
+                        BC="${MAKE}  -f Makefile CONF=MINT0010"
+                        DBC="${MAKE}  -f Makefile CONF=MINT0010 TYPE_IMAGE=DEBUG_RUN"
+                        CC="${MAKE}  -f Makefile CONF=MINT0010 clean"
+                        OP="dist/MINT0010/production/bootloader.production.hex"
+                        DOP="dist/MINT0010/debug/bootloader.debug.cof"
+                        FL="dist/MINT0010/production/bootloader.production.hex"
+                        PD="dist/MINT0010/production/bootloader.production.cof"
+                        DD="dist/MINT0010/debug/bootloader.debug.cof">
+          </makeArtifact>
+          <useAlternateLoadableFile>false</useAlternateLoadableFile>
+          <alternateLoadableFile></alternateLoadableFile>
+        </loading>
       </compileType>
       <makeCustomizationType>
         <makeCustomizationPreStepEnabled>false</makeCustomizationPreStepEnabled>
         <makeCustomizationPreStep></makeCustomizationPreStep>
         <makeCustomizationPostStepEnabled>false</makeCustomizationPostStepEnabled>
         <makeCustomizationPostStep></makeCustomizationPostStep>
-        <makeCustomizationAlternativeFileToLoadEnabled>false</makeCustomizationAlternativeFileToLoadEnabled>
-        <makeCustomizationAlternativeFileToLoad></makeCustomizationAlternativeFileToLoad>
         <makeCustomizationPutChecksumInUserID>false</makeCustomizationPutChecksumInUserID>
+        <makeCustomizationEnableLongLines>false</makeCustomizationEnableLongLines>
+        <makeCustomizationNormalizeHexFile>false</makeCustomizationNormalizeHexFile>
       </makeCustomizationType>
       <C30>
         <property key="code-model" value="default"/>
@@ -360,6 +409,76 @@
         <property key="output-file-format" value="coff"/>
       </C30Global>
       <PICkit3PlatformTool>
+        <property key="ADC 1" value="true"/>
+        <property key="AutoSelectMemRanges" value="auto"/>
+        <property key="CLOCK CONTROL" value="true"/>
+        <property key="COMPARATOR" value="true"/>
+        <property key="CRC" value="true"/>
+        <property key="CTMU" value="true"/>
+        <property key="Freeze All Other Peripherals" value="true"/>
+        <property key="GRAPHICS" value="true"/>
+        <property key="I2C1" value="true"/>
+        <property key="I2C2" value="true"/>
+        <property key="I2C3" value="true"/>
+        <property key="INPUT CAPTURE 1" value="true"/>
+        <property key="INPUT CAPTURE 2" value="true"/>
+        <property key="INPUT CAPTURE 3" value="true"/>
+        <property key="INPUT CAPTURE 4" value="true"/>
+        <property key="INPUT CAPTURE 5" value="true"/>
+        <property key="INPUT CAPTURE 6" value="true"/>
+        <property key="INPUT CAPTURE 7" value="true"/>
+        <property key="INPUT CAPTURE 8" value="true"/>
+        <property key="INPUT CAPTURE 9" value="true"/>
+        <property key="OUTPUT COMPARE 1" value="true"/>
+        <property key="OUTPUT COMPARE 2" value="true"/>
+        <property key="OUTPUT COMPARE 3" value="true"/>
+        <property key="OUTPUT COMPARE 4" value="true"/>
+        <property key="OUTPUT COMPARE 5" value="true"/>
+        <property key="OUTPUT COMPARE 6" value="true"/>
+        <property key="OUTPUT COMPARE 7" value="true"/>
+        <property key="OUTPUT COMPARE 8" value="true"/>
+        <property key="OUTPUT COMPARE 9" value="true"/>
+        <property key="RTCC" value="true"/>
+        <property key="SPI 1" value="true"/>
+        <property key="SPI 2" value="true"/>
+        <property key="SPI 3" value="true"/>
+        <property key="SecureSegment.SegmentProgramming" value="FullChipProgramming"/>
+        <property key="TIMER1" value="true"/>
+        <property key="TIMER2" value="true"/>
+        <property key="TIMER3" value="true"/>
+        <property key="TIMER4" value="true"/>
+        <property key="TIMER5" value="true"/>
+        <property key="ToolFirmwareFilePath"
+                  value="Press to browse for a specific firmware version"/>
+        <property key="ToolFirmwareOption.UseLatestFirmware" value="true"/>
+        <property key="UART 1" value="true"/>
+        <property key="UART 2" value="true"/>
+        <property key="UART 3" value="true"/>
+        <property key="UART 4" value="true"/>
+        <property key="UCNFG1" value="true"/>
+        <property key="hwtoolclock.frcindebug" value="false"/>
+        <property key="memories.aux" value="false"/>
+        <property key="memories.bootflash" value="false"/>
+        <property key="memories.configurationmemory" value="false"/>
+        <property key="memories.eeprom" value="false"/>
+        <property key="memories.flashdata" value="true"/>
+        <property key="memories.id" value="false"/>
+        <property key="memories.programmemory" value="true"/>
+        <property key="memories.programmemory.end" value="0x157f7"/>
+        <property key="memories.programmemory.start" value="0x0"/>
+        <property key="poweroptions.powerenable" value="false"/>
+        <property key="programmertogo.imagename" value=""/>
+        <property key="programoptions.eraseb4program" value="true"/>
+        <property key="programoptions.pgmspeed" value="2"/>
+        <property key="programoptions.preserveeeprom" value="false"/>
+        <property key="programoptions.preserveprogramrange" value="false"/>
+        <property key="programoptions.preserveprogramrange.end" value="0x157f7"/>
+        <property key="programoptions.preserveprogramrange.start" value="0x0"/>
+        <property key="programoptions.preserveuserid" value="false"/>
+        <property key="programoptions.testmodeentrymethod" value="VPPFirst"/>
+        <property key="programoptions.usehighvoltageonmclr" value="false"/>
+        <property key="programoptions.uselvpprogramming" value="false"/>
+        <property key="voltagevalue" value="3.25"/>
       </PICkit3PlatformTool>
     </conf>
     <conf name="IOIO0023" type="2">
@@ -367,25 +486,130 @@
         <developmentServer>localhost</developmentServer>
         <targetDevice>PIC24FJ256DA206</targetDevice>
         <targetHeader></targetHeader>
+        <targetPluginBoard></targetPluginBoard>
         <platformTool>PICkit3PlatformTool</platformTool>
         <languageToolchain>C30</languageToolchain>
-        <languageToolchainVersion>3_30b</languageToolchainVersion>
-        <platform>3</platform>
+        <languageToolchainVersion>3_30</languageToolchainVersion>
+        <platform>4</platform>
       </toolsSet>
       <compileType>
         <linkerTool>
           <linkerLibItems>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../libusb"
+                            CT="3"
+                            CN="PIC24FJ256DA206_ADB"
+                            AC="false"
+                            BL="true"
+                            WD="../libusb"
+                            BC="${MAKE}  -f Makefile CONF=PIC24FJ256DA206_ADB"
+                            DBC="${MAKE}  -f Makefile CONF=PIC24FJ256DA206_ADB TYPE_IMAGE=DEBUG_RUN"
+                            CC="rm -rf &quot;build/PIC24FJ256DA206_ADB&quot; &quot;dist/PIC24FJ256DA206_ADB&quot;"
+                            OP="dist/PIC24FJ256DA206_ADB/production/libusb.a"
+                            DOP="dist/PIC24FJ256DA206_ADB/debug/libusb.a"
+                            FL="dist/PIC24FJ256DA206_ADB/production/libusb.a"
+                            PD="dist/PIC24FJ256DA206_ADB/production/libusb."
+                            DD="dist/PIC24FJ256DA206_ADB/debug/libusb.">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../libadb"
+                            CT="3"
+                            CN="PIC24FJ256DA206"
+                            AC="true"
+                            BL="true"
+                            WD="../libadb"
+                            BC="${MAKE}  -f Makefile CONF=PIC24FJ256DA206"
+                            DBC="${MAKE}  -f Makefile CONF=PIC24FJ256DA206 TYPE_IMAGE=DEBUG_RUN"
+                            CC="rm -rf &quot;build/PIC24FJ256DA206&quot; &quot;dist/PIC24FJ256DA206&quot;"
+                            OP="dist/PIC24FJ256DA206/production/libadb.a"
+                            DOP="dist/PIC24FJ256DA206/debug/libadb.a"
+                            FL="dist/PIC24FJ256DA206/production/libadb.a"
+                            PD="dist/PIC24FJ256DA206/production/libadb."
+                            DD="dist/PIC24FJ256DA206/debug/libadb.">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../libbtstack"
+                            CT="3"
+                            CN="PIC24FJ256DA206"
+                            AC="true"
+                            BL="true"
+                            WD="../libbtstack"
+                            BC="${MAKE}  -f Makefile CONF=PIC24FJ256DA206"
+                            DBC="${MAKE}  -f Makefile CONF=PIC24FJ256DA206 TYPE_IMAGE=DEBUG_RUN"
+                            CC="rm -rf &quot;build/PIC24FJ256DA206&quot; &quot;dist/PIC24FJ256DA206&quot;"
+                            OP="dist/PIC24FJ256DA206/production/libbtstack.a"
+                            DOP="dist/PIC24FJ256DA206/debug/libbtstack.a"
+                            FL="dist/PIC24FJ256DA206/production/libbtstack.a"
+                            PD="dist/PIC24FJ256DA206/production/libbtstack."
+                            DD="dist/PIC24FJ256DA206/debug/libbtstack.">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../libconn"
+                            CT="3"
+                            CN="PIC24FJ256DA206"
+                            AC="true"
+                            BL="true"
+                            WD="../libconn"
+                            BC="${MAKE}  -f Makefile CONF=PIC24FJ256DA206"
+                            DBC="${MAKE}  -f Makefile CONF=PIC24FJ256DA206 TYPE_IMAGE=DEBUG_RUN"
+                            CC="rm -rf &quot;build/PIC24FJ256DA206&quot; &quot;dist/PIC24FJ256DA206&quot;"
+                            OP="dist/PIC24FJ256DA206/production/libconn.a"
+                            DOP="dist/PIC24FJ256DA206/debug/libconn.a"
+                            FL="dist/PIC24FJ256DA206/production/libconn.a"
+                            PD="dist/PIC24FJ256DA206/production/libconn."
+                            DD="dist/PIC24FJ256DA206/debug/libconn.">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../libsdcard.X"
+                            CT="3"
+                            CN="PIC24FJ256DA206"
+                            AC="true"
+                            BL="true"
+                            WD="../libsdcard.X"
+                            BC="${MAKE}  -f Makefile CONF=PIC24FJ256DA206"
+                            DBC="${MAKE}  -f Makefile CONF=PIC24FJ256DA206 TYPE_IMAGE=DEBUG_RUN"
+                            CC="rm -rf &quot;build/PIC24FJ256DA206&quot; &quot;dist/PIC24FJ256DA206&quot;"
+                            OP="dist/PIC24FJ256DA206/production/libsdcard.X.a"
+                            DOP="dist/PIC24FJ256DA206/debug/libsdcard.X.a"
+                            FL="dist/PIC24FJ256DA206/production/libsdcard.X.a"
+                            PD="dist/PIC24FJ256DA206/production/libsdcard.X."
+                            DD="dist/PIC24FJ256DA206/debug/libsdcard.X.">
+              </makeArtifact>
+            </linkerLibProjectItem>
           </linkerLibItems>
         </linkerTool>
+        <loading>
+          <makeArtifact PL="../bootloader"
+                        CT="1"
+                        CN="MINT0010"
+                        AC="true"
+                        BL="true"
+                        WD="../bootloader"
+                        BC="${MAKE}  -f Makefile CONF=MINT0010"
+                        DBC="${MAKE}  -f Makefile CONF=MINT0010 TYPE_IMAGE=DEBUG_RUN"
+                        CC="${MAKE}  -f Makefile CONF=MINT0010 clean"
+                        OP="dist/MINT0010/production/bootloader.production.hex"
+                        DOP="dist/MINT0010/debug/bootloader.debug.cof"
+                        FL="dist/MINT0010/production/bootloader.production.hex"
+                        PD="dist/MINT0010/production/bootloader.production.cof"
+                        DD="dist/MINT0010/debug/bootloader.debug.cof">
+          </makeArtifact>
+          <useAlternateLoadableFile>false</useAlternateLoadableFile>
+          <alternateLoadableFile></alternateLoadableFile>
+        </loading>
       </compileType>
       <makeCustomizationType>
         <makeCustomizationPreStepEnabled>false</makeCustomizationPreStepEnabled>
         <makeCustomizationPreStep></makeCustomizationPreStep>
         <makeCustomizationPostStepEnabled>false</makeCustomizationPostStepEnabled>
         <makeCustomizationPostStep></makeCustomizationPostStep>
-        <makeCustomizationAlternativeFileToLoadEnabled>false</makeCustomizationAlternativeFileToLoadEnabled>
-        <makeCustomizationAlternativeFileToLoad></makeCustomizationAlternativeFileToLoad>
         <makeCustomizationPutChecksumInUserID>false</makeCustomizationPutChecksumInUserID>
+        <makeCustomizationEnableLongLines>false</makeCustomizationEnableLongLines>
+        <makeCustomizationNormalizeHexFile>false</makeCustomizationNormalizeHexFile>
       </makeCustomizationType>
       <C30>
         <property key="code-model" value="default"/>
@@ -446,7 +670,7 @@
         <property key="heap-size" value="1536"/>
         <property key="input-libraries" value="conn;adb;usb;btstack"/>
         <property key="linker-symbols" value=""/>
-        <property key="map-file" value="&quot;$(BINDIR_)$(TARGETBASE).map&quot;"/>
+        <property key="map-file" value="foo.map"/>
         <property key="preprocessor-macros" value=""/>
         <property key="remove-unused-sections" value="true"/>
         <property key="report-memory-usage" value="true"/>
@@ -466,6 +690,77 @@
         <property key="output-file-format" value="coff"/>
       </C30Global>
       <PICkit3PlatformTool>
+        <property key="ADC 1" value="true"/>
+        <property key="AutoSelectMemRanges" value="auto"/>
+        <property key="CLOCK CONTROL" value="true"/>
+        <property key="COMPARATOR" value="true"/>
+        <property key="CRC" value="true"/>
+        <property key="CTMU" value="true"/>
+        <property key="Freeze All Other Peripherals" value="true"/>
+        <property key="GRAPHICS" value="true"/>
+        <property key="I2C1" value="true"/>
+        <property key="I2C2" value="true"/>
+        <property key="I2C3" value="true"/>
+        <property key="INPUT CAPTURE 1" value="true"/>
+        <property key="INPUT CAPTURE 2" value="true"/>
+        <property key="INPUT CAPTURE 3" value="true"/>
+        <property key="INPUT CAPTURE 4" value="true"/>
+        <property key="INPUT CAPTURE 5" value="true"/>
+        <property key="INPUT CAPTURE 6" value="true"/>
+        <property key="INPUT CAPTURE 7" value="true"/>
+        <property key="INPUT CAPTURE 8" value="true"/>
+        <property key="INPUT CAPTURE 9" value="true"/>
+        <property key="OUTPUT COMPARE 1" value="true"/>
+        <property key="OUTPUT COMPARE 2" value="true"/>
+        <property key="OUTPUT COMPARE 3" value="true"/>
+        <property key="OUTPUT COMPARE 4" value="true"/>
+        <property key="OUTPUT COMPARE 5" value="true"/>
+        <property key="OUTPUT COMPARE 6" value="true"/>
+        <property key="OUTPUT COMPARE 7" value="true"/>
+        <property key="OUTPUT COMPARE 8" value="true"/>
+        <property key="OUTPUT COMPARE 9" value="true"/>
+        <property key="RTCC" value="true"/>
+        <property key="SPI 1" value="true"/>
+        <property key="SPI 2" value="true"/>
+        <property key="SPI 3" value="true"/>
+        <property key="SecureSegment.SegmentProgramming" value="FullChipProgramming"/>
+        <property key="TIMER1" value="true"/>
+        <property key="TIMER2" value="true"/>
+        <property key="TIMER3" value="true"/>
+        <property key="TIMER4" value="true"/>
+        <property key="TIMER5" value="true"/>
+        <property key="ToolFirmwareFilePath"
+                  value="Press to browse for a specific firmware version"/>
+        <property key="ToolFirmwareOption.UseLatestFirmware" value="true"/>
+        <property key="UART 1" value="true"/>
+        <property key="UART 2" value="true"/>
+        <property key="UART 3" value="true"/>
+        <property key="UART 4" value="true"/>
+        <property key="UCNFG1" value="true"/>
+        <property key="firmware.download.all" value="false"/>
+        <property key="hwtoolclock.frcindebug" value="false"/>
+        <property key="memories.aux" value="false"/>
+        <property key="memories.bootflash" value="false"/>
+        <property key="memories.configurationmemory" value="false"/>
+        <property key="memories.eeprom" value="false"/>
+        <property key="memories.flashdata" value="true"/>
+        <property key="memories.id" value="false"/>
+        <property key="memories.programmemory" value="true"/>
+        <property key="memories.programmemory.end" value="0x2abf7"/>
+        <property key="memories.programmemory.start" value="0x0"/>
+        <property key="poweroptions.powerenable" value="false"/>
+        <property key="programmertogo.imagename" value=""/>
+        <property key="programoptions.eraseb4program" value="true"/>
+        <property key="programoptions.pgmspeed" value="2"/>
+        <property key="programoptions.preserveeeprom" value="false"/>
+        <property key="programoptions.preserveprogramrange" value="false"/>
+        <property key="programoptions.preserveprogramrange.end" value="0x2abf7"/>
+        <property key="programoptions.preserveprogramrange.start" value="0x0"/>
+        <property key="programoptions.preserveuserid" value="false"/>
+        <property key="programoptions.testmodeentrymethod" value="VPPFirst"/>
+        <property key="programoptions.usehighvoltageonmclr" value="false"/>
+        <property key="programoptions.uselvpprogramming" value="false"/>
+        <property key="voltagevalue" value="3.25"/>
       </PICkit3PlatformTool>
     </conf>
   </confs>

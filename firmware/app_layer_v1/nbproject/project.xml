@@ -9,7 +9,14 @@
             <cpp-extensions/>
             <header-extensions>h</header-extensions>
             <sourceEncoding>UTF-8</sourceEncoding>
-            <make-dep-projects/>
+            <make-dep-projects>
+                <make-dep-project>../libconn</make-dep-project>
+                <make-dep-project>../libsdcard.X</make-dep-project>
+                <make-dep-project>../libbtstack</make-dep-project>
+                <make-dep-project>../bootloader</make-dep-project>
+                <make-dep-project>../libadb</make-dep-project>
+                <make-dep-project>../libusb</make-dep-project>
+            </make-dep-projects>
         </data>
     </configuration>
 </project>

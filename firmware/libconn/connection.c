@@ -42,6 +42,7 @@
 #include "bt_app.h"
 #include "accessory.h"
 
+
 typedef enum {
   STATE_BT_DISCONNECTED,
   STATE_BT_INITIALIZING,
@@ -172,7 +173,7 @@ BOOL ConnectionTasks() {
   ConnBTTasks();
   ConnADBTasks();
   ConnAccessoryTasks();
-
+  
   return USBHostDeviceStatus(0 /* ignored */) == USB_DEVICE_ATTACHED;
 }
 

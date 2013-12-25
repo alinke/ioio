@@ -80,25 +80,30 @@
         <developmentServer>localhost</developmentServer>
         <targetDevice>PIC24FJ128DA106</targetDevice>
         <targetHeader></targetHeader>
+        <targetPluginBoard></targetPluginBoard>
         <platformTool>PICkit3PlatformTool</platformTool>
         <languageToolchain>C30</languageToolchain>
-        <languageToolchainVersion>3_30b</languageToolchainVersion>
-        <platform>3</platform>
+        <languageToolchainVersion>3_30</languageToolchainVersion>
+        <platform>4</platform>
       </toolsSet>
       <compileType>
         <linkerTool>
           <linkerLibItems>
           </linkerLibItems>
         </linkerTool>
+        <loading>
+          <useAlternateLoadableFile>false</useAlternateLoadableFile>
+          <alternateLoadableFile></alternateLoadableFile>
+        </loading>
       </compileType>
       <makeCustomizationType>
         <makeCustomizationPreStepEnabled>false</makeCustomizationPreStepEnabled>
         <makeCustomizationPreStep></makeCustomizationPreStep>
         <makeCustomizationPostStepEnabled>false</makeCustomizationPostStepEnabled>
         <makeCustomizationPostStep></makeCustomizationPostStep>
-        <makeCustomizationAlternativeFileToLoadEnabled>false</makeCustomizationAlternativeFileToLoadEnabled>
-        <makeCustomizationAlternativeFileToLoad></makeCustomizationAlternativeFileToLoad>
         <makeCustomizationPutChecksumInUserID>false</makeCustomizationPutChecksumInUserID>
+        <makeCustomizationEnableLongLines>false</makeCustomizationEnableLongLines>
+        <makeCustomizationNormalizeHexFile>false</makeCustomizationNormalizeHexFile>
       </makeCustomizationType>
       <C30>
         <property key="code-model" value="default"/>
@@ -227,7 +232,11 @@
         <property key="UART 4" value="true"/>
         <property key="UCNFG1" value="true"/>
         <property key="hwtoolclock.frcindebug" value="false"/>
+        <property key="memories.aux" value="false"/>
+        <property key="memories.bootflash" value="false"/>
+        <property key="memories.configurationmemory" value="false"/>
         <property key="memories.eeprom" value="false"/>
+        <property key="memories.flashdata" value="true"/>
         <property key="memories.id" value="false"/>
         <property key="memories.programmemory" value="true"/>
         <property key="memories.programmemory.end" value="0x157f7"/>
@@ -235,11 +244,15 @@
         <property key="poweroptions.powerenable" value="false"/>
         <property key="programmertogo.imagename" value=""/>
         <property key="programoptions.eraseb4program" value="true"/>
+        <property key="programoptions.pgmspeed" value="2"/>
         <property key="programoptions.preserveeeprom" value="false"/>
         <property key="programoptions.preserveprogramrange" value="false"/>
         <property key="programoptions.preserveprogramrange.end" value="0xff"/>
         <property key="programoptions.preserveprogramrange.start" value="0x0"/>
+        <property key="programoptions.preserveuserid" value="false"/>
+        <property key="programoptions.testmodeentrymethod" value="VPPFirst"/>
         <property key="programoptions.usehighvoltageonmclr" value="false"/>
+        <property key="programoptions.uselvpprogramming" value="false"/>
         <property key="voltagevalue" value="3.25"/>
       </PICkit3PlatformTool>
     </conf>
@@ -248,25 +261,30 @@
         <developmentServer>localhost</developmentServer>
         <targetDevice>PIC24FJ128DA206</targetDevice>
         <targetHeader></targetHeader>
+        <targetPluginBoard></targetPluginBoard>
         <platformTool>PICkit3PlatformTool</platformTool>
         <languageToolchain>C30</languageToolchain>
-        <languageToolchainVersion>3_30b</languageToolchainVersion>
-        <platform>3</platform>
+        <languageToolchainVersion>3_30</languageToolchainVersion>
+        <platform>4</platform>
       </toolsSet>
       <compileType>
         <linkerTool>
           <linkerLibItems>
           </linkerLibItems>
         </linkerTool>
+        <loading>
+          <useAlternateLoadableFile>false</useAlternateLoadableFile>
+          <alternateLoadableFile></alternateLoadableFile>
+        </loading>
       </compileType>
       <makeCustomizationType>
         <makeCustomizationPreStepEnabled>false</makeCustomizationPreStepEnabled>
         <makeCustomizationPreStep></makeCustomizationPreStep>
         <makeCustomizationPostStepEnabled>false</makeCustomizationPostStepEnabled>
         <makeCustomizationPostStep></makeCustomizationPostStep>
-        <makeCustomizationAlternativeFileToLoadEnabled>false</makeCustomizationAlternativeFileToLoadEnabled>
-        <makeCustomizationAlternativeFileToLoad></makeCustomizationAlternativeFileToLoad>
         <makeCustomizationPutChecksumInUserID>false</makeCustomizationPutChecksumInUserID>
+        <makeCustomizationEnableLongLines>false</makeCustomizationEnableLongLines>
+        <makeCustomizationNormalizeHexFile>false</makeCustomizationNormalizeHexFile>
       </makeCustomizationType>
       <C30>
         <property key="code-model" value="default"/>
@@ -395,7 +413,11 @@
         <property key="UART 4" value="true"/>
         <property key="UCNFG1" value="true"/>
         <property key="hwtoolclock.frcindebug" value="false"/>
+        <property key="memories.aux" value="false"/>
+        <property key="memories.bootflash" value="false"/>
+        <property key="memories.configurationmemory" value="false"/>
         <property key="memories.eeprom" value="false"/>
+        <property key="memories.flashdata" value="true"/>
         <property key="memories.id" value="false"/>
         <property key="memories.programmemory" value="true"/>
         <property key="memories.programmemory.end" value="0x157f7"/>
@@ -403,11 +425,15 @@
         <property key="poweroptions.powerenable" value="false"/>
         <property key="programmertogo.imagename" value=""/>
         <property key="programoptions.eraseb4program" value="true"/>
+        <property key="programoptions.pgmspeed" value="2"/>
         <property key="programoptions.preserveeeprom" value="false"/>
         <property key="programoptions.preserveprogramrange" value="false"/>
         <property key="programoptions.preserveprogramrange.end" value="0xff"/>
         <property key="programoptions.preserveprogramrange.start" value="0x0"/>
+        <property key="programoptions.preserveuserid" value="false"/>
+        <property key="programoptions.testmodeentrymethod" value="VPPFirst"/>
         <property key="programoptions.usehighvoltageonmclr" value="false"/>
+        <property key="programoptions.uselvpprogramming" value="false"/>
         <property key="voltagevalue" value="3.25"/>
       </PICkit3PlatformTool>
     </conf>
@@ -416,25 +442,30 @@
         <developmentServer>localhost</developmentServer>
         <targetDevice>PIC24FJ128DA206</targetDevice>
         <targetHeader></targetHeader>
+        <targetPluginBoard></targetPluginBoard>
         <platformTool>PICkit3PlatformTool</platformTool>
         <languageToolchain>C30</languageToolchain>
-        <languageToolchainVersion>3_30b</languageToolchainVersion>
-        <platform>3</platform>
+        <languageToolchainVersion>3_30</languageToolchainVersion>
+        <platform>4</platform>
       </toolsSet>
       <compileType>
         <linkerTool>
           <linkerLibItems>
           </linkerLibItems>
         </linkerTool>
+        <loading>
+          <useAlternateLoadableFile>false</useAlternateLoadableFile>
+          <alternateLoadableFile></alternateLoadableFile>
+        </loading>
       </compileType>
       <makeCustomizationType>
         <makeCustomizationPreStepEnabled>false</makeCustomizationPreStepEnabled>
         <makeCustomizationPreStep></makeCustomizationPreStep>
         <makeCustomizationPostStepEnabled>false</makeCustomizationPostStepEnabled>
         <makeCustomizationPostStep></makeCustomizationPostStep>
-        <makeCustomizationAlternativeFileToLoadEnabled>false</makeCustomizationAlternativeFileToLoadEnabled>
-        <makeCustomizationAlternativeFileToLoad></makeCustomizationAlternativeFileToLoad>
         <makeCustomizationPutChecksumInUserID>false</makeCustomizationPutChecksumInUserID>
+        <makeCustomizationEnableLongLines>false</makeCustomizationEnableLongLines>
+        <makeCustomizationNormalizeHexFile>false</makeCustomizationNormalizeHexFile>
       </makeCustomizationType>
       <C30>
         <property key="code-model" value="default"/>
@@ -548,24 +579,42 @@
         <property key="SPI 1" value="true"/>
         <property key="SPI 2" value="true"/>
         <property key="SPI 3" value="true"/>
+        <property key="SecureSegment.SegmentProgramming" value="FullChipProgramming"/>
         <property key="TIMER1" value="true"/>
         <property key="TIMER2" value="true"/>
         <property key="TIMER3" value="true"/>
         <property key="TIMER4" value="true"/>
         <property key="TIMER5" value="true"/>
+        <property key="ToolFirmwareFilePath"
+                  value="Press to browse for a specific firmware version"/>
+        <property key="ToolFirmwareOption.UseLatestFirmware" value="true"/>
         <property key="UART 1" value="true"/>
         <property key="UART 2" value="true"/>
         <property key="UART 3" value="true"/>
         <property key="UART 4" value="true"/>
         <property key="UCNFG1" value="true"/>
+        <property key="hwtoolclock.frcindebug" value="false"/>
+        <property key="memories.aux" value="false"/>
+        <property key="memories.bootflash" value="false"/>
+        <property key="memories.configurationmemory" value="false"/>
         <property key="memories.eeprom" value="false"/>
+        <property key="memories.flashdata" value="true"/>
         <property key="memories.id" value="false"/>
         <property key="memories.programmemory" value="true"/>
         <property key="memories.programmemory.end" value="0x157f7"/>
         <property key="memories.programmemory.start" value="0x0"/>
         <property key="poweroptions.powerenable" value="false"/>
+        <property key="programmertogo.imagename" value=""/>
         <property key="programoptions.eraseb4program" value="true"/>
+        <property key="programoptions.pgmspeed" value="2"/>
+        <property key="programoptions.preserveeeprom" value="false"/>
+        <property key="programoptions.preserveprogramrange" value="false"/>
+        <property key="programoptions.preserveprogramrange.end" value="0x157f7"/>
+        <property key="programoptions.preserveprogramrange.start" value="0x0"/>
+        <property key="programoptions.preserveuserid" value="false"/>
+        <property key="programoptions.testmodeentrymethod" value="VPPFirst"/>
         <property key="programoptions.usehighvoltageonmclr" value="false"/>
+        <property key="programoptions.uselvpprogramming" value="false"/>
         <property key="voltagevalue" value="3.25"/>
       </PICkit3PlatformTool>
     </conf>
@@ -574,25 +623,30 @@
         <developmentServer>localhost</developmentServer>
         <targetDevice>PIC24FJ128DA206</targetDevice>
         <targetHeader></targetHeader>
+        <targetPluginBoard></targetPluginBoard>
         <platformTool>PICkit3PlatformTool</platformTool>
         <languageToolchain>C30</languageToolchain>
-        <languageToolchainVersion>3_30b</languageToolchainVersion>
-        <platform>3</platform>
+        <languageToolchainVersion>3_30</languageToolchainVersion>
+        <platform>4</platform>
       </toolsSet>
       <compileType>
         <linkerTool>
           <linkerLibItems>
           </linkerLibItems>
         </linkerTool>
+        <loading>
+          <useAlternateLoadableFile>false</useAlternateLoadableFile>
+          <alternateLoadableFile></alternateLoadableFile>
+        </loading>
       </compileType>
       <makeCustomizationType>
         <makeCustomizationPreStepEnabled>false</makeCustomizationPreStepEnabled>
         <makeCustomizationPreStep></makeCustomizationPreStep>
         <makeCustomizationPostStepEnabled>false</makeCustomizationPostStepEnabled>
         <makeCustomizationPostStep></makeCustomizationPostStep>
-        <makeCustomizationAlternativeFileToLoadEnabled>false</makeCustomizationAlternativeFileToLoadEnabled>
-        <makeCustomizationAlternativeFileToLoad></makeCustomizationAlternativeFileToLoad>
         <makeCustomizationPutChecksumInUserID>false</makeCustomizationPutChecksumInUserID>
+        <makeCustomizationEnableLongLines>false</makeCustomizationEnableLongLines>
+        <makeCustomizationNormalizeHexFile>false</makeCustomizationNormalizeHexFile>
       </makeCustomizationType>
       <C30>
         <property key="code-model" value="default"/>
@@ -721,7 +775,11 @@
         <property key="UART 4" value="true"/>
         <property key="UCNFG1" value="true"/>
         <property key="hwtoolclock.frcindebug" value="false"/>
+        <property key="memories.aux" value="false"/>
+        <property key="memories.bootflash" value="false"/>
+        <property key="memories.configurationmemory" value="false"/>
         <property key="memories.eeprom" value="false"/>
+        <property key="memories.flashdata" value="true"/>
         <property key="memories.id" value="false"/>
         <property key="memories.programmemory" value="true"/>
         <property key="memories.programmemory.end" value="0x157f7"/>
@@ -729,11 +787,15 @@
         <property key="poweroptions.powerenable" value="false"/>
         <property key="programmertogo.imagename" value=""/>
         <property key="programoptions.eraseb4program" value="true"/>
+        <property key="programoptions.pgmspeed" value="2"/>
         <property key="programoptions.preserveeeprom" value="false"/>
         <property key="programoptions.preserveprogramrange" value="false"/>
         <property key="programoptions.preserveprogramrange.end" value="0xff"/>
         <property key="programoptions.preserveprogramrange.start" value="0x0"/>
+        <property key="programoptions.preserveuserid" value="false"/>
+        <property key="programoptions.testmodeentrymethod" value="VPPFirst"/>
         <property key="programoptions.usehighvoltageonmclr" value="false"/>
+        <property key="programoptions.uselvpprogramming" value="false"/>
         <property key="voltagevalue" value="3.25"/>
       </PICkit3PlatformTool>
     </conf>
@@ -742,25 +804,30 @@
         <developmentServer>localhost</developmentServer>
         <targetDevice>PIC24FJ256DA206</targetDevice>
         <targetHeader></targetHeader>
+        <targetPluginBoard></targetPluginBoard>
         <platformTool>PICkit3PlatformTool</platformTool>
         <languageToolchain>C30</languageToolchain>
-        <languageToolchainVersion>3_30b</languageToolchainVersion>
-        <platform>3</platform>
+        <languageToolchainVersion>3_30</languageToolchainVersion>
+        <platform>4</platform>
       </toolsSet>
       <compileType>
         <linkerTool>
           <linkerLibItems>
           </linkerLibItems>
         </linkerTool>
+        <loading>
+          <useAlternateLoadableFile>false</useAlternateLoadableFile>
+          <alternateLoadableFile></alternateLoadableFile>
+        </loading>
       </compileType>
       <makeCustomizationType>
         <makeCustomizationPreStepEnabled>false</makeCustomizationPreStepEnabled>
         <makeCustomizationPreStep></makeCustomizationPreStep>
         <makeCustomizationPostStepEnabled>false</makeCustomizationPostStepEnabled>
         <makeCustomizationPostStep></makeCustomizationPostStep>
-        <makeCustomizationAlternativeFileToLoadEnabled>false</makeCustomizationAlternativeFileToLoadEnabled>
-        <makeCustomizationAlternativeFileToLoad></makeCustomizationAlternativeFileToLoad>
         <makeCustomizationPutChecksumInUserID>false</makeCustomizationPutChecksumInUserID>
+        <makeCustomizationEnableLongLines>false</makeCustomizationEnableLongLines>
+        <makeCustomizationNormalizeHexFile>false</makeCustomizationNormalizeHexFile>
       </makeCustomizationType>
       <C30>
         <property key="code-model" value="default"/>
@@ -874,24 +941,42 @@
         <property key="SPI 1" value="true"/>
         <property key="SPI 2" value="true"/>
         <property key="SPI 3" value="true"/>
+        <property key="SecureSegment.SegmentProgramming" value="FullChipProgramming"/>
         <property key="TIMER1" value="true"/>
         <property key="TIMER2" value="true"/>
         <property key="TIMER3" value="true"/>
         <property key="TIMER4" value="true"/>
         <property key="TIMER5" value="true"/>
+        <property key="ToolFirmwareFilePath"
+                  value="Press to browse for a specific firmware version"/>
+        <property key="ToolFirmwareOption.UseLatestFirmware" value="true"/>
         <property key="UART 1" value="true"/>
         <property key="UART 2" value="true"/>
         <property key="UART 3" value="true"/>
         <property key="UART 4" value="true"/>
         <property key="UCNFG1" value="true"/>
+        <property key="hwtoolclock.frcindebug" value="false"/>
+        <property key="memories.aux" value="false"/>
+        <property key="memories.bootflash" value="false"/>
+        <property key="memories.configurationmemory" value="false"/>
         <property key="memories.eeprom" value="false"/>
+        <property key="memories.flashdata" value="true"/>
         <property key="memories.id" value="false"/>
         <property key="memories.programmemory" value="true"/>
         <property key="memories.programmemory.end" value="0x157f7"/>
         <property key="memories.programmemory.start" value="0x0"/>
         <property key="poweroptions.powerenable" value="false"/>
+        <property key="programmertogo.imagename" value=""/>
         <property key="programoptions.eraseb4program" value="true"/>
+        <property key="programoptions.pgmspeed" value="2"/>
+        <property key="programoptions.preserveeeprom" value="false"/>
+        <property key="programoptions.preserveprogramrange" value="false"/>
+        <property key="programoptions.preserveprogramrange.end" value="0x2abf7"/>
+        <property key="programoptions.preserveprogramrange.start" value="0x0"/>
+        <property key="programoptions.preserveuserid" value="false"/>
+        <property key="programoptions.testmodeentrymethod" value="VPPFirst"/>
         <property key="programoptions.usehighvoltageonmclr" value="false"/>
+        <property key="programoptions.uselvpprogramming" value="false"/>
         <property key="voltagevalue" value="3.25"/>
       </PICkit3PlatformTool>
     </conf>
@@ -900,25 +985,98 @@
         <developmentServer>localhost</developmentServer>
         <targetDevice>PIC24FJ256DA206</targetDevice>
         <targetHeader></targetHeader>
+        <targetPluginBoard></targetPluginBoard>
         <platformTool>PICkit3PlatformTool</platformTool>
         <languageToolchain>C30</languageToolchain>
-        <languageToolchainVersion>3_30b</languageToolchainVersion>
-        <platform>3</platform>
+        <languageToolchainVersion>3_30</languageToolchainVersion>
+        <platform>4</platform>
       </toolsSet>
       <compileType>
         <linkerTool>
           <linkerLibItems>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../libusb"
+                            CT="3"
+                            CN="PIC24FJ256DA206_ADB"
+                            AC="false"
+                            BL="true"
+                            WD="../libusb"
+                            BC="${MAKE}  -f Makefile CONF=PIC24FJ256DA206_ADB"
+                            DBC="${MAKE}  -f Makefile CONF=PIC24FJ256DA206_ADB TYPE_IMAGE=DEBUG_RUN"
+                            CC="rm -rf &quot;build/PIC24FJ256DA206_ADB&quot; &quot;dist/PIC24FJ256DA206_ADB&quot;"
+                            OP="dist/PIC24FJ256DA206_ADB/production/libusb.a"
+                            DOP="dist/PIC24FJ256DA206_ADB/debug/libusb.a"
+                            FL="dist/PIC24FJ256DA206_ADB/production/libusb.a"
+                            PD="dist/PIC24FJ256DA206_ADB/production/libusb."
+                            DD="dist/PIC24FJ256DA206_ADB/debug/libusb.">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../libadb"
+                            CT="3"
+                            CN="PIC24FJ256DA206"
+                            AC="true"
+                            BL="true"
+                            WD="../libadb"
+                            BC="${MAKE}  -f Makefile CONF=PIC24FJ256DA206"
+                            DBC="${MAKE}  -f Makefile CONF=PIC24FJ256DA206 TYPE_IMAGE=DEBUG_RUN"
+                            CC="rm -rf &quot;build/PIC24FJ256DA206&quot; &quot;dist/PIC24FJ256DA206&quot;"
+                            OP="dist/PIC24FJ256DA206/production/libadb.a"
+                            DOP="dist/PIC24FJ256DA206/debug/libadb.a"
+                            FL="dist/PIC24FJ256DA206/production/libadb.a"
+                            PD="dist/PIC24FJ256DA206/production/libadb."
+                            DD="dist/PIC24FJ256DA206/debug/libadb.">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../libbtstack"
+                            CT="3"
+                            CN="PIC24FJ256DA206"
+                            AC="true"
+                            BL="true"
+                            WD="../libbtstack"
+                            BC="${MAKE}  -f Makefile CONF=PIC24FJ256DA206"
+                            DBC="${MAKE}  -f Makefile CONF=PIC24FJ256DA206 TYPE_IMAGE=DEBUG_RUN"
+                            CC="rm -rf &quot;build/PIC24FJ256DA206&quot; &quot;dist/PIC24FJ256DA206&quot;"
+                            OP="dist/PIC24FJ256DA206/production/libbtstack.a"
+                            DOP="dist/PIC24FJ256DA206/debug/libbtstack.a"
+                            FL="dist/PIC24FJ256DA206/production/libbtstack.a"
+                            PD="dist/PIC24FJ256DA206/production/libbtstack."
+                            DD="dist/PIC24FJ256DA206/debug/libbtstack.">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../libconn"
+                            CT="3"
+                            CN="PIC24FJ256DA206"
+                            AC="true"
+                            BL="true"
+                            WD="../libconn"
+                            BC="${MAKE}  -f Makefile CONF=PIC24FJ256DA206"
+                            DBC="${MAKE}  -f Makefile CONF=PIC24FJ256DA206 TYPE_IMAGE=DEBUG_RUN"
+                            CC="rm -rf &quot;build/PIC24FJ256DA206&quot; &quot;dist/PIC24FJ256DA206&quot;"
+                            OP="dist/PIC24FJ256DA206/production/libconn.a"
+                            DOP="dist/PIC24FJ256DA206/debug/libconn.a"
+                            FL="dist/PIC24FJ256DA206/production/libconn.a"
+                            PD="dist/PIC24FJ256DA206/production/libconn."
+                            DD="dist/PIC24FJ256DA206/debug/libconn.">
+              </makeArtifact>
+            </linkerLibProjectItem>
           </linkerLibItems>
         </linkerTool>
+        <loading>
+          <useAlternateLoadableFile>false</useAlternateLoadableFile>
+          <alternateLoadableFile></alternateLoadableFile>
+        </loading>
       </compileType>
       <makeCustomizationType>
         <makeCustomizationPreStepEnabled>false</makeCustomizationPreStepEnabled>
         <makeCustomizationPreStep></makeCustomizationPreStep>
         <makeCustomizationPostStepEnabled>false</makeCustomizationPostStepEnabled>
         <makeCustomizationPostStep></makeCustomizationPostStep>
-        <makeCustomizationAlternativeFileToLoadEnabled>false</makeCustomizationAlternativeFileToLoadEnabled>
-        <makeCustomizationAlternativeFileToLoad></makeCustomizationAlternativeFileToLoad>
         <makeCustomizationPutChecksumInUserID>false</makeCustomizationPutChecksumInUserID>
+        <makeCustomizationEnableLongLines>false</makeCustomizationEnableLongLines>
+        <makeCustomizationNormalizeHexFile>false</makeCustomizationNormalizeHexFile>
       </makeCustomizationType>
       <C30>
         <property key="code-model" value="default"/>
@@ -1032,24 +1190,42 @@
         <property key="SPI 1" value="true"/>
         <property key="SPI 2" value="true"/>
         <property key="SPI 3" value="true"/>
+        <property key="SecureSegment.SegmentProgramming" value="FullChipProgramming"/>
         <property key="TIMER1" value="true"/>
         <property key="TIMER2" value="true"/>
         <property key="TIMER3" value="true"/>
         <property key="TIMER4" value="true"/>
         <property key="TIMER5" value="true"/>
+        <property key="ToolFirmwareFilePath"
+                  value="Press to browse for a specific firmware version"/>
+        <property key="ToolFirmwareOption.UseLatestFirmware" value="true"/>
         <property key="UART 1" value="true"/>
         <property key="UART 2" value="true"/>
         <property key="UART 3" value="true"/>
         <property key="UART 4" value="true"/>
         <property key="UCNFG1" value="true"/>
+        <property key="hwtoolclock.frcindebug" value="false"/>
+        <property key="memories.aux" value="false"/>
+        <property key="memories.bootflash" value="false"/>
+        <property key="memories.configurationmemory" value="false"/>
         <property key="memories.eeprom" value="false"/>
+        <property key="memories.flashdata" value="true"/>
         <property key="memories.id" value="false"/>
         <property key="memories.programmemory" value="true"/>
         <property key="memories.programmemory.end" value="0x157f7"/>
         <property key="memories.programmemory.start" value="0x0"/>
         <property key="poweroptions.powerenable" value="false"/>
+        <property key="programmertogo.imagename" value=""/>
         <property key="programoptions.eraseb4program" value="true"/>
+        <property key="programoptions.pgmspeed" value="2"/>
+        <property key="programoptions.preserveeeprom" value="false"/>
+        <property key="programoptions.preserveprogramrange" value="false"/>
+        <property key="programoptions.preserveprogramrange.end" value="0x2abf7"/>
+        <property key="programoptions.preserveprogramrange.start" value="0x0"/>
+        <property key="programoptions.preserveuserid" value="false"/>
+        <property key="programoptions.testmodeentrymethod" value="VPPFirst"/>
         <property key="programoptions.usehighvoltageonmclr" value="false"/>
+        <property key="programoptions.uselvpprogramming" value="false"/>
         <property key="voltagevalue" value="3.25"/>
       </PICkit3PlatformTool>
     </conf>
