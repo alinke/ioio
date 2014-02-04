@@ -136,12 +136,11 @@ static void draw_row() {
 
   for (i = shifter_repeat; i > 0; --i) {
     // push 32 bytes
-  #define dump DATA_CLK_PORT = *data++; CLK_PIN = 1;
-    dump dump dump dump dump dump dump dump
-    dump dump dump dump dump dump dump dump
-    dump dump dump dump dump dump dump dump
-    dump dump dump dump dump dump dump dump
-  #undef dump
+    #define DUMP1 "mov.b [%0++], [%1]\nbset [%1], #6\n"
+    #define DUMP4 DUMP1 DUMP1 DUMP1 DUMP1
+    #define DUMP16 DUMP4 DUMP4 DUMP4 DUMP4
+
+    asm(DUMP16 DUMP16 : "+r"(data) : "r"(&DATA_CLK_PORT));
   }
 
   OE_PIN = 1; // black
@@ -164,7 +163,6 @@ static unsigned int times[] = {
 void __attribute__((__interrupt__, auto_psv)) _T4Interrupt() {
   draw_row();
   PR4 = times[sub_frame];
-  TMR4 = 0;
   _T4IF = 0; // clear
 }
 
