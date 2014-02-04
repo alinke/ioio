@@ -1,0 +1,12 @@
+#!/bin/bash
+echo "Hello PIXEL user, we're now preparing the PIXEL ioioapp for you..."
+./tools/make-ioio-bundle firmware/app_layer_v1/dist lat IOIO0030
+echo "Now let's delete the old .ioioapp file"
+rm *.ioioapp
+echo "Now let's rename lat.zip to pixel.ioioapp"
+mv lat.zip pixel.ioioapp
+ls -l
+echo "When you are ready, here's the command you want to write the firmware"
+echo "java -jar ioiodude.jar --port=/dev/tty.usbmodem1421 write pixel.ioioapp"
+echo "Remember to first put PIXEL in device mode AND into bootloader mode"
+echo "Have a nice day"

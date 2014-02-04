@@ -164,7 +164,7 @@ static void BTAttached() {
   hci_uart_config_t * config = NULL;
   const remote_device_db_t * remote_db = &remote_device_db_memory;
   hci_init(transport, config, control, remote_db);
-  hci_ssp_set_enable(0);
+  hci_ssp_set_enable(0);  //tried 1 which is pineless BT but it didn't work on Windnows (Android and Mac worked), didn't test Rasp Pi
 
   // init L2CAP
   l2cap_init();

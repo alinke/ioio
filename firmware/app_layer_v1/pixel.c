@@ -23,7 +23,7 @@ typedef enum {
 } STATE;
 
 static STATE state = STATE_NONE;
-static int frame_delay;
+static int frame_delay; // static int frame_delay;
 static int shifter_len_32;
 static FSFILE *animation_file;
 static FSFILE *metadata_file;
@@ -61,7 +61,7 @@ static void StartPlayFile() {
   BYTE buff[sizeof(int)];
   metadata_file = FSfopen(METADATA_FILENAME, "r");
   if (!metadata_file) return;
-  FSfread(buff, sizeof( int ), 1, metadata_file);
+  FSfread(buff, sizeof( int ), 1, metadata_file);  //changed to float FSfread(buff, sizeof( int ), 1, metadata_file);
   FSfclose(metadata_file);
 
   //Store the framerate into frame_delay
@@ -120,7 +120,7 @@ static void StopPlayFile() {
 ////////////////////////////////////////////////////////////////////////////////
 // WriteFile stuff
 
-static void StartWriteFile(int fd, int sl32) {
+static void StartWriteFile(int fd, int sl32) {  //was int fd
  
   // Initialize
   if (!FSInit()) {
@@ -140,7 +140,7 @@ static void StartWriteFile(int fd, int sl32) {
   // write the arguments into the meta file.
 
   // Write the metadata file.
-  BYTE buff[sizeof( int ) ];
+  BYTE buff[sizeof( int ) ]; //was int
   buff[0] = (BYTE)((fd & 0x00FF));
   buff[1] = (BYTE)((fd & 0xFF00) >> 8);
 
@@ -254,7 +254,7 @@ void PixelInteractive(int shifter_len_32) {
   StartInteractive(shifter_len_32);
 }
 
-void PixelWriteFile(int frame_delay, int shifter_len_32) {
+void PixelWriteFile(int frame_delay, int shifter_len_32) {   //void PixelWriteFile(int frame_delay, int shifter_len_32) {
   ExitCurrentState();
   StartWriteFile(frame_delay, shifter_len_32);
 }

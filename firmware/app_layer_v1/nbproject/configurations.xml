@@ -95,9 +95,10 @@
         <developmentServer>localhost</developmentServer>
         <targetDevice>PIC24FJ256GB206</targetDevice>
         <targetHeader></targetHeader>
+        <targetPluginBoard></targetPluginBoard>
         <platformTool>Simulator</platformTool>
         <languageToolchain>C30</languageToolchain>
-        <languageToolchainVersion>3_31</languageToolchainVersion>
+        <languageToolchainVersion>3_30</languageToolchainVersion>
         <platform>4</platform>
       </toolsSet>
       <compileType>

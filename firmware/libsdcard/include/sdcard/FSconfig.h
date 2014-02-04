@@ -42,21 +42,21 @@
 // Description: If this macro is disabled then only 8.3 format file name is enabled.
 //              If this macro is enabled then long file names upto 256 characters are
 //              supported.
-#define	SUPPORT_LFN
+//#define	SUPPORT_LFN
 
 // Summary: A macro indicating the maximum number of concurrently open files
 // Description: The FS_MAX_FILES_OPEN #define is only applicable when dynamic memory allocation is not used (FS_DYNAMIC_MEM is not defined).
 //              This macro defines the maximum number of open files at any given time.  The amount of RAM used by FSFILE objects will
 //              be equal to the size of an FSFILE object multipled by this macro value.  This value should be kept as small as possible
 //              as dictated by the application.  This will reduce memory usage.
-#define FS_MAX_FILES_OPEN 	2
+#define FS_MAX_FILES_OPEN 	1
 
 
 // Summary: A macro defining the size of a sector
 // Description: The MEDIA_SECTOR_SIZE macro will define the size of a sector on the FAT file system.  This value must equal 512 bytes,
 //              1024 bytes, 2048 bytes, or 4096 bytes.  The value of a sector will usually be 512 bytes.
 #define MEDIA_SECTOR_SIZE 		512
-
+// I tried changing this to see if writes were faster but no difference
 
 
 /* *******************************************************************************************************/
