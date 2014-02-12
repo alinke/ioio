@@ -31,7 +31,7 @@ static FSFILE *shifter_length_file;
 
 // TODO: this can be optimized - we already have a buffer of this size for this
 // purpose in RgbLedMatrix.
-BYTE frame[1536] __attribute__((far));
+// BYTE frame[1536 * 4] __attribute__((far));
 
 ////////////////////////////////////////////////////////////////////////////////
 // PlayFile stuff
@@ -95,8 +95,14 @@ static void MaybeFrameFromFile() {
   // If our timer elapsed, push a frame to the display.
   if (_T1IF) {
     _T1IF = 0;
+
+    void * frame;
+    unsigned int dswpag;
+    RgbLedMatrixGetBackBuffer(&frame, &dswpag);
+
+    DSWPAG = dswpag;
     FSfread(frame, 768 * shifter_len_32, 1, animation_file);
-    RgbLedMatrixFrame(frame);
+    RgbLedMatrixSwapFrame();
     if (FSfeof(animation_file)) {
       // Rewind
       FSfseek(animation_file, 0, SEEK_SET);

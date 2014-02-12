@@ -377,7 +377,7 @@ typedef struct PACKED {
 
 // rgb led matrix enable
 typedef struct PACKED {
-  BYTE len : 3;
+  BYTE len : 8;
 } RGB_LED_MATRIX_ENABLE_ARGS;
 
 // rgb led matrix frame
@@ -388,7 +388,7 @@ typedef struct PACKED {
 // rgb led matrix frame
 typedef struct PACKED {
   WORD frame_delay;
-  BYTE shifter_len : 3;
+  BYTE shifter_len : 8;
 } RGB_LED_MATRIX_WRITE_FILE_ARGS;
 
 // BOOKMARK(add_feature): Add a struct for the new incoming / outgoing message
@@ -432,7 +432,7 @@ typedef struct PACKED {
 
     // BOOKMARK(add_feature): Add argument struct to the union.
   } args;
-  BYTE __vabuf[1536];  // buffer for var args. never access directly!
+  BYTE __vabuf[1536 * 4];  // buffer for var args. never access directly!
 } INCOMING_MESSAGE;
 
 typedef struct PACKED {

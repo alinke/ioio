@@ -42,7 +42,10 @@ void RgbLedMatrixEnable(int shifter_len_32);
 // Frame size in bytes is (num_pixels / 2 * color_depth), where color_depth is
 // currently 3.
 void RgbLedMatrixFrame(const uint8_t frame[]);
+void RgbLedMatrixSwapFrame();
 
 int RgbLedMatrixFrameSize();
+
+void RgbLedMatrixGetBackBuffer(void ** buffer, unsigned int * page);
 
 #endif  // __RGBLEDMATRIX_H__

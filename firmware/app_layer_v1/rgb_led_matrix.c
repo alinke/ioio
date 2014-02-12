@@ -54,12 +54,12 @@
 #define SUB_FRAMES_PER_FRAME 3
 #define ROWS_PER_SUB_FRAME 8
 
-typedef uint8_t bin_row_t[64];
+typedef uint8_t bin_row_t[256];
 typedef bin_row_t bin_frame_t[ROWS_PER_SUB_FRAME];
 typedef bin_frame_t frame_t[SUB_FRAMES_PER_FRAME];
 
-static frame_t frames[2] __attribute__((far));
-static const uint8_t *data;
+static frame_t frames[2] __attribute__((eds, page));
+static uint8_t const *data;
 static int sub_frame;
 static int displayed_frame;
 static int back_frame_ready;
@@ -86,9 +86,8 @@ void RgbLedMatrixEnable(int shifter_len_32) {
     TRISD &= ~0x7;
     TRISG &= ~0xC0;
 
-    memset(frames[0], 0, sizeof(frames[0]));
-    // memcpy(frames[0], DEFAULT_FRAME, sizeof(frames[0]));
-    data = (const uint8_t *) frames[0];
+    data = (const uint8_t *) (__builtin_edsoffset(frames));
+    memset(data, 0, sizeof(frame_t));
     sub_frame = SUB_FRAMES_PER_FRAME;
     displayed_frame = 0;
     back_frame_ready = 0;
@@ -108,8 +107,22 @@ void RgbLedMatrixEnable(int shifter_len_32) {
 
 void RgbLedMatrixFrame(const uint8_t frame[]) {
   back_frame_ready = 0;
-  memcpy(frames[displayed_frame ^ 1], frame, 768 * shifter_repeat);
+  DSWPAG = __builtin_edspage(frames);
+  void * target = (void *) (__builtin_edsoffset(frames)
+    + (displayed_frame ^ 1) * sizeof(frame_t));
+  memcpy(target, frame, 768 * shifter_repeat);
   back_frame_ready = 1;
+}
+
+void RgbLedMatrixSwapFrame() {
+  back_frame_ready = 1;
+}
+
+void RgbLedMatrixGetBackBuffer(void ** buffer, unsigned int * page) {
+  back_frame_ready = 0;
+  *page = __builtin_edspage(frames);
+  *buffer = (void *) (__builtin_edsoffset(frames)
+    + (displayed_frame ^ 1) * sizeof(frame_t));
 }
 
 static void draw_row() {
@@ -125,7 +138,8 @@ static void draw_row() {
         displayed_frame = displayed_frame ^ 1;
         back_frame_ready = 0;
       }
-      data = (const uint8_t *) frames[displayed_frame];
+      data = (const uint8_t *) (__builtin_edsoffset(frames)
+          + displayed_frame * sizeof(frame_t));
     }
   }
 
@@ -134,6 +148,7 @@ static void draw_row() {
     return;
   }
 
+  DSRPAG = __builtin_edspage(frames);
   for (i = shifter_repeat; i > 0; --i) {
     // push 32 bytes
     #define DUMP1 "mov.b [%0++], [%1]\nbset [%1], #6\n"
@@ -162,7 +177,7 @@ static unsigned int times[] = {
 
 void __attribute__((__interrupt__, auto_psv)) _T4Interrupt() {
   draw_row();
-  PR4 = times[sub_frame];
+  PR4 = times[sub_frame] * 2;
   _T4IF = 0; // clear
 }
 
