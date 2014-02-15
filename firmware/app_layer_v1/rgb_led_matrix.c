@@ -64,7 +64,7 @@ static int sub_frame;
 static int displayed_frame;
 static int back_frame_ready;
 static int shifter_repeat;
-static int address = 0;
+static int address;
 
 //static const frame_t DEFAULT_FRAME = {
 //#include "default_frame.inl"
@@ -75,7 +75,7 @@ void RgbLedMatrixEnable(int shifter_len_32) {
 
   if (shifter_len_32) {
     LATE = 0;
-    address = 7;
+    address = 0;
     LATG = (1 << 7);
 
     ODCE &= ~0x7F;
@@ -87,8 +87,9 @@ void RgbLedMatrixEnable(int shifter_len_32) {
     TRISG &= ~0xC0;
 
     data = (const uint8_t *) (__builtin_edsoffset(frames));
+    DSWPAG = __builtin_edspage(frames);
     memset(data, 0, sizeof(frame_t));
-    sub_frame = SUB_FRAMES_PER_FRAME;
+    sub_frame = 0;
     displayed_frame = 0;
     back_frame_ready = 0;
     shifter_repeat = shifter_len_32;
@@ -127,10 +128,12 @@ void RgbLedMatrixGetBackBuffer(void ** buffer, unsigned int * page) {
 
 static void draw_row() {
   int i;
-  if (++address == ROWS_PER_SUB_FRAME) {
-    // sub-frame done
-    address = 0;
-    if (++sub_frame == SUB_FRAMES_PER_FRAME + 1) {
+
+  if (sub_frame == SUB_FRAMES_PER_FRAME) {
+    OE_PIN = 1; // black
+    if (++address == ROWS_PER_SUB_FRAME) {
+      // sub-frame done
+      address = 0;
       // frame done
       sub_frame = 0;
 
@@ -141,10 +144,6 @@ static void draw_row() {
       data = (const uint8_t *) (__builtin_edsoffset(frames)
           + displayed_frame * sizeof(frame_t));
     }
-  }
-
-  if (sub_frame == SUB_FRAMES_PER_FRAME) {
-    OE_PIN = 1; // black
     return;
   }
 
@@ -165,6 +164,14 @@ static void draw_row() {
   ADDR_PORT = address;
 
   OE_PIN = 0; // enable output
+  
+  // Advance the row address, sub-frame if needed, frame if needed.
+
+  if (++address == ROWS_PER_SUB_FRAME) {
+    // sub-frame done
+    address = 0;
+    ++sub_frame;
+  }
 }
 
 int RgbLedMatrixFrameSize() {
@@ -172,12 +179,13 @@ int RgbLedMatrixFrameSize() {
 }
 
 static unsigned int times[] = {
-  6, 12, 36, 250
+  20, 40, 80, 100
 };
 
 void __attribute__((__interrupt__, auto_psv)) _T4Interrupt() {
+  // Schedule the next interrupt.
+  PR4 = times[sub_frame] - 1;
   draw_row();
-  PR4 = times[sub_frame] * 2;
   _T4IF = 0; // clear
 }
 
