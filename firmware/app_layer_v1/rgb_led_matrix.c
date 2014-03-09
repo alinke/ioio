@@ -64,7 +64,7 @@ static int sub_frame;
 static int displayed_frame;
 static int back_frame_ready;
 static int shifter_repeat;
-static int address;
+static uint8_t address;
 
 //static const frame_t DEFAULT_FRAME = {
 //#include "default_frame.inl"
@@ -164,7 +164,7 @@ static void draw_row() {
   // latch
   LAT_PIN = 1;
   LAT_PIN = 0;
-  ADDR_PORT = address;
+  *((uint8_t *) &ADDR_PORT) = address;
 
   OE_PIN = 0; // enable output
   
