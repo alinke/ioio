@@ -143,12 +143,13 @@ enum Board {
 		};
 		static final Hardware IOIO0002 = new Hardware(MAP_IOIO0002_IOIO0003, 9, 4, 3, new int[] {
 				0, 2, 4 }, new int[] { 6, 7, 8 }, new int[][] { { 4, 5 }, { 47, 48 }, { 26, 25 } },
-				new int[] { 36, 37, 38 },
-				new int[] { 7, 10, 11, 19, 20, 21, 22, 23, 24, 25, 27, 28 });
+				new int[] { 36, 37, 38 }, new int[] { 7, 10, 11, 12, 13, 14, 15, 16, 19, 20, 21,
+						22, 23, 24, 25, 26, 27, 28 });
 		static final Hardware IOIO0003 = IOIO0002;
 		static final Hardware IOIO0004 = new Hardware(MAP_IOIO0004, 9, 4, 3, new int[] { 0, 2, 4 },
 				new int[] { 6, 7, 8 }, new int[][] { { 4, 5 }, { 1, 2 }, { 26, 25 } }, new int[] {
-						36, 37, 38 }, new int[] { 7, 10, 11, 19, 20, 21, 22, 23, 24, 25, 27, 28 });
+						36, 37, 38 }, new int[] { 7, 10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22,
+						23, 24, 25, 26, 27, 28 });
 
 		private enum Function {
 			PERIPHERAL_OUT, PERIPHERAL_IN, ANALOG_IN
