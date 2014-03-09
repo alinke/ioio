@@ -48,25 +48,28 @@ static void StartPlayFile() {
 
   BYTE shiftbuff[sizeof(int)];
   shifter_length_file = FSfopen(SHIFTER_LENGTH_FILENAME, "r");
-  if (!shifter_length_file) return;
+  if (!shifter_length_file) return; //move on if the matrix type file is not there
   FSfread(shiftbuff, sizeof( int ), 1, shifter_length_file);
   FSfclose(shifter_length_file);
 
   //Store the shifter length
   shifter_len_32 = shiftbuff[0] | (shiftbuff[1]  << 8);
-
-
+ 
+  //let's make sure we got good data and abort if not
+  if (shifter_len_32 != 1 && shifter_len_32 != 2 && shifter_len_32 != 4 && shifter_len_32 != 8 ) {
+     return;
+  }
 
   //Open the metadata File
   BYTE buff[sizeof(int)];
   metadata_file = FSfopen(METADATA_FILENAME, "r");
   if (!metadata_file) return;
+
   FSfread(buff, sizeof( int ), 1, metadata_file);  //changed to float FSfread(buff, sizeof( int ), 1, metadata_file);
   FSfclose(metadata_file);
 
   //Store the framerate into frame_delay
   frame_delay = buff[0] | (buff[1]  << 8);
-
 
   // Open the animation file.
   animation_file = FSfopen(ANIMATION_FILENAME, "r");
@@ -75,6 +78,15 @@ static void StartPlayFile() {
     return;
   }
 
+  // check that the file is not empty
+ // fseek(animation_file, 0, SEEK_END); // seek to end of file
+ // int size = ftell(animation_file); // get current file pointer
+ // if (size > 0) {  //file is not 0 bytles so we are good
+  //  fseek(animation_file, 0, SEEK_SET); // seek back to beginning of file
+ // }
+ // else return; //empty file so return
+
+ 
   // Initialize the matrix.
   RgbLedMatrixEnable(shifter_len_32);
 
@@ -90,6 +102,8 @@ static void StartPlayFile() {
 
   state = STATE_PLAY_FILE;
 }
+
+
 
 static void MaybeFrameFromFile() {
   // If our timer elapsed, push a frame to the display.

@@ -150,7 +150,7 @@ static void draw_row() {
   DSRPAG = __builtin_edspage(frames);
   for (i = shifter_repeat; i > 0; --i) {
     // push 32 bytes
-    #define DUMP1 "mov.b [%0++], [%1]\nbset [%1], #6\n"
+    #define DUMP1 "mov.b [%0++], [%1]\nbset [%1], #6\n"  //the assembly language calls Ytai added
     #define DUMP4 DUMP1 DUMP1 DUMP1 DUMP1
     #define DUMP16 DUMP4 DUMP4 DUMP4 DUMP4
 
@@ -179,7 +179,7 @@ int RgbLedMatrixFrameSize() {
 }
 
 static unsigned int times[] = {
-  20, 40, 80, 100
+  20, 40, 80, 100  //this has something to do with brightness levels
 };
 
 void __attribute__((__interrupt__, auto_psv)) _T4Interrupt() {
