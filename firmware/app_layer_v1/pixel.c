@@ -108,11 +108,13 @@ static void StartPlayFile() {
 static void MaybeFrameFromFile() {
   // If our timer elapsed, push a frame to the display.
   if (_T1IF) {
-    _T1IF = 0;
-
     void * frame;
     unsigned int dswpag;
     RgbLedMatrixGetBackBuffer(&frame, &dswpag);
+    // There's already a frame in the back-buffer, we're not keeping up...
+    if (!frame) return;
+
+    _T1IF = 0;
 
     DSWPAG = dswpag;
     FSfread(frame, 768 * shifter_len_32, 1, animation_file);

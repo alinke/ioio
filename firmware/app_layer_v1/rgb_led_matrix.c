@@ -120,7 +120,10 @@ void RgbLedMatrixSwapFrame() {
 }
 
 void RgbLedMatrixGetBackBuffer(void ** buffer, unsigned int * page) {
-  back_frame_ready = 0;
+  if (back_frame_ready) {
+    *buffer = NULL;
+    return;
+  }
   *page = __builtin_edspage(frames);
   *buffer = (void *) (__builtin_edsoffset(frames)
     + (displayed_frame ^ 1) * sizeof(frame_t));

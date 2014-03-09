@@ -62,7 +62,7 @@
 
     // Description: This macro is used to initialize a 16-bit PIC SPI module
     #ifndef SYNC_MODE_FAST
-        #define   SYNC_MODE_FAST    0x3E
+        #define   SYNC_MODE_FAST    0x3F
     #endif
     // Description: This macro is used to initialize a 16-bit PIC SPI module
     #ifndef SYNC_MODE_SLOW
