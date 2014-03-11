@@ -49,8 +49,6 @@ import ioio.lib.api.exception.ConnectionLostException;
 import ioio.lib.api.exception.IncompatibilityException;
 import ioio.lib.impl.IOIOProtocol.PwmScale;
 import ioio.lib.impl.IncomingState.DisconnectListener;
-import ioio.lib.impl.ResourceManager.Resource;
-import ioio.lib.impl.ResourceManager.ResourceType;
 import ioio.lib.spi.Log;
 
 import java.io.IOException;
@@ -62,12 +60,20 @@ public class IOIOImpl implements IOIO, DisconnectListener {
 	private static final byte[] REQUIRED_INTERFACE_ID = new byte[] { 'Y', 'T',
 			'A', 'I', '0', '0', '0', '2' };
 
-	IOIOProtocol protocol_;
-	ResourceManager resourceManager_;
-	IncomingState incomingState_ = new IncomingState();
-	private Board.Hardware hardware_;
 	private IOIOConnection connection_;
+	private IncomingState incomingState_ = new IncomingState();
+	private boolean openPins_[];
+	private boolean openTwi_[];
+	private boolean openIcsp_;
+	private boolean openRgbLedMatrix_ = false;
+	private ModuleAllocator pwmAllocator_;
+	private ModuleAllocator uartAllocator_;
+	private ModuleAllocator spiAllocator_;
+	private ModuleAllocator incapAllocatorDouble_;
+	private ModuleAllocator incapAllocatorSingle_;
+	IOIOProtocol protocol_;
 	private State state_ = State.INIT;
+	private Board.Hardware hardware_;
 
 	public IOIOImpl(IOIOConnection con) {
 		connection_ = con;
@@ -165,7 +171,16 @@ public class IOIOImpl implements IOIO, DisconnectListener {
 					+ incomingState_.hardwareId_);
 		}
 		hardware_ = incomingState_.board_.hardware;
-		resourceManager_ = new ResourceManager(hardware_);
+		openPins_ = new boolean[hardware_.numPins()];
+		openTwi_ = new boolean[hardware_.numTwiModules()];
+		openIcsp_ = false;
+		pwmAllocator_ = new ModuleAllocator(hardware_.numPwmModules(), "PWM");
+		uartAllocator_ = new ModuleAllocator(hardware_.numUartModules(), "UART");
+		spiAllocator_ = new ModuleAllocator(hardware_.numSpiModules(), "SPI");
+		incapAllocatorDouble_ = new ModuleAllocator(
+				hardware_.incapDoubleModules(), "INCAP_DOUBLE");
+		incapAllocatorSingle_ = new ModuleAllocator(
+				hardware_.incapSingleModules(), "INCAP_SINGLE");
 	}
 
 	private void checkInterfaceVersion() throws IncompatibilityException,
@@ -193,11 +208,108 @@ public class IOIOImpl implements IOIO, DisconnectListener {
 		incomingState_.addDisconnectListener(listener);
 	}
 
-	synchronized void closePin(ResourceManager.Resource pin) {
+	synchronized void closePin(int pin) {
 		try {
-			protocol_.setPinDigitalIn(pin.id, DigitalInput.Spec.Mode.FLOATING);
-			resourceManager_.free(pin);
+			checkState();
+			if (!openPins_[pin]) {
+				throw new IllegalStateException("Pin not open: " + pin);
+			}
+			protocol_.setPinDigitalIn(pin, DigitalInput.Spec.Mode.FLOATING);
+			openPins_[pin] = false;
 		} catch (IOException e) {
+		} catch (ConnectionLostException e) {
+		}
+	}
+
+	synchronized void closePwm(int pwmNum) {
+		try {
+			checkState();
+			pwmAllocator_.releaseModule(pwmNum);
+			protocol_.setPwmPeriod(pwmNum, 0, IOIOProtocol.PwmScale.SCALE_1X);
+		} catch (IOException e) {
+		} catch (ConnectionLostException e) {
+		}
+	}
+
+	synchronized void closeUart(int uartNum) {
+		try {
+			checkState();
+			uartAllocator_.releaseModule(uartNum);
+			protocol_.uartClose(uartNum);
+		} catch (IOException e) {
+		} catch (ConnectionLostException e) {
+		}
+	}
+
+	synchronized void closeTwi(int twiNum) {
+		try {
+			checkState();
+			if (!openTwi_[twiNum]) {
+				throw new IllegalStateException("TWI not open: " + twiNum);
+			}
+			openTwi_[twiNum] = false;
+			final int[][] twiPins = hardware_.twiPins();
+			openPins_[twiPins[twiNum][0]] = false;
+			openPins_[twiPins[twiNum][1]] = false;
+			protocol_.i2cClose(twiNum);
+		} catch (IOException e) {
+		} catch (ConnectionLostException e) {
+		}
+	}
+
+	synchronized public void closeRgbLedMatrix() {
+		try {
+			checkState();
+			if (!openRgbLedMatrix_) {
+				throw new IllegalStateException("RGB LED matrix not open");
+			}
+			openRgbLedMatrix_ = false;
+			for (int pin : hardware_.rgbLedMatrixPins()) {
+				openPins_[pin] = false;
+			}
+			protocol_.rgbLedMatrixEnable(0);
+		} catch (IOException e) {
+		} catch (ConnectionLostException e) {
+		}
+	}
+
+	synchronized void closeIcsp() {
+		try {
+			checkState();
+			if (!openIcsp_) {
+				throw new IllegalStateException("ICSP not open");
+			}
+			openIcsp_ = false;
+			final int[] icspPins = hardware_.icspPins();
+			openPins_[icspPins[0]] = false;
+			openPins_[icspPins[1]] = false;
+			protocol_.icspClose();
+		} catch (ConnectionLostException e) {
+		} catch (IOException e) {
+		}
+	}
+
+	synchronized void closeSpi(int spiNum) {
+		try {
+			checkState();
+			spiAllocator_.releaseModule(spiNum);
+			protocol_.spiClose(spiNum);
+		} catch (IOException e) {
+		} catch (ConnectionLostException e) {
+		}
+	}
+
+	synchronized void closeIncap(int incapNum, boolean doublePrecision) {
+		try {
+			checkState();
+			if (doublePrecision) {
+				incapAllocatorDouble_.releaseModule(incapNum);
+			} else {
+				incapAllocatorSingle_.releaseModule(incapNum);
+			}
+			protocol_.incapClose(incapNum, doublePrecision);
+		} catch (IOException e) {
+		} catch (ConnectionLostException e) {
 		}
 	}
 
@@ -235,7 +347,7 @@ public class IOIOImpl implements IOIO, DisconnectListener {
 		case APP_FIRMWARE_VER:
 			return incomingState_.firmwareId_;
 		case IOIOLIB_VER:
-			return "MIRR0004";
+			return "PIXL0020";
 		}
 		return null;
 	}
@@ -256,10 +368,11 @@ public class IOIOImpl implements IOIO, DisconnectListener {
 	synchronized public DigitalInput openDigitalInput(DigitalInput.Spec spec)
 			throws ConnectionLostException {
 		checkState();
-		Resource pin = new Resource(ResourceType.PIN, spec.pin);
-		resourceManager_.alloc(pin);
-		DigitalInputImpl result = new DigitalInputImpl(this, pin);
+		hardware_.checkValidPin(spec.pin);
+		checkPinFree(spec.pin);
+		DigitalInputImpl result = new DigitalInputImpl(this, spec.pin);
 		addDisconnectListener(result);
+		openPins_[spec.pin] = true;
 		incomingState_.addInputPinListener(spec.pin, result);
 		try {
 			protocol_.setPinDigitalIn(spec.pin, spec.mode);
@@ -283,11 +396,11 @@ public class IOIOImpl implements IOIO, DisconnectListener {
 			DigitalOutput.Spec spec, boolean startValue)
 			throws ConnectionLostException {
 		checkState();
-		Resource pin = new Resource(ResourceType.PIN, spec.pin);
-		resourceManager_.alloc(pin);
-
-		DigitalOutputImpl result = new DigitalOutputImpl(this, pin, startValue);
+		hardware_.checkValidPin(spec.pin);
+		checkPinFree(spec.pin);
+		DigitalOutputImpl result = new DigitalOutputImpl(this, spec.pin, startValue);
 		addDisconnectListener(result);
+		openPins_[spec.pin] = true;
 		try {
 			protocol_.setPinDigitalOut(spec.pin, startValue, spec.mode);
 		} catch (IOException e) {
@@ -310,18 +423,18 @@ public class IOIOImpl implements IOIO, DisconnectListener {
 	}
 
 	@Override
-	synchronized public AnalogInput openAnalogInput(int pinNum)
+	synchronized public AnalogInput openAnalogInput(int pin)
 			throws ConnectionLostException {
 		checkState();
-		hardware_.checkSupportsAnalogInput(pinNum);
-		Resource pin = new Resource(ResourceType.PIN, pinNum);
-		resourceManager_.alloc(pin);
+		hardware_.checkSupportsAnalogInput(pin);
+		checkPinFree(pin);
 		AnalogInputImpl result = new AnalogInputImpl(this, pin);
 		addDisconnectListener(result);
-		incomingState_.addInputPinListener(pinNum, result);
+		openPins_[pin] = true;
+		incomingState_.addInputPinListener(pin, result);
 		try {
-			protocol_.setPinAnalogIn(pinNum);
-			protocol_.setAnalogInSampling(pinNum, true);
+			protocol_.setPinAnalogIn(pin);
+			protocol_.setAnalogInSampling(pin, true);
 		} catch (IOException e) {
 			result.close();
 			throw new ConnectionLostException(e);
@@ -340,11 +453,9 @@ public class IOIOImpl implements IOIO, DisconnectListener {
 			int freqHz) throws ConnectionLostException {
 		checkState();
 		hardware_.checkSupportsPeripheralOutput(spec.pin);
+		checkPinFree(spec.pin);
+		int pwmNum = pwmAllocator_.allocateModule();
 
-		Resource pin = new Resource(ResourceType.PIN, spec.pin);
-		Resource oc = new Resource(ResourceType.OUTCOMPARE);
-
-		resourceManager_.alloc(pin, oc);
 		int scale = 0;
 		float baseUs;
 		int period;
@@ -361,12 +472,13 @@ public class IOIOImpl implements IOIO, DisconnectListener {
 			}
 		}
 
-		PwmImpl pwm = new PwmImpl(this, pin, oc, period, baseUs);
+		PwmImpl pwm = new PwmImpl(this, spec.pin, pwmNum, period, baseUs);
 		addDisconnectListener(pwm);
+		openPins_[spec.pin] = true;
 		try {
 			protocol_.setPinDigitalOut(spec.pin, false, spec.mode);
-			protocol_.setPinPwm(spec.pin, oc.id, true);
-			protocol_.setPwmPeriod(oc.id, period - 1,
+			protocol_.setPinPwm(spec.pin, pwmNum, true);
+			protocol_.setPwmPeriod(pwmNum, period - 1,
 					IOIOProtocol.PwmScale.values()[scale]);
 		} catch (IOException e) {
 			pwm.close();
@@ -390,28 +502,28 @@ public class IOIOImpl implements IOIO, DisconnectListener {
 		checkState();
 		if (rx != null) {
 			hardware_.checkSupportsPeripheralInput(rx.pin);
+			checkPinFree(rx.pin);
 		}
 		if (tx != null) {
 			hardware_.checkSupportsPeripheralOutput(tx.pin);
+			checkPinFree(tx.pin);
 		}
-		Resource rxPin = rx != null ? new Resource(ResourceType.PIN, rx.pin)
-				: null;
-		Resource txPin = tx != null ? new Resource(ResourceType.PIN, tx.pin)
-				: null;
-		Resource uart = new Resource(ResourceType.UART);
-		resourceManager_.alloc(rxPin, txPin, uart);
-
-		UartImpl result = new UartImpl(this, txPin, rxPin, uart);
-		addDisconnectListener(result);
-		incomingState_.addUartListener(uart.id, result);
+		int rxPin = rx != null ? rx.pin : INVALID_PIN;
+		int txPin = tx != null ? tx.pin : INVALID_PIN;
+		int uartNum = uartAllocator_.allocateModule();
+		UartImpl uart = new UartImpl(this, txPin, rxPin, uartNum);
+		addDisconnectListener(uart);
+		incomingState_.addUartListener(uartNum, uart);
 		try {
 			if (rx != null) {
+				openPins_[rx.pin] = true;
 				protocol_.setPinDigitalIn(rx.pin, rx.mode);
-				protocol_.setPinUart(rx.pin, uart.id, false, true);
+				protocol_.setPinUart(rx.pin, uartNum, false, true);
 			}
 			if (tx != null) {
+				openPins_[tx.pin] = true;
 				protocol_.setPinDigitalOut(tx.pin, true, tx.mode);
-				protocol_.setPinUart(tx.pin, uart.id, true, true);
+				protocol_.setPinUart(tx.pin, uartNum, true, true);
 			}
 			boolean speed4x = true;
 			int rate = Math.round(4000000.0f / baud) - 1;
@@ -419,81 +531,75 @@ public class IOIOImpl implements IOIO, DisconnectListener {
 				speed4x = false;
 				rate = Math.round(1000000.0f / baud) - 1;
 			}
-			protocol_.uartConfigure(uart.id, rate, speed4x, stopbits, parity);
+			protocol_.uartConfigure(uartNum, rate, speed4x, stopbits, parity);
 		} catch (IOException e) {
-			result.close();
+			uart.close();
 			throw new ConnectionLostException(e);
 		}
-		return result;
+		return uart;
 	}
 
 	@Override
 	synchronized public TwiMaster openTwiMaster(int twiNum, Rate rate,
 			boolean smbus) throws ConnectionLostException {
 		checkState();
-
+		checkTwiFree(twiNum);
 		final int[][] twiPins = hardware_.twiPins();
-
-		Resource twi = new Resource(ResourceType.TWI, twiNum);
-		Resource[] pins = new Resource[] {
-				new Resource(ResourceType.PIN, twiPins[twiNum][0]),
-				new Resource(ResourceType.PIN, twiPins[twiNum][1]) };
-
-		resourceManager_.alloc(twi, pins);
-
-		TwiMasterImpl result = new TwiMasterImpl(this, twi, pins);
-		addDisconnectListener(result);
-		incomingState_.addTwiListener(twiNum, result);
+		checkPinFree(twiPins[twiNum][0]);
+		checkPinFree(twiPins[twiNum][1]);
+		openPins_[twiPins[twiNum][0]] = true;
+		openPins_[twiPins[twiNum][1]] = true;
+		openTwi_[twiNum] = true;
+		TwiMasterImpl twi = new TwiMasterImpl(this, twiNum);
+		addDisconnectListener(twi);
+		incomingState_.addTwiListener(twiNum, twi);
 		try {
 			protocol_.i2cConfigureMaster(twiNum, rate, smbus);
 		} catch (IOException e) {
-			result.close();
+			twi.close();
 			throw new ConnectionLostException(e);
 		}
-		return result;
+		return twi;
 	}
 
 	@Override
 	synchronized public IcspMaster openIcspMaster()
 			throws ConnectionLostException {
 		checkState();
-
+		checkIcspFree();
 		final int[] icspPins = hardware_.icspPins();
-		Resource icsp = new Resource(ResourceType.ICSP);
-		Resource[] pins = new Resource[] {
-				new Resource(ResourceType.PIN, icspPins[0]),
-				new Resource(ResourceType.PIN, icspPins[1]),
-				new Resource(ResourceType.PIN, icspPins[2]) };
-
-		resourceManager_.alloc(icsp, pins);
-
-		IcspMasterImpl result = new IcspMasterImpl(this, icsp, pins);
-		addDisconnectListener(result);
-		incomingState_.addIcspListener(result);
+		checkPinFree(icspPins[0]);
+		checkPinFree(icspPins[1]);
+		checkPinFree(icspPins[2]);
+		openPins_[icspPins[0]] = true;
+		openPins_[icspPins[1]] = true;
+		openPins_[icspPins[2]] = true;
+		openIcsp_ = true;
+		IcspMasterImpl icsp = new IcspMasterImpl(this);
+		addDisconnectListener(icsp);
+		incomingState_.addIcspListener(icsp);
 		try {
 			protocol_.icspOpen();
 		} catch (IOException e) {
-			result.close();
+			icsp.close();
 			throw new ConnectionLostException(e);
 		}
-		return result;
+		return icsp;
 	}
 
 	@Override
 	public RgbLedMatrix openRgbLedMatrix(RgbLedMatrix.Matrix kind)
 			throws ConnectionLostException {
 		checkState();
-
-		int[] pinNumbers = hardware_.rgbLedMatrixPins();
-		Resource matrix = new Resource(ResourceType.RGB_LED_MATRIX);
-		Resource[] pins = new Resource[pinNumbers.length];
-		for (int i = 0; i < pinNumbers.length; ++i) {
-			pins[i] = new Resource(ResourceType.PIN, pinNumbers[i]);
+		checkRgbLedMatrixFree();
+		for (int pin : hardware_.rgbLedMatrixPins()) {
+			checkPinFree(pin);
 		}
-
-		resourceManager_.alloc(matrix, pins);
-
-		RgbLedMatrixImpl result = new RgbLedMatrixImpl(this, kind, matrix, pins);
+		for (int pin : hardware_.rgbLedMatrixPins()) {
+			openPins_[pin] = true;
+		}
+		openRgbLedMatrix_ = true;
+		RgbLedMatrixImpl result = new RgbLedMatrixImpl(this, kind);
 		addDisconnectListener(result);
 		try {
 			protocol_.rgbLedMatrixEnable(RgbLedMatrixImpl.getShifterLen(kind));
@@ -530,70 +636,72 @@ public class IOIOImpl implements IOIO, DisconnectListener {
 			DigitalOutput.Spec[] slaveSelect, SpiMaster.Config config)
 			throws ConnectionLostException {
 		checkState();
-
+		int ssPins[] = new int[slaveSelect.length];
+		checkPinFree(miso.pin);
 		hardware_.checkSupportsPeripheralInput(miso.pin);
+		checkPinFree(mosi.pin);
 		hardware_.checkSupportsPeripheralOutput(mosi.pin);
+		checkPinFree(clk.pin);
 		hardware_.checkSupportsPeripheralOutput(clk.pin);
-
-		Resource ssPins[] = new Resource[slaveSelect.length];
-		Resource misoPin = new Resource(ResourceType.PIN, miso.pin);
-		Resource mosiPin = new Resource(ResourceType.PIN, mosi.pin);
-		Resource clkPin = new Resource(ResourceType.PIN, clk.pin);
 		for (int i = 0; i < slaveSelect.length; ++i) {
-			ssPins[i] = new Resource(ResourceType.PIN, slaveSelect[i].pin);
+			checkPinFree(slaveSelect[i].pin);
+			ssPins[i] = slaveSelect[i].pin;
 		}
-		Resource spi = new Resource(ResourceType.SPI);
 
-		resourceManager_.alloc(ssPins, misoPin, mosiPin, clkPin, spi);
+		int spiNum = spiAllocator_.allocateModule();
+		SpiMasterImpl spi = new SpiMasterImpl(this, spiNum, mosi.pin, miso.pin,
+				clk.pin, ssPins);
+		addDisconnectListener(spi);
 
-		SpiMasterImpl result = new SpiMasterImpl(this, spi, mosiPin, misoPin,
-				clkPin, ssPins);
-		addDisconnectListener(result);
+		openPins_[miso.pin] = true;
+		openPins_[mosi.pin] = true;
+		openPins_[clk.pin] = true;
+		for (int i = 0; i < slaveSelect.length; ++i) {
+			openPins_[slaveSelect[i].pin] = true;
+		}
 
-		incomingState_.addSpiListener(spi.id, result);
+		incomingState_.addSpiListener(spiNum, spi);
 		try {
 			protocol_.setPinDigitalIn(miso.pin, miso.mode);
-			protocol_.setPinSpi(miso.pin, 1, true, spi.id);
+			protocol_.setPinSpi(miso.pin, 1, true, spiNum);
 			protocol_.setPinDigitalOut(mosi.pin, true, mosi.mode);
-			protocol_.setPinSpi(mosi.pin, 0, true, spi.id);
+			protocol_.setPinSpi(mosi.pin, 0, true, spiNum);
 			protocol_.setPinDigitalOut(clk.pin, config.invertClk, clk.mode);
-			protocol_.setPinSpi(clk.pin, 2, true, spi.id);
+			protocol_.setPinSpi(clk.pin, 2, true, spiNum);
 			for (DigitalOutput.Spec spec : slaveSelect) {
 				protocol_.setPinDigitalOut(spec.pin, true, spec.mode);
 			}
-			protocol_.spiConfigureMaster(spi.id, config);
+			protocol_.spiConfigureMaster(spiNum, config);
 		} catch (IOException e) {
-			result.close();
+			spi.close();
 			throw new ConnectionLostException(e);
 		}
-		return result;
+		return spi;
 	}
 
 	@Override
 	public PulseInput openPulseInput(Spec spec, ClockRate rate, PulseMode mode,
 			boolean doublePrecision) throws ConnectionLostException {
 		checkState();
+		checkPinFree(spec.pin);
 		hardware_.checkSupportsPeripheralInput(spec.pin);
-		Resource pin = new Resource(ResourceType.PIN, spec.pin);
-		Resource incap = new Resource(
-				doublePrecision ? ResourceType.INCAP_DOUBLE
-						: ResourceType.INCAP_SINGLE);
-		resourceManager_.alloc(pin, incap);
-
-		IncapImpl result = new IncapImpl(this, mode, incap, pin, rate.hertz,
-				mode.scaling, doublePrecision);
-		addDisconnectListener(result);
-		incomingState_.addIncapListener(incap.id, result);
+		int incapNum = doublePrecision ? incapAllocatorDouble_.allocateModule()
+				: incapAllocatorSingle_.allocateModule();
+		IncapImpl incap = new IncapImpl(this, mode, incapNum, spec.pin,
+				rate.hertz, mode.scaling, doublePrecision);
+		addDisconnectListener(incap);
+		incomingState_.addIncapListener(incapNum, incap);
+		openPins_[spec.pin] = true;
 		try {
 			protocol_.setPinDigitalIn(spec.pin, spec.mode);
-			protocol_.setPinIncap(spec.pin, incap.id, true);
-			protocol_.incapConfigure(incap.id, doublePrecision,
+			protocol_.setPinIncap(spec.pin, incapNum, true);
+			protocol_.incapConfigure(incapNum, doublePrecision,
 					mode.ordinal() + 1, rate.ordinal());
 		} catch (IOException e) {
-			result.close();
+			incap.close();
 			throw new ConnectionLostException(e);
 		}
-		return result;
+		return incap;
 	}
 
 	@Override
@@ -603,11 +711,29 @@ public class IOIOImpl implements IOIO, DisconnectListener {
 				mode, true);
 	}
 
-//	private void checkRgbLedMatrixFree() {
-//		if (openRgbLedMatrix_) {
-//			throw new IllegalArgumentException("RGB LED matrix already open");
-//		}
-//	}
+	private void checkPinFree(int pin) {
+		if (openPins_[pin]) {
+			throw new IllegalArgumentException("Pin already open: " + pin);
+		}
+	}
+
+	private void checkTwiFree(int twi) {
+		if (openTwi_[twi]) {
+			throw new IllegalArgumentException("TWI already open: " + twi);
+		}
+	}
+
+	private void checkIcspFree() {
+		if (openIcsp_) {
+			throw new IllegalArgumentException("ICSP already open");
+		}
+	}
+
+	private void checkRgbLedMatrixFree() {
+		if (openRgbLedMatrix_) {
+			throw new IllegalArgumentException("RGB LED matrix already open");
+		}
+	}
 
 	private void checkState() throws ConnectionLostException {
 		if (state_ == State.DEAD) {

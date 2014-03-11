@@ -3,8 +3,8 @@
     <type>com.microchip.mplab.nbide.embedded.makeproject</type>
     <configuration>
         <data xmlns="http://www.netbeans.org/ns/make-project/1">
-            <name>pixelv2merge</name>
-            <creation-uuid>6268675e-b98b-44ac-8f30-909724af6826</creation-uuid>
+            <name>pixl0004_release</name>
+            <creation-uuid>61a6af24-5a2b-4346-a05d-16956bcc3799</creation-uuid>
             <make-project-type>0</make-project-type>
             <c-extensions/>
             <cpp-extensions/>

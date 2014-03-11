@@ -31,18 +31,16 @@ package ioio.lib.impl;
 import ioio.lib.api.exception.ConnectionLostException;
 
 abstract class AbstractPin extends AbstractResource {
-	protected final ResourceManager.Resource pin_;
-
-	AbstractPin(IOIOImpl ioio, ResourceManager.Resource pin)
-			throws ConnectionLostException {
+	protected final int pinNum_;
+	
+	AbstractPin(IOIOImpl ioio, int pinNum) throws ConnectionLostException {
 		super(ioio);
-		pin_ = pin;
+		pinNum_ = pinNum;
 	}
 
 	@Override
 	synchronized public void close() {
-		checkClose();
-		ioio_.closePin(pin_);
 		super.close();
+		ioio_.closePin(pinNum_);
 	}
 }
