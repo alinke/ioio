@@ -48,7 +48,10 @@
 #include "protocol_defs.h"
 
 // Human-readable string describing app firmware version.
-#define FW_IMPL_VER "PIXL0005"
+#define FW_IMPL_VER "PIXL0006"//normal firmware, can only be 8 digits
+//#define FW_IMPL_VER "PIXLD306" //demo firmware for 32x32
+//#define FW_IMPL_VER "PIXLD606" //demo firemware for 64x64
+//note also see bt_connection.c in libconn, line 168 to chnge to pinless bluetooth for demo mode
 
 // Initialize this module.
 // This function completely resets the module's state and can be called even
