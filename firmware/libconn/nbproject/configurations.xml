@@ -38,7 +38,7 @@
         <targetDevice>PIC24FJ128DA106</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
-        <platformTool>PICkit3PlatformTool</platformTool>
+        <platformTool>Simulator</platformTool>
         <languageToolchain>C30</languageToolchain>
         <languageToolchainVersion>3_30</languageToolchainVersion>
         <platform>3</platform>
@@ -132,8 +132,8 @@
         <property key="legacy-libc" value="false"/>
         <property key="output-file-format" value="coff"/>
       </C30Global>
-      <PICkit3PlatformTool>
-      </PICkit3PlatformTool>
+      <Simulator>
+      </Simulator>
     </conf>
     <conf name="PIC24FJ128DA206" type="3">
       <toolsSet>
@@ -141,7 +141,7 @@
         <targetDevice>PIC24FJ128DA206</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
-        <platformTool>PICkit3PlatformTool</platformTool>
+        <platformTool>Simulator</platformTool>
         <languageToolchain>C30</languageToolchain>
         <languageToolchainVersion>3_30</languageToolchainVersion>
         <platform>3</platform>
@@ -235,8 +235,8 @@
         <property key="legacy-libc" value="false"/>
         <property key="output-file-format" value="coff"/>
       </C30Global>
-      <PICkit3PlatformTool>
-      </PICkit3PlatformTool>
+      <Simulator>
+      </Simulator>
     </conf>
     <conf name="PIC24FJ256DA206" type="3">
       <toolsSet>
@@ -244,7 +244,7 @@
         <targetDevice>PIC24FJ256DA206</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
-        <platformTool>PICkit3PlatformTool</platformTool>
+        <platformTool>Simulator</platformTool>
         <languageToolchain>C30</languageToolchain>
         <languageToolchainVersion>3_30</languageToolchainVersion>
         <platform>3</platform>
@@ -338,8 +338,8 @@
         <property key="legacy-libc" value="false"/>
         <property key="output-file-format" value="coff"/>
       </C30Global>
-      <PICkit3PlatformTool>
-      </PICkit3PlatformTool>
+      <Simulator>
+      </Simulator>
     </conf>
     <conf name="PIC24FJ256GB206" type="3">
       <toolsSet>
@@ -347,7 +347,7 @@
         <targetDevice>PIC24FJ256GB206</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
-        <platformTool>PICkit3PlatformTool</platformTool>
+        <platformTool>Simulator</platformTool>
         <languageToolchain>C30</languageToolchain>
         <languageToolchainVersion>3_30</languageToolchainVersion>
         <platform>3</platform>
@@ -441,8 +441,8 @@
         <property key="legacy-libc" value="false"/>
         <property key="output-file-format" value="coff"/>
       </C30Global>
-      <PICkit3PlatformTool>
-      </PICkit3PlatformTool>
+      <Simulator>
+      </Simulator>
     </conf>
   </confs>
 </configurationDescriptor>

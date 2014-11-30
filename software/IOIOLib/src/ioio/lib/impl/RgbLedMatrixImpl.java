@@ -175,6 +175,64 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 			}
 		}
 	}
+	
+	private static void convertAdafruit(short[] rgb565, int width, byte[] dest) {  //would like to daisy chain adafruit 16x32's
+		final int height = rgb565.length / width;
+		final int subframeSize = rgb565.length / 2;
+		
+		for (int x = 0; x < width; ++x) {
+			for (int y = 0; y < height; ++y) {
+				if (y % 32 >= 16) continue;
+				
+				// This are the two indices of the pixel comprising a dot-pair in the input.
+				int inputIndex0 = y * width + x;
+				int inputIndex1 = (y + 16) * width + x;
+				
+				short color0 = rgb565[inputIndex0];
+				// Take the top 3 bits of each {r,g,b}
+				int r0 = (color0 >> 13) & 0x7;
+				int g0 = (color0 >> 8) & 0x7;
+				int b0 = (color0 >> 2) & 0x7;
+										
+				short color1 = rgb565[inputIndex1];
+				// Take the top 3 bits of each {r,g,b}
+				int r1 = (color1 >> 13) & 0x7;
+				int g1 = (color1 >> 8) & 0x7;
+				int b1 = (color1 >> 2) & 0x7;
+				
+				// Hack: Odd matrices have their G/B channels swapped.
+				/*boolean oddMatrix = (((x / 32) + (y / 32) * (width / 32)) & 1) != 0;
+				
+				if (oddMatrix) {
+					int t = g0;
+					g0 = b0;
+					b0 = t;
+					t = g1;
+					g1 = b1;
+					b1 = t;
+				}*/
+
+				for (int subframe = 0; subframe < 3; ++subframe) {
+					int dotPair =
+							(r0 & 1) << 5
+							| (g0 & 1) << 4
+							| (b0 & 1) << 3
+							| (r1 & 1) << 2
+							| (g1 & 1) << 1
+							| (b1 & 1) << 0;
+					int indexWithinSubframe = mapAdafruitIndex(x, y, width, height);
+					int indexWithinOutput = subframe * subframeSize + indexWithinSubframe;
+					dest[indexWithinOutput] = (byte) dotPair;
+					r0 >>= 1;
+					g0 >>= 1;
+					b0 >>= 1;
+					r1 >>= 1;
+					g1 >>= 1;
+					b1 >>= 1;
+				}
+			}
+		}
+	}
 
 	private static void convertSeeedStudio32x32New(short[] rgb565, byte[] dest) {
 		int outIndex = 0;
@@ -303,6 +361,25 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 		return index;
 	}
 	
+	private static int mapAdafruitIndex(int x, int y, int width, int height) {
+		assert y % 32 < 16;
+		int logicalRow = y % 8;
+		boolean firstHalf = y % 16 < 8;
+		int dotPairsPerLogicalRow = width * height / 16;
+		int widthInMatrices = width / 32;
+		int matrixX = x / 32;
+		int matrixY = y / 32;
+		int totalMatrices = width * height / 1024;
+		int matrixNumber = totalMatrices - 1 - (matrixY * widthInMatrices + matrixX);
+		int indexWithinMatrixRow = x % 32 + (firstHalf ? 0 : 32);
+		int index = logicalRow * dotPairsPerLogicalRow
+				+ matrixNumber * 64;
+				//+ SEEED_MAP[indexWithinMatrixRow];
+		return index;
+	}
+	
+	
+	
 	private static void convertSeeedStudio(short[] rgb565, int width, byte[] dest) {
 		final int height = rgb565.length / width;
 		final int subframeSize = rgb565.length / 2;
@@ -378,7 +455,7 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 	}
 	
 	private static void convertSeeedStudio32x128Mirrored(short[] rgb565, byte[] dest) { //4 mirrored
-		convertSeeedStudio(rgb565, 32, dest);
+		convertSeeedStudio(rgb565, 32, dest); //originally 32
 	}
 	
 	private static void convertSeeedStudio128x32(short[] rgb565, byte[] dest) {
@@ -391,6 +468,18 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 	
 	private static void convertSeeedStudio64x64(short[] rgb565, byte[] dest) {
 		convertSeeedStudio(rgb565, 64, dest);
+	}
+	
+	private static void convertAdafruit64x16(short[] rgb565, byte[] dest) { //2 Adafruit panels
+		convertAdafruit(rgb565, 16, dest); //16 is the width, these are for Adafruit 16x32 panels
+	}
+	
+	private static void convertAdafruit96x16(short[] rgb565, byte[] dest) {  //3 Adafruit panels
+		convertAdafruit(rgb565, 16, dest);
+	}
+	
+	private static void convertAdafruit128x16(short[] rgb565, byte[] dest) { //4 Adafruit panels
+		convertAdafruit(rgb565, 16, dest);
 	}
 	
 	
@@ -448,7 +537,8 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 		case SEEEDSTUDIO_2_MIRRORED:
 			return 4; 
 			
-		case SEEEDSTUDIO_4_MIRRORED:
+
+		case SEEEDSTUDIO_4_MIRRORED: 
 		case SEEEDSTUDIO_64x64:
 		case SEEEDSTUDIO_128x32:
 		case SEEEDSTUDIO_32x128:
@@ -474,7 +564,7 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 		case SEEEDSTUDIO_32x64:
 		case SEEEDSTUDIO_2_MIRRORED:
 			return 3072; 
-			
+
 		case SEEEDSTUDIO_4_MIRRORED:
 		case SEEEDSTUDIO_64x64:
 		case SEEEDSTUDIO_128x32:

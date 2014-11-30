@@ -15,6 +15,9 @@
 #define METADATA_FILENAME "fps.bin"
 #define SHIFTER_LENGTH_FILENAME "matrixtp.bin"
 
+
+
+
 typedef enum {
   STATE_NONE,
   STATE_PLAY_FILE,
@@ -49,6 +52,7 @@ static void StartPlayFile() {
   BYTE shiftbuff[sizeof(int)];
   shifter_length_file = FSfopen(SHIFTER_LENGTH_FILENAME, "r");
   if (!shifter_length_file) return; //move on if the matrix type file is not there
+  //if (!fsize(shifter_length_file) > 0) return; //move on if the file is 0 bytes
   FSfread(shiftbuff, sizeof( int ), 1, shifter_length_file);
   FSfclose(shifter_length_file);
 
@@ -64,6 +68,7 @@ static void StartPlayFile() {
   BYTE buff[sizeof(int)];
   metadata_file = FSfopen(METADATA_FILENAME, "r");
   if (!metadata_file) return;
+ // if (!fsize(metadata_file) > 0) return; //move on if the file is 0 bytes
 
   FSfread(buff, sizeof( int ), 1, metadata_file);  //changed to float FSfread(buff, sizeof( int ), 1, metadata_file);
   FSfclose(metadata_file);
@@ -73,10 +78,8 @@ static void StartPlayFile() {
 
   // Open the animation file.
   animation_file = FSfopen(ANIMATION_FILENAME, "r");
-  if (!animation_file) {
-    // Either file is not present or card is not present
-    return;
-  }
+  if (!animation_file) return;
+ // if (!fsize(animation_file) > 0) return; //move on if the file is 0 bytes
 
   // check that the file is not empty
  // fseek(animation_file, 0, SEEK_END); // seek to end of file
@@ -102,6 +105,14 @@ static void StartPlayFile() {
 
   state = STATE_PLAY_FILE;
 }
+
+//int fsize(FILE *fp){
+//    int prev=ftell(fp);
+//    fseek(fp, 0L, SEEK_END);
+//    int sz=ftell(fp);
+//    fseek(fp,prev,SEEK_SET); //go back to where we were
+//    return sz;
+//}
 
 
 

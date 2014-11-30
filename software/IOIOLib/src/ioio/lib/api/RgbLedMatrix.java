@@ -67,7 +67,7 @@ public interface RgbLedMatrix extends Closeable {
 		SEEEDSTUDIO_64x32(64,32), //horizontal
 		SEEEDSTUDIO_32x64(32,64), //vertical
 		SEEEDSTUDIO_2_MIRRORED(32,64), //2 panels mirrored
-		SEEEDSTUDIO_4_MIRRORED(128,32), //4 panels mirrored
+		SEEEDSTUDIO_4_MIRRORED(128,32), //4 panels mirrored: was originally (128,32) but this not working
 		SEEEDSTUDIO_64x64(64,64), //2x2 square
 		SEEEDSTUDIO_128x32(128,32), //4x1 horizontal
 		SEEEDSTUDIO_32x128(32,128); //1x4 vertical

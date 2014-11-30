@@ -39,6 +39,9 @@ import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+
 import purejavacomm.CommPort;
 import purejavacomm.CommPortIdentifier;
 import purejavacomm.PortInUseException;
@@ -59,8 +62,9 @@ public class SerialPortIOIOConnectionBootstrap implements
 					+ "list of port identifiers, e.g. COM1:COM2.");
 			ports = getAllOpenablePorts();
 		}
+		
 		for (final String port : ports) {
-			Log.d(TAG, "Adding serial port " + port);
+			Log.w(TAG, "Adding serial port " + port); //al changed from log.d to log.w
 			result.add(new IOIOConnectionFactory() {
 				@Override
 				public String getType() {
@@ -89,7 +93,7 @@ public class SerialPortIOIOConnectionBootstrap implements
 			final CommPortIdentifier identifier = identifiers.nextElement();
 			if (identifier.getPortType() == CommPortIdentifier.PORT_SERIAL) {
 				if (checkIdentifier(identifier)) {
-					Log.d(TAG, "Adding serial port " + identifier.getName());
+					Log.w(TAG, "Adding serial port " + identifier.getName()); // al changed from log.d to log.w
 					result.add(identifier.getName());
 				} else {
 					Log.w(TAG, "Serial port " + identifier.getName()
