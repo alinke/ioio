@@ -267,7 +267,7 @@ public class IOIOImpl implements IOIO, DisconnectListener {
 			for (int pin : hardware_.rgbLedMatrixPins()) {
 				openPins_[pin] = false;
 			}
-			protocol_.rgbLedMatrixEnable(0);
+			protocol_.rgbLedMatrixEnable(0, 0);
 		} catch (IOException e) {
 		} catch (ConnectionLostException e) {
 		}
@@ -602,7 +602,8 @@ public class IOIOImpl implements IOIO, DisconnectListener {
 		RgbLedMatrixImpl result = new RgbLedMatrixImpl(this, kind);
 		addDisconnectListener(result);
 		try {
-			protocol_.rgbLedMatrixEnable(RgbLedMatrixImpl.getShifterLen(kind));
+			protocol_.rgbLedMatrixEnable(RgbLedMatrixImpl.getShifterLen(kind),
+										RgbLedMatrixImpl.getNumRows(kind));
 		} catch (IOException e) {
 			result.close();
 			throw new ConnectionLostException(e);

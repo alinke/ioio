@@ -56,7 +56,7 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 	@Override
 	synchronized public void writeFile(float fps) throws ConnectionLostException {
 		try {
-			ioio_.protocol_.rgbLedMatrixWriteFile(fps, getShifterLen(kind_));
+			ioio_.protocol_.rgbLedMatrixWriteFile(fps, getShifterLen(kind_), getNumRows(kind_));
 		} catch (IOException e) {
 			throw new ConnectionLostException(e);
 		}
@@ -65,7 +65,7 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 	@Override
 	synchronized public void interactive() throws ConnectionLostException {
 		try {
-			ioio_.protocol_.rgbLedMatrixEnable(getShifterLen(kind_));
+			ioio_.protocol_.rgbLedMatrixEnable(getShifterLen(kind_), getNumRows(kind_));
 		} catch (IOException e) {
 			throw new ConnectionLostException(e);
 		}
@@ -74,7 +74,7 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 	@Override
 	synchronized public void playFile() throws ConnectionLostException {
 		try {
-			ioio_.protocol_.rgbLedMatrixEnable(0);
+			ioio_.protocol_.rgbLedMatrixEnable(0, 0);
 		} catch (IOException e) {
 			throw new ConnectionLostException(e);
 		}
@@ -132,6 +132,18 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 		case SEEEDSTUDIO_32x128:
 			convertSeeedStudio32x128(rgb565, frame_);
 			break;	
+			
+		case ADAFRUIT_32x32:
+			convertAdafruit32x32(rgb565, frame_);
+			break;
+			
+		case ADAFRUIT_64x32:
+			convertAdafruit64x32(rgb565, frame_);
+			break;
+			
+		case ADAFRUIT_64x64:
+			convertAdafruit64x64(rgb565, frame_);
+			break;
 		
 
 		default:
@@ -176,59 +188,31 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 		}
 	}
 	
+	
+	
 	private static void convertAdafruit(short[] rgb565, int width, byte[] dest) {  //would like to daisy chain adafruit 16x32's
-		final int height = rgb565.length / width;
-		final int subframeSize = rgb565.length / 2;
+//		final int height = rgb565.length / width;
+//		final int subframeSize = rgb565.length / 2;
 		
-		for (int x = 0; x < width; ++x) {
-			for (int y = 0; y < height; ++y) {
-				if (y % 32 >= 16) continue;
-				
-				// This are the two indices of the pixel comprising a dot-pair in the input.
-				int inputIndex0 = y * width + x;
-				int inputIndex1 = (y + 16) * width + x;
-				
-				short color0 = rgb565[inputIndex0];
-				// Take the top 3 bits of each {r,g,b}
-				int r0 = (color0 >> 13) & 0x7;
-				int g0 = (color0 >> 8) & 0x7;
-				int b0 = (color0 >> 2) & 0x7;
-										
-				short color1 = rgb565[inputIndex1];
-				// Take the top 3 bits of each {r,g,b}
-				int r1 = (color1 >> 13) & 0x7;
-				int g1 = (color1 >> 8) & 0x7;
-				int b1 = (color1 >> 2) & 0x7;
-				
-				// Hack: Odd matrices have their G/B channels swapped.
-				/*boolean oddMatrix = (((x / 32) + (y / 32) * (width / 32)) & 1) != 0;
-				
-				if (oddMatrix) {
-					int t = g0;
-					g0 = b0;
-					b0 = t;
-					t = g1;
-					g1 = b1;
-					b1 = t;
-				}*/
+		int outIndex = 0;
+		for (int subframe = 0; subframe < 3; ++subframe) {
+			int inIndex = 0;
+			for (int row = 0; row < 16; ++row) {
+				for (int col = 0; col < 32; ++col) {
+					int pixel1 = ((int) rgb565[inIndex]) & 0xFFFF;
+					int pixel2 = ((int) rgb565[inIndex + 512]) & 0xFFFF;
 
-				for (int subframe = 0; subframe < 3; ++subframe) {
-					int dotPair =
-							(r0 & 1) << 5
-							| (g0 & 1) << 4
-							| (b0 & 1) << 3
-							| (r1 & 1) << 2
-							| (g1 & 1) << 1
-							| (b1 & 1) << 0;
-					int indexWithinSubframe = mapAdafruitIndex(x, y, width, height);
-					int indexWithinOutput = subframe * subframeSize + indexWithinSubframe;
-					dest[indexWithinOutput] = (byte) dotPair;
-					r0 >>= 1;
-					g0 >>= 1;
-					b0 >>= 1;
-					r1 >>= 1;
-					g1 >>= 1;
-					b1 >>= 1;
+					int r1 = (pixel1 >> (11 + 2 + subframe)) & 1;
+					int g1 = (pixel1 >> (5 + 3 + subframe)) & 1;
+					int b1 = (pixel1 >> (0 + 2 + subframe)) & 1;
+
+					int r2 = (pixel2 >> (11 + 2 + subframe)) & 1;
+					int g2 = (pixel2 >> (5 + 3 + subframe)) & 1;
+					int b2 = (pixel2 >> (0 + 2 + subframe)) & 1;
+
+					dest[outIndex++] = (byte) (r1 << 5 | g1 << 4 | b1 << 3
+							| r2 << 2 | g2 << 1 | b2 << 0);
+					++inIndex;
 				}
 			}
 		}
@@ -438,6 +422,19 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 		}
 	}
 	
+	
+	private static void convertAdafruit32x32(short[] rgb565, byte[] dest) {
+		convertAdafruit(rgb565, 32, dest);
+	}
+	
+	private static void convertAdafruit64x32(short[] rgb565, byte[] dest) {
+		convertAdafruit(rgb565, 64, dest);
+	}
+	
+	private static void convertAdafruit64x64(short[] rgb565, byte[] dest) {
+		convertAdafruit(rgb565, 64, dest);
+	}
+	
 	private static void convertSeeedStudio32x32(short[] rgb565, byte[] dest) {
 		convertSeeedStudio(rgb565, 32, dest); //32 is the width
 	}
@@ -525,24 +522,52 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 	public static int getShifterLen(Matrix kind) {
 		switch (kind) {
 		case ADAFRUIT_32x16:
+		case ADAFRUIT_32x32:
 			return 1;
 
 		case SEEEDSTUDIO_32x16:
 		case SEEEDSTUDIO_32x32:
 		case SEEEDSTUDIO_32x32_NEW:
+		case ADAFRUIT_64x32:
 			return 2;
 			
 		case SEEEDSTUDIO_64x32:
 		case SEEEDSTUDIO_32x64:
 		case SEEEDSTUDIO_2_MIRRORED:
+		case ADAFRUIT_64x64:
 			return 4; 
-			
 
 		case SEEEDSTUDIO_4_MIRRORED: 
 		case SEEEDSTUDIO_64x64:
 		case SEEEDSTUDIO_128x32:
 		case SEEEDSTUDIO_32x128:
 			return 8; 	
+		
+
+		default:
+			throw new IllegalStateException("Unsupported kind.");
+		}
+	}
+
+	public static int getNumRows(Matrix kind) {
+		switch (kind) {
+		case ADAFRUIT_32x16:
+		case SEEEDSTUDIO_32x16:
+		case SEEEDSTUDIO_32x32:
+		case SEEEDSTUDIO_32x32_NEW:
+		case SEEEDSTUDIO_64x32:
+		case SEEEDSTUDIO_32x64:
+		case SEEEDSTUDIO_2_MIRRORED:
+		case SEEEDSTUDIO_4_MIRRORED: 
+		case SEEEDSTUDIO_64x64:
+		case SEEEDSTUDIO_128x32:
+		case SEEEDSTUDIO_32x128:
+			return 8; 	
+			
+		case ADAFRUIT_32x32:
+		case ADAFRUIT_64x32:
+		case ADAFRUIT_64x64:
+			return 16;
 
 		default:
 			throw new IllegalStateException("Unsupported kind.");
@@ -551,28 +576,11 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 
 	private static int getFrameSize(Matrix kind) {
 		switch (kind) {
-		case ADAFRUIT_32x16:
-			return 768;
-
 		case SEEEDSTUDIO_32x16:
-		case SEEEDSTUDIO_32x32:
-		case SEEEDSTUDIO_32x32_NEW:
 			return 1536;
 			
-			
-		case SEEEDSTUDIO_64x32:
-		case SEEEDSTUDIO_32x64:
-		case SEEEDSTUDIO_2_MIRRORED:
-			return 3072; 
-
-		case SEEEDSTUDIO_4_MIRRORED:
-		case SEEEDSTUDIO_64x64:
-		case SEEEDSTUDIO_128x32:
-		case SEEEDSTUDIO_32x128:
-			return 6144;		
-
 		default:
-			throw new IllegalStateException("Unsupported kind.");
+			return kind.height * kind.width * 3 / 2;
 		}
 	}
 }
