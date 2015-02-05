@@ -377,7 +377,11 @@ typedef struct PACKED {
 
 // rgb led matrix enable
 typedef struct PACKED {
-  BYTE len : 8;
+  // Row length, divided by 32.
+  BYTE len : 4;
+  // 0 = 8 rows, 1 = 16 rows.
+  BYTE rows : 2;
+  BYTE : 2;
 } RGB_LED_MATRIX_ENABLE_ARGS;
 
 // rgb led matrix frame
@@ -388,7 +392,9 @@ typedef struct PACKED {
 // rgb led matrix frame
 typedef struct PACKED {
   WORD frame_delay;
-  BYTE shifter_len : 8;
+  BYTE shifter_len : 4;
+  BYTE rows : 2;
+  BYTE : 2;
 } RGB_LED_MATRIX_WRITE_FILE_ARGS;
 
 // BOOKMARK(add_feature): Add a struct for the new incoming / outgoing message

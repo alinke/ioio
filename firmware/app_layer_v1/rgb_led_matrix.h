@@ -37,7 +37,8 @@
 // 1: 32-deep register.
 // 2: 64-deep register.
 // etc.
-void RgbLedMatrixEnable(int shifter_len_32);
+// num_rows: 0 = 8 rows, 1 = 16 rows.
+void RgbLedMatrixEnable(int shifter_len_32, int num_rows);
 
 // Frame size in bytes is (num_pixels / 2 * color_depth), where color_depth is
 // currently 3.

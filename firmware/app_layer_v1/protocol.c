@@ -504,7 +504,8 @@ static BOOL MessageDone() {
 
     case RGB_LED_MATRIX_ENABLE:
       if (rx_msg.args.rgb_led_matrix_enable.len) {
-          PixelInteractive(rx_msg.args.rgb_led_matrix_enable.len);
+          PixelInteractive(rx_msg.args.rgb_led_matrix_enable.len,
+                           rx_msg.args.rgb_led_matrix_enable.rows);
       } else {
           PixelPlayFile();
       }
@@ -516,7 +517,8 @@ static BOOL MessageDone() {
 
     case RGB_LED_MATRIX_WRITE_FILE:
       PixelWriteFile(rx_msg.args.rgb_led_matrix_write_file.frame_delay,
-                     rx_msg.args.rgb_led_matrix_write_file.shifter_len);
+                     rx_msg.args.rgb_led_matrix_write_file.shifter_len,
+                     rx_msg.args.rgb_led_matrix_write_file.rows);
       break;
       
     // BOOKMARK(add_feature): Add incoming message handling to switch clause.

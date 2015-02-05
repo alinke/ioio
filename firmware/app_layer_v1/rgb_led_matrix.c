@@ -36,7 +36,7 @@
 //
 // (r1 g1 b1 r2 g2 b2) (24 .. 19)
 // clk                 25
-// (a b c)             (7 10 11)
+// (a b c d)           (7 10 11 12)
 // lat                 27
 // oe                  28
 
@@ -52,10 +52,8 @@
 #define OE_PIN _LATG7
 
 #define SUB_FRAMES_PER_FRAME 3
-#define ROWS_PER_SUB_FRAME 8
 
-typedef uint8_t bin_row_t[256];
-typedef bin_row_t bin_frame_t[ROWS_PER_SUB_FRAME];
+typedef uint8_t bin_frame_t[2048];
 typedef bin_frame_t frame_t[SUB_FRAMES_PER_FRAME];
 
 static frame_t frames[2] __attribute__((eds, page));
@@ -64,13 +62,14 @@ static int sub_frame;
 static int displayed_frame;
 static int back_frame_ready;
 static int shifter_repeat;
+static int rows_per_subframe;
 static uint8_t address;
 
 //static const frame_t DEFAULT_FRAME = {
 //#include "default_frame.inl"
 //};
 
-void RgbLedMatrixEnable(int shifter_len_32) {
+void RgbLedMatrixEnable(int shifter_len_32, int num_rows) {
   _T4IE = 0;
 
   if (shifter_len_32) {
@@ -79,20 +78,24 @@ void RgbLedMatrixEnable(int shifter_len_32) {
     LATG = (1 << 7);
 
     ODCE &= ~0x7F;
-    ODCD &= ~0x7;
+    ODCD &= ~0xF;
     ODCG &= ~0xC0;
 
     TRISE &= ~0x7F;
-    TRISD &= ~0x7;
+    TRISD &= ~0xF;
     TRISG &= ~0xC0;
 
     data = (const uint8_t *) (__builtin_edsoffset(frames));
     DSWPAG = __builtin_edspage(frames);
-    memset(data, 0, sizeof(frame_t));
+    memset((uint8_t *) data, 0, sizeof(frame_t));
     sub_frame = 0;
     displayed_frame = 0;
     back_frame_ready = 0;
     shifter_repeat = shifter_len_32;
+    switch (num_rows) {
+      case 0:  rows_per_subframe =  8; break;
+      default: rows_per_subframe = 16; break;
+    }
 
     // timer 4 is sysclk / 64 = 250KHz
     PR4 = 1;
@@ -101,7 +104,7 @@ void RgbLedMatrixEnable(int shifter_len_32) {
     _T4IE = 1;
   } else {
     TRISE |= 0x7F;
-    TRISD |= 0x7;
+    TRISD |= 0xF;
     TRISG |= 0xC0;
   }
 }
@@ -111,7 +114,7 @@ void RgbLedMatrixFrame(const uint8_t frame[]) {
   DSWPAG = __builtin_edspage(frames);
   void * target = (void *) (__builtin_edsoffset(frames)
     + (displayed_frame ^ 1) * sizeof(frame_t));
-  memcpy(target, frame, 768 * shifter_repeat);
+  memcpy(target, frame, RgbLedMatrixFrameSize());
   back_frame_ready = 1;
 }
 
@@ -134,7 +137,7 @@ static void draw_row() {
 
   if (sub_frame == SUB_FRAMES_PER_FRAME) {
     OE_PIN = 1; // black
-    if (++address == ROWS_PER_SUB_FRAME) {
+    if (++address == rows_per_subframe) {
       // sub-frame done
       address = 0;
       // frame done
@@ -170,7 +173,7 @@ static void draw_row() {
   
   // Advance the row address, sub-frame if needed, frame if needed.
 
-  if (++address == ROWS_PER_SUB_FRAME) {
+  if (++address == rows_per_subframe) {
     // sub-frame done
     address = 0;
     ++sub_frame;
@@ -178,7 +181,7 @@ static void draw_row() {
 }
 
 int RgbLedMatrixFrameSize() {
-  return shifter_repeat * 32 * ROWS_PER_SUB_FRAME * SUB_FRAMES_PER_FRAME;
+  return shifter_repeat * 32 * rows_per_subframe * SUB_FRAMES_PER_FRAME;
 }
 
 static unsigned int times[] = { //15, 30, 60, 150   133 to 122.5 refresh rate 37.5%, this is the normal one

@@ -23,11 +23,11 @@ void PixelFrame(const BYTE frame[]);
 
 // Switch to interactive mode - any frame written to Pixel from this point on
 // goes directly to the display.
-void PixelInteractive(int shifter_len_32);
+void PixelInteractive(int shifter_len_32, int num_rows);
 
 // Switch to write-file mode - any frame writen to Pixel from this point on
 // goes to the currently open file.
-void PixelWriteFile(int frame_delay, int shifter_len_32);
+void PixelWriteFile(int frame_delay, int shifter_len_32, int num_rows);
 
 // Start playing animations from the file. Any frame coming in to Pixel at this
 // state is discarded.

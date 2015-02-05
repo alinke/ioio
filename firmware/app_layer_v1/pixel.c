@@ -28,6 +28,7 @@ typedef enum {
 static STATE state = STATE_NONE;
 static int frame_delay; // static int frame_delay;
 static int shifter_len_32;
+static int num_rows;
 static FSFILE *animation_file;
 static FSFILE *metadata_file;
 static FSFILE *shifter_length_file;
@@ -57,12 +58,17 @@ static void StartPlayFile() {
   FSfclose(shifter_length_file);
 
   //Store the shifter length
-  shifter_len_32 = shiftbuff[0] | (shiftbuff[1]  << 8);
+  shifter_len_32 = shiftbuff[0] & 0x0F;
+  int rows = (shiftbuff[0] >> 4) & 0x03;
  
   //let's make sure we got good data and abort if not
   if (shifter_len_32 != 1 && shifter_len_32 != 2 && shifter_len_32 != 4 && shifter_len_32 != 8 ) {
      return;
   }
+  if (rows != 0 && rows != 1) {
+    return;
+  }
+  num_rows = rows == 0 ? 8 : 16;
 
   //Open the metadata File
   BYTE buff[sizeof(int)];
@@ -91,7 +97,7 @@ static void StartPlayFile() {
 
  
   // Initialize the matrix.
-  RgbLedMatrixEnable(shifter_len_32);
+  RgbLedMatrixEnable(shifter_len_32, rows);
 
   // Initialize the timer.
   // Stop the timer
@@ -128,7 +134,7 @@ static void MaybeFrameFromFile() {
     _T1IF = 0;
 
     DSWPAG = dswpag;
-    FSfread(frame, 768 * shifter_len_32, 1, animation_file);
+    FSfread(frame, RgbLedMatrixFrameSize(), 1, animation_file);
     RgbLedMatrixSwapFrame();
     if (FSfeof(animation_file)) {
       // Rewind
@@ -145,7 +151,7 @@ static void StopPlayFile() {
   FSfclose(animation_file);
 
   // Close the matrix.
-  RgbLedMatrixEnable(0);
+  RgbLedMatrixEnable(0, 0);
 
   state = STATE_NONE;
 }
@@ -153,7 +159,7 @@ static void StopPlayFile() {
 ////////////////////////////////////////////////////////////////////////////////
 // WriteFile stuff
 
-static void StartWriteFile(int fd, int sl32) {  //was int fd
+static void StartWriteFile(int fd, int sl32, int rows) {  //was int fd
  
   // Initialize
   if (!FSInit()) {
@@ -163,8 +169,8 @@ static void StartWriteFile(int fd, int sl32) {  //was int fd
   
   // Write the shifterlength file.
   BYTE shiftbuff[sizeof( int ) ];
-  shiftbuff[0] = (BYTE)((sl32 & 0x00FF));
-  shiftbuff[1] = (BYTE)((sl32 & 0xFF00) >> 8);
+  shiftbuff[0] = (BYTE)((sl32 & 0x0F) | ((rows & 0x3) << 4));
+  shiftbuff[1] = 0;
 
   shifter_length_file = FSfopen(SHIFTER_LENGTH_FILENAME, "w");
   if (!shifter_length_file) return;
@@ -192,12 +198,13 @@ static void StartWriteFile(int fd, int sl32) {  //was int fd
 
   frame_delay = fd;
   shifter_len_32 = sl32;
+  num_rows = rows == 0 ? 8 : 16;
   state = STATE_WRITE_FILE;
 }
 
 static void WriteFrameToFile(const BYTE f[]) {
   // Write the frame to the animation file.
-  FSfwrite(f, 768 * shifter_len_32, 1, animation_file);
+  FSfwrite(f, 3 * 32 * shifter_len_32 * num_rows, 1, animation_file);
 }
 
 static void StopWriteFile() {
@@ -209,16 +216,16 @@ static void StopWriteFile() {
 ////////////////////////////////////////////////////////////////////////////////
 // Interactive stuff
 
-static void StartInteractive(int shifter_len_32) {
+static void StartInteractive(int shifter_len_32, int num_rows) {
   // Intialize the matrix.
-  RgbLedMatrixEnable(shifter_len_32);
+  RgbLedMatrixEnable(shifter_len_32, num_rows);
 
   state = STATE_INTERACTIVE;
 }
 
 static void StopInteractive() {
   // Close the matrix.
-  RgbLedMatrixEnable(0);
+  RgbLedMatrixEnable(0, 0);
 
   state = STATE_NONE;
 }
@@ -282,14 +289,14 @@ static void ExitCurrentState() {
   }
 }
 
-void PixelInteractive(int shifter_len_32) {
+void PixelInteractive(int shifter_len_32, int num_rows) {
   ExitCurrentState();
-  StartInteractive(shifter_len_32);
+  StartInteractive(shifter_len_32, num_rows);
 }
 
-void PixelWriteFile(int frame_delay, int shifter_len_32) {   //void PixelWriteFile(int frame_delay, int shifter_len_32) {
+void PixelWriteFile(int frame_delay, int shifter_len_32, int num_rows) {   //void PixelWriteFile(int frame_delay, int shifter_len_32) {
   ExitCurrentState();
-  StartWriteFile(frame_delay, shifter_len_32);
+  StartWriteFile(frame_delay, shifter_len_32, num_rows);
 }
 
 void PixelPlayFile() {
