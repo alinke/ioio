@@ -15,8 +15,8 @@
  * Software License Agreement
  *
  * The software supplied herewith by Microchip Technology Incorporated
- * (the "Company") for its PICmicro® Microcontroller is intended and
- * supplied to you, the Company’s customer, for use solely and
+ * (the "Company") for its PICmicroÂ® Microcontroller is intended and
+ * supplied to you, the CompanyÂ’s customer, for use solely and
  * exclusively on Microchip PICmicro Microcontroller products. The
  * software is owned by the Company and/or its supplier, and is
  * protected under applicable copyright laws. All rights are reserved.
@@ -2030,7 +2030,8 @@ void OpenSPIM( unsigned int sync_mode)
         // MISO <- RP20
         _SDI1R = 20;
         // RP22 <- MOSI
-        _RP22R = 7;
+        _RP22R = 7; //PIXEL V2   Per Ytai, MOSI pin is being routed to RP22 = pin 51 on the PIC = pin 3 on the IOIO.
+        //_RP2R = 7; // PIXEL V2B   Per Ytai, Seems like you want to change is to RP2 = pin 42 on the PIC = pin 12 on the IOIO.
         // RP25 <- SCLK
         _RP25R = 8;
 //    SPICLOCK = 0;
