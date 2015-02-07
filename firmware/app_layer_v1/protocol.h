@@ -48,10 +48,12 @@
 #include "protocol_defs.h"
 
 // Human-readable string describing app firmware version.
-#define FW_IMPL_VER "PIXL0008"//normal firmware, can only be 8 digits
+#define FW_IMPL_VER "PIXL0009"//normal firmware, can only be 8 digits
 // third digit could be S for super pixel, fourth could be K for kiosk, firth could be L for lower power or U for ultra low power
 //#define FW_IMPL_VER "PIXLD306" //demo firmware for 32x32
 //#define FW_IMPL_VER "PIXLD606" //demo firemware for 64x64
+//#define FW_IMPL_VER "PIXLL008" //low power firmware
+// things we need to put in the numbering: board version, matrix panel type, pixel model (super pixel, normal, iBling), low power firmware, kiosk firmware
 //note also see bt_connection.c in libconn, line 168 to chnge to pinless bluetooth for demo mode
 
 // Initialize this module.
