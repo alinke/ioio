@@ -74,7 +74,7 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 	@Override
 	synchronized public void playFile() throws ConnectionLostException {
 		try {
-			ioio_.protocol_.rgbLedMatrixEnable(0, 0);
+			ioio_.protocol_.rgbLedMatrixEnable(0, 0);  //TO DO weird bug here, when I write on the new matrix with d pin it's fine but doesn't play locally after writing on old matrix
 		} catch (IOException e) {
 			throw new ConnectionLostException(e);
 		}
@@ -135,6 +135,10 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 			
 		case ADAFRUIT_32x32:
 			convertAdafruit32x32(rgb565, frame_);
+			break;
+			
+		case ADAFRUIT_32x32_ColorSwap:
+			convertAdafruit32x32_ColorSwap(rgb565, frame_);
 			break;
 			
 		case ADAFRUIT_64x32:
@@ -209,6 +213,34 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 					int r2 = (pixel2 >> (11 + 2 + subframe)) & 1;
 					int g2 = (pixel2 >> (5 + 3 + subframe)) & 1;
 					int b2 = (pixel2 >> (0 + 2 + subframe)) & 1;
+
+					dest[outIndex++] = (byte) (r1 << 5 | g1 << 4 | b1 << 3
+							| r2 << 2 | g2 << 1 | b2 << 0);
+					++inIndex;
+				}
+			}
+		}
+	}
+	
+	private static void convertAdafruitColorSwap(short[] rgb565, int width, byte[] dest) {  //would like to daisy chain adafruit 16x32's
+//		final int height = rgb565.length / width;
+//		final int subframeSize = rgb565.length / 2;
+		
+		int outIndex = 0;
+		for (int subframe = 0; subframe < 3; ++subframe) {
+			int inIndex = 0;
+			for (int row = 0; row < 16; ++row) {
+				for (int col = 0; col < 32; ++col) {
+					int pixel1 = ((int) rgb565[inIndex]) & 0xFFFF;
+					int pixel2 = ((int) rgb565[inIndex + 512]) & 0xFFFF;
+
+					int b1 = (pixel1 >> (11 + 2 + subframe)) & 1;
+					int r1 = (pixel1 >> (5 + 3 + subframe)) & 1;
+					int g1 = (pixel1 >> (0 + 2 + subframe)) & 1;
+
+					int b2 = (pixel2 >> (11 + 2 + subframe)) & 1;
+					int r2 = (pixel2 >> (5 + 3 + subframe)) & 1;
+					int g2 = (pixel2 >> (0 + 2 + subframe)) & 1;
 
 					dest[outIndex++] = (byte) (r1 << 5 | g1 << 4 | b1 << 3
 							| r2 << 2 | g2 << 1 | b2 << 0);
@@ -427,6 +459,10 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 		convertAdafruit(rgb565, 32, dest);
 	}
 	
+	private static void convertAdafruit32x32_ColorSwap(short[] rgb565, byte[] dest) {
+		convertAdafruitColorSwap(rgb565, 32, dest);
+	}
+	
 	private static void convertAdafruit64x32(short[] rgb565, byte[] dest) {
 		convertAdafruit(rgb565, 64, dest);
 	}
@@ -467,7 +503,7 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 		convertSeeedStudio(rgb565, 64, dest);
 	}
 	
-	private static void convertAdafruit64x16(short[] rgb565, byte[] dest) { //2 Adafruit panels
+	/*private static void convertAdafruit64x16(short[] rgb565, byte[] dest) { //2 Adafruit panels
 		convertAdafruit(rgb565, 16, dest); //16 is the width, these are for Adafruit 16x32 panels
 	}
 	
@@ -477,7 +513,7 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 	
 	private static void convertAdafruit128x16(short[] rgb565, byte[] dest) { //4 Adafruit panels
 		convertAdafruit(rgb565, 16, dest);
-	}
+	}*/
 	
 	
 	
@@ -523,6 +559,7 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 		switch (kind) {
 		case ADAFRUIT_32x16:
 		case ADAFRUIT_32x32:
+		case ADAFRUIT_32x32_ColorSwap:
 			return 1;
 
 		case SEEEDSTUDIO_32x16:
@@ -550,7 +587,7 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 	}
 
 	public static int getNumRows(Matrix kind) {
-		switch (kind) {
+		switch (kind) {            //these panels are 1/8 scan or 8 rows
 		case ADAFRUIT_32x16:
 		case SEEEDSTUDIO_32x16:
 		case SEEEDSTUDIO_32x32:
@@ -564,7 +601,8 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 		case SEEEDSTUDIO_32x128:
 			return 8; 	
 			
-		case ADAFRUIT_32x32:
+		case ADAFRUIT_32x32:           // these panels are 1/16 scan or 16 rows
+		case ADAFRUIT_32x32_ColorSwap:
 		case ADAFRUIT_64x32:
 		case ADAFRUIT_64x64:
 			return 16;
