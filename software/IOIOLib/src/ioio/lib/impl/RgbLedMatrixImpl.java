@@ -74,7 +74,8 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 	@Override
 	synchronized public void playFile() throws ConnectionLostException {
 		try {
-			ioio_.protocol_.rgbLedMatrixEnable(0, 0);  //TO DO weird bug here, when I write on the new matrix with d pin it's fine but doesn't play locally after writing on old matrix
+			//ioio_.protocol_.rgbLedMatrixEnable(0, 0);  //TO DO weird bug here, when I write on the new matrix with d pin it's fine but doesn't play locally after writing on old matrix
+			ioio_.protocol_.rgbLedMatrixEnable(0, getNumRows(kind_)); //this fixed the bug but is it right?
 		} catch (IOException e) {
 			throw new ConnectionLostException(e);
 		}
