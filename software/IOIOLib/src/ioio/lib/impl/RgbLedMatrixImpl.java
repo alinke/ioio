@@ -194,34 +194,7 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 	}
 	
 	
-	
-	private static void convertAdafruit(short[] rgb565, int width, byte[] dest) {  //would like to daisy chain adafruit 16x32's
-//		final int height = rgb565.length / width;
-//		final int subframeSize = rgb565.length / 2;
-		
-		int outIndex = 0;
-		for (int subframe = 0; subframe < 3; ++subframe) {
-			int inIndex = 0;
-			for (int row = 0; row < 16; ++row) {
-				for (int col = 0; col < 32; ++col) {
-					int pixel1 = ((int) rgb565[inIndex]) & 0xFFFF;
-					int pixel2 = ((int) rgb565[inIndex + 512]) & 0xFFFF;
 
-					int r1 = (pixel1 >> (11 + 2 + subframe)) & 1;
-					int g1 = (pixel1 >> (5 + 3 + subframe)) & 1;
-					int b1 = (pixel1 >> (0 + 2 + subframe)) & 1;
-
-					int r2 = (pixel2 >> (11 + 2 + subframe)) & 1;
-					int g2 = (pixel2 >> (5 + 3 + subframe)) & 1;
-					int b2 = (pixel2 >> (0 + 2 + subframe)) & 1;
-
-					dest[outIndex++] = (byte) (r1 << 5 | g1 << 4 | b1 << 3
-							| r2 << 2 | g2 << 1 | b2 << 0);
-					++inIndex;
-				}
-			}
-		}
-	}
 	
 	private static void convertAdafruitColorSwap(short[] rgb565, int width, byte[] dest) {  //would like to daisy chain adafruit 16x32's
 //		final int height = rgb565.length / width;
@@ -395,7 +368,157 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 		return index;
 	}
 	
+	private static void convertAdafruit32x162(short[] rgb565, byte[] dest) {
+		int outIndex = 0;
+		for (int subframe = 0; subframe < 3; ++subframe) {
+			int inIndex = 0;
+			for (int row = 0; row < 8; ++row) {
+				for (int col = 0; col < 32; ++col) {
+					int pixel1 = ((int) rgb565[inIndex]) & 0xFFFF;
+					int pixel2 = ((int) rgb565[inIndex + 256]) & 0xFFFF;
+
+					int r1 = (pixel1 >> (11 + 2 + subframe)) & 1;
+					int g1 = (pixel1 >> (5 + 3 + subframe)) & 1;
+					int b1 = (pixel1 >> (0 + 2 + subframe)) & 1;
+
+					int r2 = (pixel2 >> (11 + 2 + subframe)) & 1;
+					int g2 = (pixel2 >> (5 + 3 + subframe)) & 1;
+					int b2 = (pixel2 >> (0 + 2 + subframe)) & 1;
+
+					dest[outIndex++] = (byte) (r1 << 5 | g1 << 4 | b1 << 3
+							| r2 << 2 | g2 << 1 | b2 << 0);
+					++inIndex;
+				}
+			}
+		}
+	}
 	
+private static void convertAdafruit32(short[] rgb565, int width, byte[] dest) {  //would like to daisy chain adafruit 16x32's
+
+		
+		final int height = rgb565.length / width;
+		final int subframeSize = rgb565.length / 2;
+		
+		//rows was 8, columns 32 for 32x16 adafruit with 8 rows but d-pin panels have 16 rows
+		
+		int outIndex = 0;
+		for (int subframe = 0; subframe < 3; ++subframe) {
+			int inIndex = 0;
+			for (int row = 0; row < 16; ++row) { //width for 32x32
+				for (int col = 0; col < 32; ++col) {   //was 32 for 32x32, 32 for 64x32, 64 for 64x64 but it was mirroed and not true 64x64
+					int pixel1 = ((int) rgb565[inIndex]) & 0xFFFF;
+					int pixel2 = ((int) rgb565[inIndex + 512]) & 0xFFFF; //was 256 for 32x16, 512 for 32x32, 1024 for 64x32, 2048 for 64x64
+					
+					int r1 = (pixel1 >> (11 + 2 + subframe)) & 1;
+					int g1 = (pixel1 >> (5 + 3 + subframe)) & 1;
+					int b1 = (pixel1 >> (0 + 2 + subframe)) & 1;
+
+					int r2 = (pixel2 >> (11 + 2 + subframe)) & 1;
+					int g2 = (pixel2 >> (5 + 3 + subframe)) & 1;
+					int b2 = (pixel2 >> (0 + 2 + subframe)) & 1;
+
+					dest[outIndex++] = (byte) (r1 << 5 | g1 << 4 | b1 << 3
+							| r2 << 2 | g2 << 1 | b2 << 0);
+					++inIndex;
+				}
+			}
+		}
+	}
+
+private static void convertAdafruit6432(short[] rgb565, int width, byte[] dest) {  //would like to daisy chain adafruit 16x32's
+
+	
+	//final int height = rgb565.length / width;
+	//final int subframeSize = rgb565.length / 2;
+	
+	int outIndex = 0;
+	for (int subframe = 0; subframe < 3; ++subframe) {  //16 and 64
+		int inIndex = 0;
+		for (int row = 0; row < 32; ++row) {	//was 8 for 32x16, was 16 for 32x32, 32 for 64x32
+			for (int col = 0; col < 32; ++col) {   //was 32 for 32x32, 32 for 64x32, 64 for 64x64 but it was mirroed and not true 64x64
+				int pixel1 = ((int) rgb565[inIndex]) & 0xFFFF;
+				int pixel2 = ((int) rgb565[inIndex + 1024]) & 0xFFFF; //was 256 for 32x16, 512 for 32x32, 1024 for 64x32, 2048 for 64x64
+				
+				int r1 = (pixel1 >> (11 + 2 + subframe)) & 1;
+				int g1 = (pixel1 >> (5 + 3 + subframe)) & 1;
+				int b1 = (pixel1 >> (0 + 2 + subframe)) & 1;
+
+				int r2 = (pixel2 >> (11 + 2 + subframe)) & 1;
+				int g2 = (pixel2 >> (5 + 3 + subframe)) & 1;
+				int b2 = (pixel2 >> (0 + 2 + subframe)) & 1;
+
+				dest[outIndex++] = (byte) (r1 << 5 | g1 << 4 | b1 << 3
+						| r2 << 2 | g2 << 1 | b2 << 0);
+				++inIndex;
+			}
+		}
+	}
+}
+
+private static void convertAdafruit6464(short[] rgb565, int width, byte[] dest) {  //would like to daisy chain adafruit 16x32's
+
+	
+	//final int height = rgb565.length / width;
+	//final int subframeSize = rgb565.length / 2;
+	
+	int outIndex = 0;
+	for (int subframe = 0; subframe < 3; ++subframe) {  //16 and 64
+		int inIndex = 0;
+		for (int row = 0; row < 32; ++row) {	//was 8 for 32x16, was 16 for 32x32, 32 for 64x32
+			for (int col = 0; col < 64; ++col) {   //was 32 for 32x32, 32 for 64x32, 64 for 64x64 but it was mirroed and not true 64x64
+				int pixel1 = ((int) rgb565[inIndex]) & 0xFFFF;
+				int pixel2 = ((int) rgb565[inIndex + 2048]) & 0xFFFF; //was 256 for 32x16, 512 for 32x32, 1024 for 64x32, 2048 for 64x64
+				
+				int r1 = (pixel1 >> (11 + 2 + subframe)) & 1;
+				int g1 = (pixel1 >> (5 + 3 + subframe)) & 1;
+				int b1 = (pixel1 >> (0 + 2 + subframe)) & 1;
+
+				int r2 = (pixel2 >> (11 + 2 + subframe)) & 1;
+				int g2 = (pixel2 >> (5 + 3 + subframe)) & 1;
+				int b2 = (pixel2 >> (0 + 2 + subframe)) & 1;
+
+				dest[outIndex++] = (byte) (r1 << 5 | g1 << 4 | b1 << 3
+						| r2 << 2 | g2 << 1 | b2 << 0);
+				++inIndex;
+			}
+		}
+	}
+}
+	
+	private static void convertAdafruit(short[] rgb565, int width, byte[] dest) {  //would like to daisy chain adafruit 16x32's
+
+		
+		final int height = rgb565.length / width;
+		final int subframeSize = rgb565.length / 2;
+		
+		//rows was 8, columns 32 for 32x16 adafruit with 8 rows but d-pin panels have 16 rows
+		
+		int outIndex = 0;
+		for (int subframe = 0; subframe < 3; ++subframe) {
+			int inIndex = 0;
+			//for (int row = 0; row < 16; ++row) { //width for 32x32
+			for (int row = 0; row < width/2; ++row) {	//was 8 for 32x16, was 16 for 32x32, 32 for 64x32
+				//for (int col = 0; col < 32; ++col) { for 32x32
+				for (int col = 0; col < 64; ++col) {   //was 32 for 32x32, 32 for 64x32, 64 for 64x64 but it was mirroed and not true 64x64
+					int pixel1 = ((int) rgb565[inIndex]) & 0xFFFF;
+					int pixel2 = ((int) rgb565[inIndex + 2048]) & 0xFFFF; //was 256 for 32x16, 512 for 32x32, 1024 for 64x32, 2048 for 64x64
+					//int pixel2 = ((int) rgb565[inIndex + subframeSize]) & 0xFFFF;
+					
+					int r1 = (pixel1 >> (11 + 2 + subframe)) & 1;
+					int g1 = (pixel1 >> (5 + 3 + subframe)) & 1;
+					int b1 = (pixel1 >> (0 + 2 + subframe)) & 1;
+
+					int r2 = (pixel2 >> (11 + 2 + subframe)) & 1;
+					int g2 = (pixel2 >> (5 + 3 + subframe)) & 1;
+					int b2 = (pixel2 >> (0 + 2 + subframe)) & 1;
+
+					dest[outIndex++] = (byte) (r1 << 5 | g1 << 4 | b1 << 3
+							| r2 << 2 | g2 << 1 | b2 << 0);
+					++inIndex;
+				}
+			}
+		}
+	}
 	
 	private static void convertSeeedStudio(short[] rgb565, int width, byte[] dest) {
 		final int height = rgb565.length / width;
@@ -457,7 +580,8 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 	
 	
 	private static void convertAdafruit32x32(short[] rgb565, byte[] dest) {
-		convertAdafruit(rgb565, 32, dest);
+		//convertAdafruit(rgb565, 32, dest);
+		convertAdafruit32(rgb565, 32, dest);
 	}
 	
 	private static void convertAdafruit32x32_ColorSwap(short[] rgb565, byte[] dest) {
@@ -465,11 +589,13 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 	}
 	
 	private static void convertAdafruit64x32(short[] rgb565, byte[] dest) {
-		convertAdafruit(rgb565, 64, dest);
+		//convertAdafruit(rgb565, 64, dest);
+		convertAdafruit6432(rgb565, 64, dest);
 	}
 	
 	private static void convertAdafruit64x64(short[] rgb565, byte[] dest) {
-		convertAdafruit(rgb565, 64, dest);
+		//convertAdafruit(rgb565, 64, dest);
+		convertAdafruit6464(rgb565, 64, dest);
 	}
 	
 	private static void convertSeeedStudio32x32(short[] rgb565, byte[] dest) {
@@ -489,7 +615,7 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 	}
 	
 	private static void convertSeeedStudio32x128Mirrored(short[] rgb565, byte[] dest) { //4 mirrored
-		convertSeeedStudio(rgb565, 32, dest); //originally 32
+		convertSeeedStudio(rgb565, 32, dest); //originally 32, this one does not work
 	}
 	
 	private static void convertSeeedStudio128x32(short[] rgb565, byte[] dest) {
