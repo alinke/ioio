@@ -45,7 +45,7 @@
 #define BOARD_MINT_BASE 2000  // base number for IOIOMint boards
 #define BOARD_MINT0010 BOARD_MINT_BASE + 10
 #define BOARD_PIXL0020 BOARD_MINT_BASE + 20
-#define BOARD_PIXL0025 BOARD_MINT_BASE + 20
+#define BOARD_PIXL0025 BOARD_MINT_BASE + 25
 
 // add more boards here!
 

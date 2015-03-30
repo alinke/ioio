@@ -57,8 +57,10 @@
 //
 // note that when BLAPI changes, this list will need to be completely rebuilt
 // with new numbers per hardware version.
-#if BOARD_VER == BOARD_SPRK0020 || BOARD_VER == BOARD_PIXL0020 || BOARD_VER == BOARD_PIXL0025
+#if BOARD_VER == BOARD_SPRK0020 || BOARD_VER == BOARD_PIXL0020
   #define PLATFORM_ID "IOIO0030"
+#elif BOARD_VER ==  BOARD_PIXL0025
+  #define PLATFORM_ID "PIXL0025"
 #else
   #error Unknown board version - cannot determine platform ID
 #endif
