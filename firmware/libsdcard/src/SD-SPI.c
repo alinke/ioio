@@ -2029,8 +2029,8 @@ void OpenSPIM( unsigned int sync_mode)
 
         // MISO <- RP20
         _SDI1R = 20;
-        // RP2 <- MOSI
-        _RP2R = 7;
+        // RP(MOSI_RP) <- MOSI
+        MOSI_RP = 7;
         // RP25 <- SCLK
         _RP25R = 8;
 //    SPICLOCK = 0;

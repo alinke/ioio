@@ -102,9 +102,9 @@ typedef struct {
 #define MAKE_CN_INFO(num, bit) { &CNEN##num, &CNPU##num, &CNPD##num, (1 << bit), ~(1 << bit) }
 #define MAKE_RPOR(num) (((unsigned char*) &RPOR0) + num)
 
-#if HARDWARE >= HARDWARE_IOIO0000 && HARDWARE <= HARDWARE_IOIO0004
+#if HARDWARE >= HARDWARE_IOIO0000 && HARDWARE <= HARDWARE_IOIO0004 || HARDWARE == HARDWARE_PIXL0025
   const PORT_INFO port_info[NUM_PINS] = {
-#if HARDWARE == HARDWARE_IOIO0004
+#if HARDWARE == HARDWARE_IOIO0004 || HARDWARE == HARDWARE_PIXL0025
     MAKE_PORT_INFO(C, 12),   // LED
     MAKE_PORT_INFO(F, 4),    // 1
     MAKE_PORT_INFO(F, 5),    // 2
@@ -160,14 +160,14 @@ typedef struct {
     MAKE_PORT_INFO(B, 13),  // 44 (45)
     MAKE_PORT_INFO(B, 14),  // 45 (46)
     MAKE_PORT_INFO(B, 15),  // 46 (47)
-#if HARDWARE != HARDWARE_IOIO0004
+#if HARDWARE != HARDWARE_IOIO0004 && HARDWARE != HARDWARE_PIXL0025
     MAKE_PORT_INFO(F, 4),   // 47 (48)
     MAKE_PORT_INFO(F, 5),   // 48 (49)
 #endif
   };
 
   const CN_INFO cn_info[NUM_PINS] = {
-#if HARDWARE == HARDWARE_IOIO0004
+#if HARDWARE == HARDWARE_IOIO0004 || HARDWARE == HARDWARE_PIXL0025
     MAKE_CN_INFO(2, 7),  // LED
     MAKE_CN_INFO(2, 1),  // 1
     MAKE_CN_INFO(2, 2),  // 2
@@ -223,14 +223,14 @@ typedef struct {
     MAKE_CN_INFO(2, 15),  // 44 (45)
     MAKE_CN_INFO(3, 0),  // 45 (46)
     MAKE_CN_INFO(1, 12),  // 46 (47)
-#if HARDWARE != HARDWARE_IOIO0004
+#if HARDWARE != HARDWARE_IOIO0004 && HARDWARE != HARDWARE_PIXL0025
     MAKE_CN_INFO(2, 1),  // 47 (48)
     MAKE_CN_INFO(2, 2),  // 48 (49)
 #endif
   };
 
   const signed char pin_to_rpin[NUM_PINS] = {
-#if HARDWARE == HARDWARE_IOIO0004
+#if HARDWARE == HARDWARE_IOIO0004 || HARDWARE == HARDWARE_PIXL0025
     -1, 10, 17,
 #else
     16, -1, -1,
@@ -245,7 +245,7 @@ typedef struct {
                             27, 18,
     28, -1, 13,  1,  0,  6,  7,  8,
      9, -1, -1, -1, -1, 14, 29,
-#if HARDWARE != HARDWARE_IOIO0004
+#if HARDWARE != HARDWARE_IOIO0004 && HARDWARE != HARDWARE_PIXL0025
     10, 17
 #endif
   };
@@ -270,7 +270,7 @@ typedef struct {
 /* F */ {17, 18, -1,  0, 47, 48, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
 /* G */ {-1, -1, -1, -1, -1, -1, 27, 28, 29, 30, -1, -1, -1, -1, -1, -1}
     };
-  #elif HARDWARE == HARDWARE_IOIO0004
+  #elif HARDWARE == HARDWARE_IOIO0004 || HARDWARE == HARDWARE_PIXL0025
     static const signed char port_to_pin[7][16] = {
 //        0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15
 /* B */ {36, 35, 34, 33, 32, 31, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46},
@@ -287,7 +287,7 @@ typedef struct {
       37, 36, 35, 34, 33, 32, 38, 39,
       40, 41, 42, 43, 44, 45, 46, 47
     };
-  #elif HARDWARE >= HARDWARE_IOIO0001 && HARDWARE <= HARDWARE_IOIO0004
+  #elif HARDWARE >= HARDWARE_IOIO0001 && HARDWARE <= HARDWARE_IOIO0004 || HARDWARE == HARDWARE_PIXL0025
     static const signed char analog_to_pin[16] = {
       36, 35, 34, 33, 32, 31, 37, 38,
       39, 40, 41, 42, 43, 44, 45, 46
@@ -296,11 +296,11 @@ typedef struct {
 
   #if HARDWARE == HARDWARE_IOIO0000
     #define MIN_ANALOG_PIN 32
-  #elif HARDWARE >= HARDWARE_IOIO0001 && HARDWARE <= HARDWARE_IOIO0004
+  #elif HARDWARE >= HARDWARE_IOIO0001 && HARDWARE <= HARDWARE_IOIO0004 || HARDWARE == HARDWARE_PIXL0025
     #define MIN_ANALOG_PIN 31
   #endif
 
-  #if HARDWARE >= HARDWARE_IOIO0000 && HARDWARE <= HARDWARE_IOIO0004
+  #if HARDWARE >= HARDWARE_IOIO0000 && HARDWARE <= HARDWARE_IOIO0004 || HARDWARE == HARDWARE_PIXL0025
     static const int pin_to_analog[16] = {
        5 , 4 , 3 , 2 , 1 , 0 , 6 , 7 ,
        8 , 9 , 10, 11, 12, 13, 14, 15
@@ -308,7 +308,7 @@ typedef struct {
   #endif
 
   volatile unsigned char* pin_to_rpor[NUM_PINS] = {
-#if HARDWARE == HARDWARE_IOIO0004
+#if HARDWARE == HARDWARE_IOIO0004 || HARDWARE == HARDWARE_PIXL0025
     0            , MAKE_RPOR(10), MAKE_RPOR(17)
 #else
     MAKE_RPOR(16), 0            , 0
@@ -329,7 +329,7 @@ typedef struct {
     MAKE_RPOR(0) , MAKE_RPOR(6) , MAKE_RPOR(7) , MAKE_RPOR(8) ,
     MAKE_RPOR(9) , 0            , 0            , 0            ,
     0            , MAKE_RPOR(14), MAKE_RPOR(29),
-#if HARDWARE != HARDWARE_IOIO0004
+#if HARDWARE != HARDWARE_IOIO0004 && HARDWARE != HARDWARE_PIXL0025
                                                  MAKE_RPOR(10),
     MAKE_RPOR(17)
 #endif

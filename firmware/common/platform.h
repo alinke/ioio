@@ -42,6 +42,7 @@
 #define __PLATFORM_H__
 
 #define PLATFORM_IOIO_BASE 1000  // base platform number for 'official' IOIO platforms
+#define PLATFORM_PIXL_BASE 2000  // base platform number for PIXL platforms, starting at v2.5
 // BLAPI 1
 #define PLATFORM_IOIO0000 PLATFORM_IOIO_BASE + 0
 #define PLATFORM_IOIO0001 PLATFORM_IOIO_BASE + 1
@@ -53,14 +54,17 @@
 #define PLATFORM_IOIO0022 PLATFORM_IOIO_BASE + 22
 #define PLATFORM_IOIO0023 PLATFORM_IOIO_BASE + 23
 #define PLATFORM_IOIO0030 PLATFORM_IOIO_BASE + 30
+#define PLATFORM_PIXL0025 PLATFORM_PIXL_BASE + 25
 // add more platforms here!
 
 #define HARDWARE_IOIO_BASE 1000  // base hardware interface version number for 'official' IOIO platforms
+#define HARDWARE_PIXL_BASE 2000  // base hardware interface version number for PIXL platforms, starting at v2.5
 #define HARDWARE_IOIO0000 HARDWARE_IOIO_BASE + 0
 #define HARDWARE_IOIO0001 HARDWARE_IOIO_BASE + 1
 #define HARDWARE_IOIO0002 HARDWARE_IOIO_BASE + 2
 #define HARDWARE_IOIO0003 HARDWARE_IOIO_BASE + 3
 #define HARDWARE_IOIO0004 HARDWARE_IOIO_BASE + 4
+#define HARDWARE_PIXL0025 HARDWARE_PIXL_BASE + 25
 
 #ifndef PLATFORM
 #error Must define PLATFORM
@@ -77,6 +81,8 @@
 #define HARDWARE HARDWARE_IOIO0003
 #elif PLATFORM == PLATFORM_IOIO0030
 #define HARDWARE HARDWARE_IOIO0004
+#elif PLATFORM == PLATFORM_PIXL0025
+#define HARDWARE HARDWARE_PIXL0025
 #else
 #error Unknown hardware for PLATFORM
 #endif
@@ -103,6 +109,10 @@
   #ifndef __PIC24FJ256GB206__
     #error Platform and MCU mismatch - expecting PIC24FJ256GB206
   #endif
+#elif HARDWARE == HARDWARE_PIXL0025
+  #ifndef __PIC24FJ256GB206__
+    #error Platform and MCU mismatch - expecting PIC24FJ256GB206
+  #endif
 #else
   #error Unknown platform
 #endif
@@ -112,7 +122,7 @@
   #define NUM_PINS 50
 #elif HARDWARE >= HARDWARE_IOIO0001 && HARDWARE <= HARDWARE_IOIO0003
   #define NUM_PINS 49
-#elif HARDWARE == HARDWARE_IOIO0004
+#elif HARDWARE == HARDWARE_IOIO0004 || HARDWARE == HARDWARE_PIXL0025
   #define NUM_PINS 47
 #else
   #error Unknown hardware
@@ -124,6 +134,10 @@
 #define led_on()   do { _LATF3 = 0; } while (0)
 #define led_off()  do { _LATF3 = 1; } while (0)
 #elif HARDWARE == HARDWARE_IOIO0004
+#define led_init() do { _ODC12 = 1; _LATC12 = 1; _TRISC12 = 0; } while (0)
+#define led_on()   do { _LATC12 = 0; } while (0)
+#define led_off()  do { _LATC12 = 1; } while (0)
+#elif HARDWARE == HARDWARE_PIXL0025
 #define led_init() do { _ODC12 = 1; _LATC12 = 1; _TRISC12 = 0; } while (0)
 #define led_on()   do { _LATC12 = 0; } while (0)
 #define led_off()  do { _LATC12 = 1; } while (0)
