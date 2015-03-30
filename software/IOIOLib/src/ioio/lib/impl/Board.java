@@ -30,7 +30,7 @@ package ioio.lib.impl;
 
 enum Board {
 	SPRK0015(Hardware.IOIO0002), SPRK0016(Hardware.IOIO0003), MINT0010(Hardware.IOIO0003), SPRK0020(
-			Hardware.IOIO0004), PIXL0020(Hardware.IOIO0004);
+			Hardware.IOIO0004), PIXL0020(Hardware.IOIO0004), PIXL0025(Hardware.PIXL0025);
 
 	public final Hardware hardware;
 
@@ -150,6 +150,7 @@ enum Board {
 				new int[] { 6, 7, 8 }, new int[][] { { 4, 5 }, { 1, 2 }, { 26, 25 } }, new int[] {
 						36, 37, 38 }, new int[] { 7, 10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22,
 						23, 24, 25, 26, 27, 28 });
+		static final Hardware PIXL0025 = IOIO0004;
 
 		private enum Function {
 			PERIPHERAL_OUT, PERIPHERAL_IN, ANALOG_IN
