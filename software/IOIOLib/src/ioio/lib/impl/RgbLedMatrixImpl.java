@@ -169,6 +169,7 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 	}
 
 	private static void convertAdafruit32x16(short[] rgb565, byte[] dest) {
+		// TODO: Consider replacing this with convertAdafruit(rgb565, 32, 8, dest) or somethin'
 		int outIndex = 0;
 		for (int subframe = 0; subframe < 3; ++subframe) {
 			int inIndex = 0;
@@ -351,174 +352,70 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 		return index;
 	}
 	
-	private static int mapAdafruitIndex(int x, int y, int width, int height) {
-		assert y % 32 < 16;
-		int logicalRow = y % 8;
-		boolean firstHalf = y % 16 < 8;
-		int dotPairsPerLogicalRow = width * height / 16;
+	private static int mapAdafruitIndex(int x, int y, int width, int height, int numLogicalRows) {
+		final int pairOffset = 16;
+		final int logicalRowLengthPerMatrix = 32 * 32 / 2 / numLogicalRows;
+		assert y % (pairOffset * 2) < pairOffset;
+		int logicalRow = y % numLogicalRows;
+		int dotPairsPerLogicalRow = width * height / numLogicalRows / 2;
 		int widthInMatrices = width / 32;
 		int matrixX = x / 32;
 		int matrixY = y / 32;
 		int totalMatrices = width * height / 1024;
-		int matrixNumber = totalMatrices - 1 - (matrixY * widthInMatrices + matrixX);
-		int indexWithinMatrixRow = x % 32 + (firstHalf ? 0 : 32);
+		int matrixNumber = totalMatrices - ((matrixY + 1) * widthInMatrices) + matrixX;
+		int indexWithinMatrixRow = x % logicalRowLengthPerMatrix;
 		int index = logicalRow * dotPairsPerLogicalRow
-				+ matrixNumber * 64;
-				//+ SEEED_MAP[indexWithinMatrixRow];
+				+ matrixNumber * logicalRowLengthPerMatrix + indexWithinMatrixRow;
 		return index;
 	}
 	
-	private static void convertAdafruit32x162(short[] rgb565, byte[] dest) {
-		int outIndex = 0;
-		for (int subframe = 0; subframe < 3; ++subframe) {
-			int inIndex = 0;
-			for (int row = 0; row < 8; ++row) {
-				for (int col = 0; col < 32; ++col) {
-					int pixel1 = ((int) rgb565[inIndex]) & 0xFFFF;
-					int pixel2 = ((int) rgb565[inIndex + 256]) & 0xFFFF;
-
-					int r1 = (pixel1 >> (11 + 2 + subframe)) & 1;
-					int g1 = (pixel1 >> (5 + 3 + subframe)) & 1;
-					int b1 = (pixel1 >> (0 + 2 + subframe)) & 1;
-
-					int r2 = (pixel2 >> (11 + 2 + subframe)) & 1;
-					int g2 = (pixel2 >> (5 + 3 + subframe)) & 1;
-					int b2 = (pixel2 >> (0 + 2 + subframe)) & 1;
-
-					dest[outIndex++] = (byte) (r1 << 5 | g1 << 4 | b1 << 3
-							| r2 << 2 | g2 << 1 | b2 << 0);
-					++inIndex;
-				}
-			}
-		}
-	}
+	private static void convertAdafruit(short[] rgb565, int width, int numLogicalRows, byte[] dest) {
+	final int pairOffset = 16;
+	final int height = rgb565.length / width;
+	final int subframeSize = rgb565.length / 2;
 	
-private static void convertAdafruit32(short[] rgb565, int width, byte[] dest) {  //would like to daisy chain adafruit 16x32's
-
-		
-		final int height = rgb565.length / width;
-		final int subframeSize = rgb565.length / 2;
-		
-		//rows was 8, columns 32 for 32x16 adafruit with 8 rows but d-pin panels have 16 rows
-		
-		int outIndex = 0;
-		for (int subframe = 0; subframe < 3; ++subframe) {
-			int inIndex = 0;
-			for (int row = 0; row < 16; ++row) { //width for 32x32
-				for (int col = 0; col < 32; ++col) {   //was 32 for 32x32, 32 for 64x32, 64 for 64x64 but it was mirroed and not true 64x64
-					int pixel1 = ((int) rgb565[inIndex]) & 0xFFFF;
-					int pixel2 = ((int) rgb565[inIndex + 512]) & 0xFFFF; //was 256 for 32x16, 512 for 32x32, 1024 for 64x32, 2048 for 64x64
-					
-					int r1 = (pixel1 >> (11 + 2 + subframe)) & 1;
-					int g1 = (pixel1 >> (5 + 3 + subframe)) & 1;
-					int b1 = (pixel1 >> (0 + 2 + subframe)) & 1;
-
-					int r2 = (pixel2 >> (11 + 2 + subframe)) & 1;
-					int g2 = (pixel2 >> (5 + 3 + subframe)) & 1;
-					int b2 = (pixel2 >> (0 + 2 + subframe)) & 1;
-
-					dest[outIndex++] = (byte) (r1 << 5 | g1 << 4 | b1 << 3
-							| r2 << 2 | g2 << 1 | b2 << 0);
-					++inIndex;
-				}
-			}
-		}
-	}
-
-private static void convertAdafruit6432(short[] rgb565, int width, byte[] dest) {  //would like to daisy chain adafruit 16x32's
-
-	
-	//final int height = rgb565.length / width;
-	//final int subframeSize = rgb565.length / 2;
-	
-	int outIndex = 0;
-	for (int subframe = 0; subframe < 3; ++subframe) {  //16 and 64
-		int inIndex = 0;
-		for (int row = 0; row < 32; ++row) {	//was 8 for 32x16, was 16 for 32x32, 32 for 64x32
-			for (int col = 0; col < 32; ++col) {   //was 32 for 32x32, 32 for 64x32, 64 for 64x64 but it was mirroed and not true 64x64
-				int pixel1 = ((int) rgb565[inIndex]) & 0xFFFF;
-				int pixel2 = ((int) rgb565[inIndex + 1024]) & 0xFFFF; //was 256 for 32x16, 512 for 32x32, 1024 for 64x32, 2048 for 64x64
-				
-				int r1 = (pixel1 >> (11 + 2 + subframe)) & 1;
-				int g1 = (pixel1 >> (5 + 3 + subframe)) & 1;
-				int b1 = (pixel1 >> (0 + 2 + subframe)) & 1;
-
-				int r2 = (pixel2 >> (11 + 2 + subframe)) & 1;
-				int g2 = (pixel2 >> (5 + 3 + subframe)) & 1;
-				int b2 = (pixel2 >> (0 + 2 + subframe)) & 1;
-
-				dest[outIndex++] = (byte) (r1 << 5 | g1 << 4 | b1 << 3
-						| r2 << 2 | g2 << 1 | b2 << 0);
-				++inIndex;
+	for (int x = 0; x < width; ++x) {
+		for (int y = 0; y < height; ++y) {
+			if (y % (pairOffset * 2) >= pairOffset) continue;
+			
+			// This are the two indices of the pixel comprising a dot-pair in the input.
+			int inputIndex0 = y * width + x;
+			int inputIndex1 = (y + pairOffset) * width + x;
+			
+			short color0 = rgb565[inputIndex0];
+			// Take the top 3 bits of each {r,g,b}
+			int r0 = (color0 >> 13) & 0x7;
+			int g0 = (color0 >> 8) & 0x7;
+			int b0 = (color0 >> 2) & 0x7;
+									
+			short color1 = rgb565[inputIndex1];
+			// Take the top 3 bits of each {r,g,b}
+			int r1 = (color1 >> 13) & 0x7;
+			int g1 = (color1 >> 8) & 0x7;
+			int b1 = (color1 >> 2) & 0x7;
+			
+			for (int subframe = 0; subframe < 3; ++subframe) {
+				int dotPair =
+						(r0 & 1) << 5
+						| (g0 & 1) << 4
+						| (b0 & 1) << 3
+						| (r1 & 1) << 2
+						| (g1 & 1) << 1
+						| (b1 & 1) << 0;
+				int indexWithinSubframe = mapAdafruitIndex(x, y, width, height, numLogicalRows);
+				int indexWithinOutput = subframe * subframeSize + indexWithinSubframe;
+				dest[indexWithinOutput] = (byte) dotPair;
+				r0 >>= 1;
+				g0 >>= 1;
+				b0 >>= 1;
+				r1 >>= 1;
+				g1 >>= 1;
+				b1 >>= 1;
 			}
 		}
 	}
 }
 
-private static void convertAdafruit6464(short[] rgb565, int width, byte[] dest) {  //would like to daisy chain adafruit 16x32's
-
-	
-	//final int height = rgb565.length / width;
-	//final int subframeSize = rgb565.length / 2;
-	
-	int outIndex = 0;
-	for (int subframe = 0; subframe < 3; ++subframe) {  //16 and 64
-		int inIndex = 0;
-		for (int row = 0; row < 32; ++row) {	//was 8 for 32x16, was 16 for 32x32, 32 for 64x32
-			for (int col = 0; col < 64; ++col) {   //was 32 for 32x32, 32 for 64x32, 64 for 64x64 but it was mirroed and not true 64x64
-				int pixel1 = ((int) rgb565[inIndex]) & 0xFFFF;
-				int pixel2 = ((int) rgb565[inIndex + 2048]) & 0xFFFF; //was 256 for 32x16, 512 for 32x32, 1024 for 64x32, 2048 for 64x64
-				
-				int r1 = (pixel1 >> (11 + 2 + subframe)) & 1;
-				int g1 = (pixel1 >> (5 + 3 + subframe)) & 1;
-				int b1 = (pixel1 >> (0 + 2 + subframe)) & 1;
-
-				int r2 = (pixel2 >> (11 + 2 + subframe)) & 1;
-				int g2 = (pixel2 >> (5 + 3 + subframe)) & 1;
-				int b2 = (pixel2 >> (0 + 2 + subframe)) & 1;
-
-				dest[outIndex++] = (byte) (r1 << 5 | g1 << 4 | b1 << 3
-						| r2 << 2 | g2 << 1 | b2 << 0);
-				++inIndex;
-			}
-		}
-	}
-}
-	
-	private static void convertAdafruit(short[] rgb565, int width, byte[] dest) {  //would like to daisy chain adafruit 16x32's
-
-		
-		final int height = rgb565.length / width;
-		final int subframeSize = rgb565.length / 2;
-		
-		//rows was 8, columns 32 for 32x16 adafruit with 8 rows but d-pin panels have 16 rows
-		
-		int outIndex = 0;
-		for (int subframe = 0; subframe < 3; ++subframe) {
-			int inIndex = 0;
-			//for (int row = 0; row < 16; ++row) { //width for 32x32
-			for (int row = 0; row < width/2; ++row) {	//was 8 for 32x16, was 16 for 32x32, 32 for 64x32
-				//for (int col = 0; col < 32; ++col) { for 32x32
-				for (int col = 0; col < 64; ++col) {   //was 32 for 32x32, 32 for 64x32, 64 for 64x64 but it was mirroed and not true 64x64
-					int pixel1 = ((int) rgb565[inIndex]) & 0xFFFF;
-					int pixel2 = ((int) rgb565[inIndex + 2048]) & 0xFFFF; //was 256 for 32x16, 512 for 32x32, 1024 for 64x32, 2048 for 64x64
-					//int pixel2 = ((int) rgb565[inIndex + subframeSize]) & 0xFFFF;
-					
-					int r1 = (pixel1 >> (11 + 2 + subframe)) & 1;
-					int g1 = (pixel1 >> (5 + 3 + subframe)) & 1;
-					int b1 = (pixel1 >> (0 + 2 + subframe)) & 1;
-
-					int r2 = (pixel2 >> (11 + 2 + subframe)) & 1;
-					int g2 = (pixel2 >> (5 + 3 + subframe)) & 1;
-					int b2 = (pixel2 >> (0 + 2 + subframe)) & 1;
-
-					dest[outIndex++] = (byte) (r1 << 5 | g1 << 4 | b1 << 3
-							| r2 << 2 | g2 << 1 | b2 << 0);
-					++inIndex;
-				}
-			}
-		}
-	}
 	
 	private static void convertSeeedStudio(short[] rgb565, int width, byte[] dest) {
 		final int height = rgb565.length / width;
@@ -580,8 +477,7 @@ private static void convertAdafruit6464(short[] rgb565, int width, byte[] dest) 
 	
 	
 	private static void convertAdafruit32x32(short[] rgb565, byte[] dest) {
-		//convertAdafruit(rgb565, 32, dest);
-		convertAdafruit32(rgb565, 32, dest);
+		convertAdafruit(rgb565, 32, 16, dest);
 	}
 	
 	private static void convertAdafruit32x32_ColorSwap(short[] rgb565, byte[] dest) {
@@ -589,13 +485,11 @@ private static void convertAdafruit6464(short[] rgb565, int width, byte[] dest) 
 	}
 	
 	private static void convertAdafruit64x32(short[] rgb565, byte[] dest) {
-		//convertAdafruit(rgb565, 64, dest);
-		convertAdafruit6432(rgb565, 64, dest);
+		convertAdafruit(rgb565, 64, 16, dest);
 	}
 	
 	private static void convertAdafruit64x64(short[] rgb565, byte[] dest) {
-		//convertAdafruit(rgb565, 64, dest);
-		convertAdafruit6464(rgb565, 64, dest);
+		convertAdafruit(rgb565, 64, 16, dest);
 	}
 	
 	private static void convertSeeedStudio32x32(short[] rgb565, byte[] dest) {
