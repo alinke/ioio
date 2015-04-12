@@ -149,6 +149,14 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 		case ADAFRUIT_64x64:
 			convertAdafruit64x64(rgb565, frame_);
 			break;
+			
+		case ADAFRUIT_128x32:
+			convertAdafruit128x32(rgb565, frame_);
+			break;
+			
+		case ADAFRUIT_32x128:
+			convertAdafruit32x128(rgb565, frame_);
+			break;
 		
 
 		default:
@@ -492,6 +500,14 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 		convertAdafruit(rgb565, 64, 16, dest);
 	}
 	
+	private static void convertAdafruit128x32(short[] rgb565, byte[] dest) {
+		convertAdafruit(rgb565, 128, 16, dest);
+	}
+	
+	private static void convertAdafruit32x128(short[] rgb565, byte[] dest) {
+		convertAdafruit(rgb565, 32, 16, dest);
+	}
+	
 	private static void convertSeeedStudio32x32(short[] rgb565, byte[] dest) {
 		convertSeeedStudio(rgb565, 32, dest); //32 is the width
 	}
@@ -593,6 +609,8 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 		case SEEEDSTUDIO_32x64:
 		case SEEEDSTUDIO_2_MIRRORED:
 		case ADAFRUIT_64x64:
+		case ADAFRUIT_128x32:
+		case ADAFRUIT_32x128:
 			return 4; 
 
 		case SEEEDSTUDIO_4_MIRRORED: 
@@ -626,6 +644,8 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 		case ADAFRUIT_32x32_ColorSwap:
 		case ADAFRUIT_64x32:
 		case ADAFRUIT_64x64:
+		case ADAFRUIT_128x32:
+		case ADAFRUIT_32x128:
 			return 16;
 
 		default:

@@ -74,7 +74,9 @@ public interface RgbLedMatrix extends Closeable {
 		ADAFRUIT_32x32(32,32),
 		ADAFRUIT_32x32_ColorSwap(32,32), //for a 4mm pitch 32x32, 16 row, matrix where the color channels were swapped
 		ADAFRUIT_64x32(64,32),
-		ADAFRUIT_64x64(64,64);
+		ADAFRUIT_64x64(64,64),
+		ADAFRUIT_128x32(128,32),
+		ADAFRUIT_32x128(32,128);
 		
 		public final int width;
 		public final int height;
