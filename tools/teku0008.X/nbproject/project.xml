@@ -3,8 +3,8 @@
     <type>com.microchip.mplab.nbide.embedded.makeproject</type>
     <configuration>
         <data xmlns="http://www.netbeans.org/ns/make-project/1">
-            <name>PIXL0008</name>
-            <creation-uuid>1437a091-3826-45eb-892c-7ab08fda2559</creation-uuid>
+            <name>teku0008</name>
+            <creation-uuid>03e16d00-c0cc-4de1-a447-032946751352</creation-uuid>
             <make-project-type>0</make-project-type>
             <c-extensions/>
             <cpp-extensions/>

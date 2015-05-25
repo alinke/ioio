@@ -189,9 +189,9 @@ static unsigned int times[] = { //15, 30, 60, 150   133 to 122.5 refresh rate 37
 };                // for original pixel  8, 16, 32, 250 this one was not a good refresh rate/ bad
                   // 15,30,60,150 //150 is the black frame time, increase this number to make it
                   // for lower power, reduce the first three by a factor of x and multiple the fourth by x
-                  // low power 4, 8, 15, 600
-                  // lowest power 3, 6, 12, 750
-
+                  // low power 4, 8, 15, 600 recommended
+                  // lowest power 3, 6, 12, 750 this one has flickering, not recommended to use
+                  // used this for the 32x32 low power  7, 15, 30, 300
 void __attribute__((__interrupt__, auto_psv)) _T4Interrupt() {
   // Schedule the next interrupt.
   PR4 = times[sub_frame] - 1;
