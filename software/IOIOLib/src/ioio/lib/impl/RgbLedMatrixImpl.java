@@ -157,6 +157,9 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 		case ADAFRUIT_32x128:
 			convertAdafruit32x128(rgb565, frame_);
 			break;
+		case ADAFRUIT_64x16:
+			convertAdafruit64x16(rgb565, frame_);
+			break;
 		
 
 		default:
@@ -176,7 +179,7 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 		ioio_.closeRgbLedMatrix();
 	}
 
-	private static void convertAdafruit32x16(short[] rgb565, byte[] dest) {
+	/*private static void convertAdafruit32x16(short[] rgb565, byte[] dest) {
 		// TODO: Consider replacing this with convertAdafruit(rgb565, 32, 8, dest) or somethin'
 		int outIndex = 0;
 		for (int subframe = 0; subframe < 3; ++subframe) {
@@ -200,7 +203,7 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 				}
 			}
 		}
-	}
+	}*/
 	
 	
 
@@ -484,8 +487,16 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 	}
 	
 	
+	private static void convertAdafruit32x16(short[] rgb565, byte[] dest) {
+		convertAdafruit(rgb565, 16, 16, dest);  //for a 32x16 matrix
+	}
+	
 	private static void convertAdafruit32x32(short[] rgb565, byte[] dest) {
 		convertAdafruit(rgb565, 32, 16, dest);
+	}
+	
+	private static void convertAdafruit64x16(short[] rgb565, byte[] dest) {
+		convertAdafruit(rgb565, 32, 16, dest);  //for a 64x16 matrix
 	}
 	
 	private static void convertAdafruit32x32_ColorSwap(short[] rgb565, byte[] dest) {
@@ -597,8 +608,12 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 		case ADAFRUIT_32x16:
 		case ADAFRUIT_32x32:
 		case ADAFRUIT_32x32_ColorSwap:
+		
+		
 			return 1;
 
+
+		case ADAFRUIT_64x16:
 		case SEEEDSTUDIO_32x16:
 		case SEEEDSTUDIO_32x32:
 		case SEEEDSTUDIO_32x32_NEW:
@@ -638,6 +653,8 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 		case SEEEDSTUDIO_64x64:
 		case SEEEDSTUDIO_128x32:
 		case SEEEDSTUDIO_32x128:
+		case ADAFRUIT_64x16:
+		
 			return 8; 	
 			
 		case ADAFRUIT_32x32:           // these panels are 1/16 scan or 16 rows
@@ -646,6 +663,7 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 		case ADAFRUIT_64x64:
 		case ADAFRUIT_128x32:
 		case ADAFRUIT_32x128:
+		
 			return 16;
 
 		default:
