@@ -133,6 +133,8 @@
         <property key="legacy-libc" value="false"/>
         <property key="output-file-format" value="coff"/>
       </C30Global>
+      <Simulator>
+      </Simulator>
     </conf>
     <conf name="PIC24FJ128DA206" type="3">
       <toolsSet>
