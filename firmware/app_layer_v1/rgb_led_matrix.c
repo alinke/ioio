@@ -192,6 +192,7 @@ static unsigned int times[] = { //15, 30, 60, 150   133 to 122.5 refresh rate 37
                   // low power 4, 8, 15, 600 recommended
                   // lowest power 3, 6, 12, 750 this one has flickering, not recommended to use
                   // used this for the 32x32 low power  7, 15, 30, 300
+                  // 8, 15, 30, 100 use this for pixel v2.5 1/16 scan panels, changed the last digit to 75 to 100 for less LED bleed
 void __attribute__((__interrupt__, auto_psv)) _T4Interrupt() {
   // Schedule the next interrupt.
   PR4 = times[sub_frame] - 1;
