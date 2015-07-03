@@ -47,7 +47,7 @@ enum Board {
 	SPRK0015(Hardware.IOIO0002), SPRK0016(Hardware.IOIO0003), MINT0010(Hardware.IOIO0003), SPRK0020(
 			Hardware.IOIO0004), PIXL0020(Hardware.IOIO0004), PIXL0025(Hardware.PIXL0025), PIXLI025(
 			Hardware.PIXL0025), PIXLQ025(Hardware.PIXL0025), PIXLR025(Hardware.PIXL0025), PIXLT025
-			(Hardware.PIXL0025), PIXLX025(Hardware.PIXL0025), PIXLY025(Hardware.PIXL0025);
+			(Hardware.PIXL0025), PIXLX025(Hardware.PIXL0025), PIXLY025(Hardware.PIXL0025),PIXLC025(Hardware.PIXL0025);
 
 	public final Hardware hardware;
 
@@ -174,6 +174,7 @@ enum Board {
 		static final Hardware PIXLT025 = IOIO0004;
 		static final Hardware PIXLX025 = IOIO0004;
 		static final Hardware PIXLY025 = IOIO0004;
+		static final Hardware PIXLC025 = IOIO0004;
 		
 		private enum Function {
 			PERIPHERAL_OUT, PERIPHERAL_IN, ANALOG_IN
