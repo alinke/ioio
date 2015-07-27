@@ -48,7 +48,7 @@
 #include "protocol_defs.h"
 
 // Human-readable string describing app firmware version.
-#define FW_IMPL_VER "PIXLL009"//normal firmware, can only be 8 digits
+#define FW_IMPL_VER "PIXL0009"//normal firmware, can only be 8 digits
 // note the hardware version (not the firmware version you see above) is what we use for the board auto-detect from the software, this is set from the config build in the bootloader file
 // the above just tells us the firmware version and whether or not low power firmware, denoted by the L
 
