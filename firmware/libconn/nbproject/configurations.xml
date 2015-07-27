@@ -11,6 +11,10 @@
       <itemPath>adb_connection.h</itemPath>
       <itemPath>cdc_connection.h</itemPath>
     </logicalFolder>
+    <logicalFolder name="f1" displayName="New Folder 1" projectFiles="true">
+    </logicalFolder>
+    <logicalFolder name="f2" displayName="New Folder 2" projectFiles="true">
+    </logicalFolder>
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
