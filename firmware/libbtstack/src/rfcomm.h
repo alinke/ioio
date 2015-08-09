@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2012 by Matthias Ringwald
+ * Copyright (C) 2014 BlueKitchen GmbH
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -17,7 +17,7 @@
  *    personal benefit and not for any commercial purpose or for
  *    monetary gain.
  *
- * THIS SOFTWARE IS PROVIDED BY MATTHIAS RINGWALD AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY BLUEKITCHEN GMBH AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL MATTHIAS
@@ -30,7 +30,8 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * Please inquire about commercial licensing options at btstack@ringwald.ch
+ * Please inquire about commercial licensing options at 
+ * contact@bluekitchen-gmbh.com
  *
  */
 
@@ -38,7 +39,8 @@
  *  RFCOMM.h
  */
 
-#pragma once
+#ifndef __RFCOMM_H
+#define __RFCOMM_H
  
 #include <btstack/btstack.h>
 #include <btstack/utils.h>
@@ -49,8 +51,85 @@
 extern "C" {
 #endif
     
-
 #define UNLIMITED_INCOMING_CREDITS 0xff
+
+#define RFCOMM_TEST_DATA_MAX_LEN 4
+
+#define RFCOMM_RLS_STATUS_INVALID 0xff
+
+// Line Status
+#define LINE_STATUS_NO_ERROR       0x00
+#define LINE_STATUS_OVERRUN_ERROR  0x03
+#define LINE_STATUS_PARITY_ERORR   0x05
+#define LINE_STATUS_FRAMING_ERROR  0x09
+
+// Modem Status Flags
+#define MODEM_STATUS_FC   0x02
+#define MODEM_STATUS_RTC  0x04
+#define MODEM_STATUS_RTR  0x08
+#define MODEM_STATUS_IC   0x40
+#define MODEM_STATUS_DV   0x80
+
+typedef enum rpn_baud {
+    RPN_BAUD_2400 = 0,
+    RPN_BAUD_4800,
+    RPN_BAUD_7200,
+    RPN_BAUD_9600,
+    RPN_BAUD_19200,
+    RPN_BAUD_38400,
+    RPN_BAUD_57600,
+    RPN_BAUD_115200,
+    RPN_BAUD_230400
+} rpn_baud_t;
+
+typedef enum rpn_data_bits {
+    RPN_DATA_BITS_5 = 0,
+    RPN_DATA_BITS_6 = 0,
+    RPN_DATA_BITS_7 = 0,
+    RPN_DATA_BITS_8 = 0
+} rpn_data_bits_t;
+
+typedef enum rpn_stop_bits {
+    RPN_STOP_BITS_1_0 = 0,
+    RPN_STOP_BITS_1_5 
+} rpn_stop_bits_t;
+
+typedef enum rpn_parity {
+    RPN_PARITY_NONE  = 0,
+    RPN_PARITY_ODD   = 1,
+    RPN_PARITY_EVEN  = 3,
+    RPN_PARITY_MARK  = 5,
+    RPN_PARITY_SPACE = 7, 
+} rpn_parity_t;
+
+typedef enum rpn_flow_control {
+    RPN_FLOW_CONTROL_XONXOFF_ON_INPUT  = 1 << 0,
+    RPN_FLOW_CONTROL_XONXOFF_ON_OUTPUT = 1 << 1,
+    RPN_FLOW_CONTROL_RTR_ON_INPUT  = 1 << 2,
+    RPN_FLOW_CONTROL_RTR_ON_OUTPUT = 1 << 3,
+    RPN_FLOW_CONTROL_RTC_ON_INPUT  = 1 << 4,
+    RPN_FLOW_CONTROL_RTC_ON_OUTPUT = 1 << 5,
+} rpn_flow_control_t;
+
+#define RPN_PARAM_MASK_0_BAUD             0x01
+#define RPN_PARAM_MASK_0_DATA_BITS        0x02
+#define RPN_PARAM_MASK_0_STOP_BITS        0x04
+#define RPN_PARAM_MASK_0_PARITY           0x08       
+#define RPN_PARAM_MASK_0_PARITY_TYPE      0x10
+#define RPN_PARAM_MASK_0_XON_CHAR         0x20
+#define RPN_PARAM_MASK_0_XOFF_CHAR        0x40
+#define RPN_PARAM_MASK_0_RESERVED         0x80
+
+// @note: values are identical to rpn_flow_control_t
+#define RPN_PARAM_MASK_1_XONOFF_ON_INPUT  0x01
+#define RPN_PARAM_MASK_1_XONOFF_ON_OUTPUT 0x02
+#define RPN_PARAM_MASK_1_RTR_ON_INPUT     0x04
+#define RPN_PARAM_MASK_1_RTR_ON_OUTPUT    0x08       
+#define RPN_PARAM_MASK_1_RTC_ON_INPUT     0x10
+#define RPN_PARAM_MASK_1_RTC_ON_OUTPUT    0x20
+#define RPN_PARAM_MASK_1_RESERVED_0       0x40
+#define RPN_PARAM_MASK_1_RESERVED_1       0x80
+
 
 // private structs
 typedef enum {
@@ -81,6 +160,7 @@ typedef enum {
 	RFCOMM_CHANNEL_OPEN,
     RFCOMM_CHANNEL_SEND_UA_AFTER_DISC,
     RFCOMM_CHANNEL_SEND_DISC,
+    RFCOMM_CHANNEL_W4_UA_AFTER_UA,
     RFCOMM_CHANNEL_SEND_DM,
     
 } RFCOMM_CHANNEL_STATE;
@@ -117,6 +197,9 @@ typedef enum {
     CH_EVT_RCVD_DM,
     CH_EVT_RCVD_MSC_CMD,
     CH_EVT_RCVD_MSC_RSP,
+    CH_EVT_RCVD_NSC_RSP,
+    CH_EVT_RCVD_RLS_CMD,
+    CH_EVT_RCVD_RLS_RSP,
     CH_EVT_RCVD_RPN_CMD,
     CH_EVT_RCVD_RPN_REQ,
     CH_EVT_RCVD_CREDITS,
@@ -150,6 +233,16 @@ typedef struct rfcomm_channel_event_rpn {
     rfcomm_rpn_data_t data;
 } rfcomm_channel_event_rpn_t;
 
+typedef struct rfcomm_channel_event_rls {
+    rfcomm_channel_event_t super;
+    uint8_t line_status;
+} rfcomm_channel_event_rls_t;
+
+typedef struct rfcomm_channel_event_msc {
+    rfcomm_channel_event_t super;
+    uint8_t modem_status;
+} rfcomm_channel_event_msc_t;
+
 // info regarding potential connections
 typedef struct {
     // linked list - assert: first field
@@ -176,7 +269,7 @@ typedef struct {
 } rfcomm_service_t;
 
 // info regarding multiplexer
-// note: spec mandates single multplexer per device combination
+// note: spec mandates single multiplexer per device combination
 typedef struct {
     // linked list - assert: first field
     linked_item_t    item;
@@ -189,22 +282,31 @@ typedef struct {
     uint16_t  l2cap_cid;
     uint8_t   l2cap_credits;
     
+    uint8_t   fcon; // only send if fcon & 1, send rsp if fcon & 0x80
+
 	bd_addr_t remote_addr;
     hci_con_handle_t con_handle;
     
 	uint8_t   outgoing;
     
     // hack to deal with authentication failure only observed by remote side
-    uint8_t   at_least_one_connection;
+    uint8_t at_least_one_connection;
     
     uint16_t max_frame_size;
     
     // send DM for DLCI != 0
     uint8_t send_dm_for_dlci;
     
+    // non supported command, 0 if not set
+    uint8_t nsc_command;
+
+    // test data - limited to RFCOMM_TEST_DATA_MAX_LEN
+    uint8_t test_data_len;
+    uint8_t test_data[RFCOMM_TEST_DATA_MAX_LEN];
+
 } rfcomm_multiplexer_t;
 
-// info regarding an actual coneection
+// info regarding an actual connection
 typedef struct {
     // linked list - assert: first field
     linked_item_t    item;
@@ -241,9 +343,15 @@ typedef struct {
 	// negotiated frame size
     uint16_t max_frame_size;
 	
-    // rpn data
+    // local rpn data
     rfcomm_rpn_data_t rpn_data;
     
+    // rls line status. RFCOMM_RLS_STATUS_INVALID if not set
+    uint8_t rls_line_status;
+
+    // msc modem status.
+    uint8_t msc_modem_status;
+
 	// server channel (see rfcomm_service_t) - NULL => outgoing channel
 	rfcomm_service_t * service;
     
@@ -256,51 +364,107 @@ typedef struct {
 } rfcomm_channel_t;
 
 void rfcomm_packet_handler(uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t size);
-void rfcomm_close_connection(void *connection);
 
-/** Embedded API **/
+/* API_START */
 
-// Set up RFCOMM.
+/** 
+ * @brief Set up RFCOMM.
+ */
 void rfcomm_init(void);
 
-// Register packet handler.
-void rfcomm_register_packet_handler(void (*handler)(void * connection, uint8_t packet_type,
-                                                    uint16_t channel, uint8_t *packet, uint16_t size));
+/** 
+ * @brief Set security level required for incoming connections, need to be called before registering services.
+ */
+void rfcomm_set_required_security_level(gap_security_level_t security_level);
 
-// Creates RFCOMM connection (channel) to a given server channel on a remote device with baseband address. A new baseband connection will be initiated if necessary.
-// This channel will automatically provide enough credits to the remote side
-void rfcomm_create_channel_internal(void * connection, bd_addr_t *addr, uint8_t channel);
+/** 
+ * @brief Register packet handler.
+ */
+void rfcomm_register_packet_handler(void (*handler)(void * connection, uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t size));
 
-// Creates RFCOMM connection (channel) to a given server channel on a remote device with baseband address. new baseband connection will be initiated if necessary.
-// This channel will use explicit credit management. During channel establishment, an initial amount of credits is provided.
-void rfcomm_create_channel_with_initial_credits_internal(void * connection, bd_addr_t *addr, uint8_t server_channel, uint8_t initial_credits);
+/** 
+ * @brief Creates RFCOMM connection (channel) to a given server channel on a remote device with baseband address. A new baseband connection will be initiated if necessary. This channel will automatically provide enough credits to the remote side
+ */
+void rfcomm_create_channel_internal(void * connection, bd_addr_t addr, uint8_t channel);
 
-// Disconencts RFCOMM channel with given identifier. 
+/** 
+ * @brief Creates RFCOMM connection (channel) to a given server channel on a remote device with baseband address. new baseband connection will be initiated if necessary. This channel will use explicit credit management. During channel establishment, an initial  amount of credits is provided.
+ */
+void rfcomm_create_channel_with_initial_credits_internal(void * connection, bd_addr_t addr, uint8_t server_channel, uint8_t initial_credits);
+
+/** 
+ * @brief Disconnects RFCOMM channel with given identifier. 
+ */
 void rfcomm_disconnect_internal(uint16_t rfcomm_cid);
 
-// Registers RFCOMM service for a server channel and a maximum frame size, and assigns a packet handler. On embedded systems, use NULL for connection parameter.
-// This channel provides automatically enough credits to the remote side.
+/** 
+ * @brief Registers RFCOMM service for a server channel and a maximum frame size, and assigns a packet handler. On embedded systems, use NULL for connection parameter. This channel provides automatically enough credits to the remote side.
+ */
 void rfcomm_register_service_internal(void * connection, uint8_t channel, uint16_t max_frame_size);
 
-// Registers RFCOMM service for a server channel and a maximum frame size, and assigns a packet handler. On embedded systems, use NULL for connection parameter.
-// This channel will use explicit credit management. During channel establishment, an initial amount of credits is provided.
+/** 
+ * @brief Registers RFCOMM service for a server channel and a maximum frame size, and assigns a packet handler. On embedded systems, use NULL for connection parameter. This channel will use explicit credit management. During channel establishment, an initial amount of credits is provided.
+ */
 void rfcomm_register_service_with_initial_credits_internal(void * connection, uint8_t channel, uint16_t max_frame_size, uint8_t initial_credits);
 
-// Unregister RFCOMM service.
+/** 
+ * @brief Unregister RFCOMM service.
+ */
 void rfcomm_unregister_service_internal(uint8_t service_channel);
 
-// Accepts/Deny incoming RFCOMM connection.
+/** 
+ * @brief Accepts/Deny incoming RFCOMM connection.
+ */
 void rfcomm_accept_connection_internal(uint16_t rfcomm_cid);
 void rfcomm_decline_connection_internal(uint16_t rfcomm_cid);
 
-// Grant more incoming credits to the remote side for the given RFCOMM channel identifier.
+/** 
+ * @brief Grant more incoming credits to the remote side for the given RFCOMM channel identifier.
+ */
 void rfcomm_grant_credits(uint16_t rfcomm_cid, uint8_t credits);
 
-// Sends RFCOMM data packet to the RFCOMM channel with given identifier.
+/** 
+ * @brief Checks if RFCOMM can send packet. Returns yes if packet can be sent.
+ */
+int rfcomm_can_send_packet_now(uint16_t rfcomm_cid);
+
+/** 
+ * @brief Sends RFCOMM data packet to the RFCOMM channel with given identifier.
+ */
 int  rfcomm_send_internal(uint16_t rfcomm_cid, uint8_t *data, uint16_t len);
 
-int  rfcomm_can_send(uint8_t rfcomm_cid);
+/** 
+ * @brief Sends Local Line Status, see LINE_STATUS_..
+ */
+int rfcomm_send_local_line_status(uint16_t rfcomm_cid, uint8_t line_status);
+
+/** 
+ * @brief Send local modem status. see MODEM_STAUS_..
+ */
+int rfcomm_send_modem_status(uint16_t rfcomm_cid, uint8_t modem_status);
+
+/** 
+ * @brief Configure remote port 
+ */
+int rfcomm_send_port_configuration(uint16_t rfcomm_cid, rpn_baud_t baud_rate, rpn_data_bits_t data_bits, rpn_stop_bits_t stop_bits, rpn_parity_t parity, rpn_flow_control_t flow_control);
+
+/** 
+ * @brief Query remote port 
+ */
+int rfcomm_query_port_configuration(uint16_t rfcomm_cid);
+
+/** 
+ * @brief Allow to create RFCOMM packet in outgoing buffer.
+ */
+int       rfcomm_reserve_packet_buffer(void);
+void      rfcomm_release_packet_buffer(void);
+uint8_t * rfcomm_get_outgoing_buffer(void);
+uint16_t  rfcomm_get_max_frame_size(uint16_t rfcomm_cid);
+int       rfcomm_send_prepared(uint16_t rfcomm_cid, uint16_t len);
+/* API_END */
 
 #if defined __cplusplus
 }
 #endif
+
+#endif // __RFCOMM_H

@@ -36,6 +36,14 @@
 #include "usb_host_bluetooth.h"
 #include "logging.h"
 
+
+
+#include "log.h"
+
+static int log_usb_host_bluetooth_tasks = 0;
+
+
+
 BLUETOOTH_DEVICE gc_BluetoothDevData;
 
 #define FOUND_BULK_IN   0x01
@@ -253,6 +261,9 @@ void USBHostBluetoothTasks(void) {
 //          log_print_buf(gc_BluetoothDevData.intIn.data, byteCount);
 //        }
         gc_BluetoothDevData.intIn.busy = 0;
+
+        if ( log_usb_host_bluetooth_tasks )
+          LogUSB("CALL USBHostBluetoothCallback  BLUETOOTH_EVENT_READ_INTERRUPT_DONE  error: 0x%02x   size: 0x%08x", errorCode, byteCount );
         USBHostBluetoothCallback(BLUETOOTH_EVENT_READ_INTERRUPT_DONE,
                                  errorCode,
                                  gc_BluetoothDevData.intIn.data, byteCount);
@@ -270,6 +281,9 @@ void USBHostBluetoothTasks(void) {
 //          log_print_buf(gc_BluetoothDevData.bulkIn.data, byteCount);
 //        }
         gc_BluetoothDevData.bulkIn.busy = 0;
+
+        if ( log_usb_host_bluetooth_tasks )
+          LogUSB("CALL USBHostBluetoothCallback  BLUETOOTH_EVENT_READ_BULK_DONE  error: 0x%02x   size: 0x%08x", errorCode, byteCount );
         USBHostBluetoothCallback(BLUETOOTH_EVENT_READ_BULK_DONE,
                                  errorCode,
                                  gc_BluetoothDevData.bulkIn.data, byteCount);
@@ -282,6 +296,9 @@ void USBHostBluetoothTasks(void) {
                                     &errorCode,
                                     &byteCount)) {
         gc_BluetoothDevData.bulkOut.busy = 0;
+
+        if ( log_usb_host_bluetooth_tasks )
+          LogUSB("CALL USBHostBluetoothCallback  BLUETOOTH_EVENT_WRITE_BULK_DONE  error: 0x%02x", errorCode );
         USBHostBluetoothCallback(BLUETOOTH_EVENT_WRITE_BULK_DONE,
                                  errorCode,
                                  NULL, 0);
@@ -294,6 +311,9 @@ void USBHostBluetoothTasks(void) {
                                     &errorCode,
                                     &byteCount)) {
         gc_BluetoothDevData.ctrlOut.busy = 0;
+
+        if ( log_usb_host_bluetooth_tasks )
+          LogUSB("CALL USBHostBluetoothCallback  BLUETOOTH_EVENT_WRITE_CONTROL_DONE  error: 0x%02x", errorCode );
         USBHostBluetoothCallback(BLUETOOTH_EVENT_WRITE_CONTROL_DONE,
                                  errorCode,
                                  NULL, 0);

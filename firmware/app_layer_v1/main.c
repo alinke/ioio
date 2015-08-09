@@ -35,6 +35,9 @@
 #include "pixel.h"
 
 
+#include "log.h"
+
+
 // define in non-const arrays to ensure data space
 static char descManufacturer[] = "IOIO Open Source Project";
 static char descModel[] = "IOIO";
@@ -62,6 +65,36 @@ typedef enum {
 
 static STATE state = STATE_INIT;
 static CHANNEL_HANDLE handle;
+
+
+const char *mainStateName(STATE state) {
+  switch ( state ) {
+  case STATE_INIT:
+    return "STATE_INIT";
+  case STATE_OPEN_CHANNEL:
+    return "STATE_OPEN_CHANNEL";
+  case STATE_WAIT_CHANNEL_OPEN:
+    return "STATE_WAIT_CHANNEL_OPEN";
+  case STATE_CONNECTED:
+    return "STATE_CONNECTED";
+  case STATE_ERROR:
+    return "STATE_ERROR";
+  }
+  return "STATE-unknown";
+}
+
+void main_set_state(STATE new_state) {
+  if ( state != new_state ) {
+    LogMain("state change  %s -> %s", mainStateName(state), mainStateName(new_state) );
+  }
+  state = new_state;
+}
+
+
+
+//
+// AppCallback - called by usb_host
+//
 
 void AppCallback(const void* data, UINT32 data_len, int_or_ptr_t arg);
 
@@ -92,7 +125,7 @@ void AppCallback(const void* data, UINT32 data_len, int_or_ptr_t arg) {
     if (!AppProtocolHandleIncoming(data, data_len)) {
       // got corrupt input. need to close the connection and soft reset.
       log_printf("Protocol error");
-      state = STATE_ERROR;
+      main_set_state(STATE_ERROR);
     }
   } else {
     // connection closed, soft reset and re-establish
@@ -102,7 +135,7 @@ void AppCallback(const void* data, UINT32 data_len, int_or_ptr_t arg) {
     } else {
       log_printf("Channel failed to open");
     }
-    state = STATE_OPEN_CHANNEL;
+    main_set_state(STATE_OPEN_CHANNEL);
   }
 }
 
@@ -111,20 +144,31 @@ int main() {
   log_printf("***** Hello from app-layer! *******");
 
   SoftReset();
+
+
+  LogInit();
+#ifdef LED_DEBUG
+  LedDebugInit();
+#endif // LED_DEBUG
+  LogMain("main()  state = %s", mainStateName(state) );
+
+
   ConnectionInit();
   while (1) {
+    //    LogMain("  loop TOP state = %s", mainStateName(state) );
+
     PixelTasks();
     ConnectionTasks();
     switch (state) {
       case STATE_INIT:
         handle = INVALID_CHANNEL_HANDLE;
-        state = STATE_OPEN_CHANNEL;
+        main_set_state(STATE_OPEN_CHANNEL);
         break;
 
       case STATE_OPEN_CHANNEL:
         if ((handle = OpenAvailableChannel()) != INVALID_CHANNEL_HANDLE) {
           log_printf("Connected");
-          state = STATE_WAIT_CHANNEL_OPEN;
+          main_set_state(STATE_WAIT_CHANNEL_OPEN);
         }
         break;
 
@@ -132,7 +176,7 @@ int main() {
        if (ConnectionCanSend(handle)) {
           log_printf("Channel open");
           AppProtocolInit(handle);
-          state = STATE_CONNECTED;
+          main_set_state(STATE_CONNECTED);
         }
         break;
 
@@ -143,7 +187,7 @@ int main() {
       case STATE_ERROR:
         ConnectionCloseChannel(handle);
         SoftReset();
-        state = STATE_INIT;
+        main_set_state(STATE_INIT);
         break;
     }
   }

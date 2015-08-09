@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2012 by Matthias Ringwald
+ * Copyright (C) 2014 BlueKitchen GmbH
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -17,7 +17,7 @@
  *    personal benefit and not for any commercial purpose or for
  *    monetary gain.
  *
- * THIS SOFTWARE IS PROVIDED BY MATTHIAS RINGWALD AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY BLUEKITCHEN GMBH AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL MATTHIAS
@@ -30,7 +30,8 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * Please inquire about commercial licensing options at btstack@ringwald.ch
+ * Please inquire about commercial licensing options at 
+ * contact@bluekitchen-gmbh.com
  *
  */
 
@@ -43,9 +44,11 @@
  *
  */
 
-#pragma once
+#ifndef __BT_CONTROL_H
+#define __BT_CONTROL_H
 
 #include <stdint.h>
+#include <btstack/utils.h>
 
 #if defined __cplusplus
 extern "C" {
@@ -77,8 +80,16 @@ typedef struct {
     void         (*register_for_power_notifications)(void (*cb)(POWER_NOTIFICATION_t event));
 
     void         (*hw_error)(void); 
+
+    /** support for vendor-specific way to set BD ADDR - cmd has to be stored in hci_cmd_buffer
+     * @return have command
+     */
+    int          (*set_bd_addr_cmd)(void * config, bd_addr_t addr, uint8_t *hci_cmd_buffer); 
+
 } bt_control_t;
 
 #if defined __cplusplus
 }
 #endif
+
+#endif // __BT_CONTROL_H

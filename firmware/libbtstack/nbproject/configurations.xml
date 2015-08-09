@@ -4,28 +4,48 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
-      <itemPath>src/bt_control.h</itemPath>
+      <itemPath>src/bt_log.h</itemPath>
+      <itemPath>btstack-config.h</itemPath>
+      <itemPath>ble/att.h</itemPath>
+      <itemPath>ble/att_dispatch.h</itemPath>
+      <itemPath>ble/att_server.h</itemPath>
+      <itemPath>ble/gap_le.h</itemPath>
+      <itemPath>ble/gatt_client.h</itemPath>
+      <itemPath>ble/le_device_db.h</itemPath>
+      <itemPath>ble/sm.h</itemPath>
+      <itemPath>include/btstack/ant_cmds.h</itemPath>
       <itemPath>include/btstack/btstack.h</itemPath>
-      <itemPath>src/btstack_memory.h</itemPath>
-      <itemPath>config.h</itemPath>
-      <itemPath>src/debug.h</itemPath>
       <itemPath>include/btstack/hal_cpu.h</itemPath>
+      <itemPath>include/btstack/hal_led.h</itemPath>
       <itemPath>include/btstack/hal_tick.h</itemPath>
-      <itemPath>src/hci.h</itemPath>
+      <itemPath>include/btstack/hal_time_ms.h</itemPath>
+      <itemPath>include/btstack/hal_uart_dma.h</itemPath>
       <itemPath>include/btstack/hci_cmds.h</itemPath>
-      <itemPath>src/hci_dump.h</itemPath>
-      <itemPath>src/hci_transport.h</itemPath>
-      <itemPath>src/l2cap.h</itemPath>
-      <itemPath>src/l2cap_signaling.h</itemPath>
       <itemPath>include/btstack/linked_list.h</itemPath>
       <itemPath>include/btstack/memory_pool.h</itemPath>
-      <itemPath>src/remote_device_db.h</itemPath>
-      <itemPath>src/rfcomm.h</itemPath>
       <itemPath>include/btstack/run_loop.h</itemPath>
-      <itemPath>src/run_loop_private.h</itemPath>
-      <itemPath>src/sdp.h</itemPath>
       <itemPath>include/btstack/sdp_util.h</itemPath>
       <itemPath>include/btstack/utils.h</itemPath>
+      <itemPath>src/bnep.h</itemPath>
+      <itemPath>src/bt_control.h</itemPath>
+      <itemPath>src/btstack_memory.h</itemPath>
+      <itemPath>src/debug.h</itemPath>
+      <itemPath>src/gap.h</itemPath>
+      <itemPath>src/hci.h</itemPath>
+      <itemPath>src/hci_dump.h</itemPath>
+      <itemPath>src/hci_transport.h</itemPath>
+      <itemPath>src/hfp.h</itemPath>
+      <itemPath>src/hfp_ag.h</itemPath>
+      <itemPath>src/hfp_hf.h</itemPath>
+      <itemPath>src/hsp_ag.h</itemPath>
+      <itemPath>src/hsp_hs.h</itemPath>
+      <itemPath>src/l2cap.h</itemPath>
+      <itemPath>src/l2cap_signaling.h</itemPath>
+      <itemPath>src/pan.h</itemPath>
+      <itemPath>src/remote_device_db.h</itemPath>
+      <itemPath>src/rfcomm.h</itemPath>
+      <itemPath>src/run_loop_private.h</itemPath>
+      <itemPath>src/sdp.h</itemPath>
       <itemPath>src/sdp_client.h</itemPath>
       <itemPath>src/sdp_parser.h</itemPath>
       <itemPath>src/sdp_query_rfcomm.h</itemPath>
@@ -46,25 +66,43 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
+      <itemPath>src/bt_log.c</itemPath>
+      <itemPath>ble/att.c</itemPath>
+      <itemPath>ble/att_dispatch.c</itemPath>
+      <itemPath>ble/att_server.c</itemPath>
+      <itemPath>ble/le_device_db_memory.c</itemPath>
+      <itemPath>ble/sm_minimal.c</itemPath>
+      <itemPath>src/bnep.c</itemPath>
       <itemPath>src/btstack_memory.c</itemPath>
+      <itemPath>src/hal_cpu.c</itemPath>
       <itemPath>src/hci.c</itemPath>
       <itemPath>src/hci_cmds.c</itemPath>
       <itemPath>src/hci_dump.c</itemPath>
+      <itemPath>src/hci_transport_h4_dma.c</itemPath>
+      <itemPath>src/hci_transport_h4_ehcill_dma.c</itemPath>
       <itemPath>src/hci_transport_mchpusb.c</itemPath>
+      <itemPath>src/hfp.c</itemPath>
+      <itemPath>src/hfp_ag.c</itemPath>
+      <itemPath>src/hfp_hf.c</itemPath>
+      <itemPath>src/hsp_ag.c</itemPath>
+      <itemPath>src/hsp_hs.c</itemPath>
       <itemPath>src/l2cap.c</itemPath>
       <itemPath>src/l2cap_signaling.c</itemPath>
       <itemPath>src/linked_list.c</itemPath>
       <itemPath>src/memory_pool.c</itemPath>
+      <itemPath>src/pan.c</itemPath>
+      <itemPath>src/remote_device_db_memory.c</itemPath>
       <itemPath>src/rfcomm.c</itemPath>
       <itemPath>src/run_loop.c</itemPath>
+      <itemPath>src/run_loop_embedded.c</itemPath>
+      <itemPath>src/hal_tick.c</itemPath>
       <itemPath>src/sdp.c</itemPath>
-      <itemPath>src/sdp_util.c</itemPath>
-      <itemPath>src/utils.c</itemPath>
-      <itemPath>src/remote_device_db_memory.c</itemPath>
       <itemPath>src/sdp_client.c</itemPath>
       <itemPath>src/sdp_parser.c</itemPath>
-      <itemPath>src/sdp_query_util.c</itemPath>
       <itemPath>src/sdp_query_rfcomm.c</itemPath>
+      <itemPath>src/sdp_query_util.c</itemPath>
+      <itemPath>src/sdp_util.c</itemPath>
+      <itemPath>src/utils.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -116,7 +154,7 @@
         <property key="enable-symbols" value="true"/>
         <property key="enable-unroll-loops" value="false"/>
         <property key="extra-include-directories"
-                  value=".;./include;../common;../libusb;../microchip/include"/>
+                  value=".;./include;../common;../libusb;../microchip/include;./src;./ble;../app_layer_v1"/>
         <property key="isolate-each-function" value="true"/>
         <property key="optimization-level" value="s"/>
         <property key="post-instruction-scheduling" value="default"/>
@@ -175,7 +213,7 @@
         <property key="enable-symbols" value="true"/>
         <property key="enable-unroll-loops" value="false"/>
         <property key="extra-include-directories"
-                  value=".;./include;../common;../libusb;../microchip/include"/>
+                  value=".;./include;../common;../libusb;../microchip/include;./src;./ble;../app_layer_v1"/>
         <property key="isolate-each-function" value="true"/>
         <property key="optimization-level" value="s"/>
         <property key="post-instruction-scheduling" value="default"/>
@@ -234,7 +272,7 @@
         <property key="enable-symbols" value="true"/>
         <property key="enable-unroll-loops" value="false"/>
         <property key="extra-include-directories"
-                  value=".;./include;../common;../libusb;../microchip/include"/>
+                  value=".;./include;../common;../libusb;../microchip/include;./src;./ble;../app_layer_v1"/>
         <property key="isolate-each-function" value="true"/>
         <property key="optimization-level" value="s"/>
         <property key="post-instruction-scheduling" value="default"/>
@@ -293,7 +331,7 @@
         <property key="enable-symbols" value="true"/>
         <property key="enable-unroll-loops" value="false"/>
         <property key="extra-include-directories"
-                  value=".;./include;../common;../libusb;../microchip/include"/>
+                  value=".;./include;../common;../libusb;../microchip/include;./src;./ble;../app_layer_v1"/>
         <property key="isolate-each-function" value="true"/>
         <property key="optimization-level" value="s"/>
         <property key="post-instruction-scheduling" value="default"/>

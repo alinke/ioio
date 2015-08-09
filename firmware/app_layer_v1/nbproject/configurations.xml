@@ -17,6 +17,7 @@
         <itemPath>../common/byte_queue.h</itemPath>
         <itemPath>../common/atomic.h</itemPath>
       </logicalFolder>
+      <itemPath>log.h</itemPath>
       <itemPath>adc.h</itemPath>
       <itemPath>digital.h</itemPath>
       <itemPath>features.h</itemPath>
@@ -58,6 +59,7 @@
         <itemPath>../microchip/common/uart2.c</itemPath>
         <itemPath>../common/byte_queue.c</itemPath>
       </logicalFolder>
+      <itemPath>log.c</itemPath>
       <itemPath>adc.c</itemPath>
       <itemPath>digital.c</itemPath>
       <itemPath>features.c</itemPath>

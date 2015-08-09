@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2012 by Matthias Ringwald
+ * Copyright (C) 2014 BlueKitchen GmbH
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -17,7 +17,7 @@
  *    personal benefit and not for any commercial purpose or for
  *    monetary gain.
  *
- * THIS SOFTWARE IS PROVIDED BY MATTHIAS RINGWALD AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY BLUEKITCHEN GMBH AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL MATTHIAS
@@ -30,7 +30,8 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * Please inquire about commercial licensing options at btstack@ringwald.ch
+ * Please inquire about commercial licensing options at 
+ * contact@bluekitchen-gmbh.com
  *
  */
 
@@ -42,6 +43,8 @@
 
 #include <btstack/linked_list.h>
 #include <stdlib.h>
+#include <stdio.h>
+
 /**
  * tests if list is empty
  */
@@ -98,6 +101,7 @@ void linked_list_add_tail(linked_list_t * list, linked_item_t *item){   // <-- a
  * @note: assumes that data_source_t.next is first element in data_source
  */
 int  linked_list_remove(linked_list_t * list, linked_item_t *item){    // <-- remove item from list
+    if (!item) return -1;
     linked_item_t *it;
     for (it = (linked_item_t *) list; it ; it = it->next){
         if (it->next == item){
@@ -108,6 +112,19 @@ int  linked_list_remove(linked_list_t * list, linked_item_t *item){    // <-- re
     return -1;
 }
 
+/**
+ * @returns number of items in list
+ */
+ int linked_list_count(linked_list_t * list){
+    linked_item_t *it;
+    int counter = 0;
+    for (it = (linked_item_t *) list; it ; it = it->next) {
+        counter++;
+    }
+    return counter; 
+}
+
+
 void linked_item_set_user(linked_item_t *item, void *user_data){
     item->next = (linked_item_t *) 0;
     item->user_data = user_data;
@@ -117,31 +134,46 @@ void * linked_item_get_user(linked_item_t *item) {
     return item->user_data;
 }
 
-#if 0
-#include <stdio.h>
-void test_linked_list(){
-    linked_list_t testList = 0;
-    linked_item_t itemA;
-    linked_item_t itemB;
-    linked_item_t itemC;
-    linked_item_set_user(&itemA, (void *) 0);
-    linked_item_set_user(&itemB, (void *) 0);
-    linked_list_add(&testList, &itemA);
-    linked_list_add(&testList, &itemB);
-    linked_list_add_tail(&testList, &itemC);
-    // linked_list_remove(&testList, &itemB);
-    linked_item_t *it;
-    for (it = (linked_item_t *) &testList; it ; it = it->next){
-        if (it->next == &itemA) printf("Item A\n");
-        if (it->next == &itemB) printf("Item B\n");
-        if (it->next == &itemC) printf("Item C\n");
-        /* if (it->next == &itemB){
-            it->next =  it->next;
-            printf(" remove\n");
-        } else {
-            printf(" keep\n");
-        
-         */
-    }
+//
+// Linked List Iterator implementation
+//
+
+void linked_list_iterator_init(linked_list_iterator_t * it, linked_list_t * head){
+    it->advance_on_next = 0;
+    it->prev = (linked_item_t*) head;
+    it->curr = * head;
 }
-#endif
+
+int linked_list_iterator_has_next(linked_list_iterator_t * it){
+    // log_info("linked_list_iterator_has_next: advance on next %u, it->prev %p, it->curr %p", it->advance_on_next, it->prev, it->curr);
+    if (!it->advance_on_next){
+        return it->curr != NULL;
+    }
+    if (it->prev->next != it->curr){
+        // current item has been removed
+        return it->prev->next != NULL;
+    }
+    // current items has not been removed
+    return it->curr->next != NULL;
+}
+
+linked_item_t * linked_list_iterator_next(linked_list_iterator_t * it){
+    if (it->advance_on_next){
+        if (it->prev->next == it->curr){
+            it->prev = it->curr;
+            it->curr = it->curr->next;
+        } else {
+            // curr was removed from the list, set it again but don't advance prev
+            it->curr = it->prev->next;
+        }
+    } else {
+        it->advance_on_next = 1;
+    }
+    return it->curr;
+}
+
+void linked_list_iterator_remove(linked_list_iterator_t * it){
+    it->curr = it->curr->next;
+    it->prev->next = it->curr;
+    it->advance_on_next = 0;
+}

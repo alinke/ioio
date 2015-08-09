@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2012 by Matthias Ringwald
+ * Copyright (C) 2014 BlueKitchen GmbH
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -17,7 +17,7 @@
  *    personal benefit and not for any commercial purpose or for
  *    monetary gain.
  *
- * THIS SOFTWARE IS PROVIDED BY MATTHIAS RINGWALD AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY BLUEKITCHEN GMBH AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL MATTHIAS
@@ -30,7 +30,8 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * Please inquire about commercial licensing options at btstack@ringwald.ch
+ * Please inquire about commercial licensing options at 
+ * contact@bluekitchen-gmbh.com
  *
  */
 
@@ -46,18 +47,18 @@
  *  Created by Matthias Ringwald on 5/26/09.
  */
 
-#include "config.h"
+#include "btstack-config.h"
 
 #include "hci_dump.h"
 #include "hci.h"
 #include "hci_transport.h"
 #include <btstack/hci_cmds.h>
+#include <btstack/run_loop.h>
+#include <stdio.h>
 
 #ifndef EMBEDDED
 #include <fcntl.h>        // open
-#include <arpa/inet.h>    // hton..
 #include <unistd.h>       // write 
-#include <stdio.h>
 #include <time.h>
 #include <sys/time.h>     // for timestamps
 #include <sys/stat.h>     // for mode flags
@@ -90,8 +91,8 @@ __attribute__ ((packed))
 #endif
 pktlog_hdr;
 
-#ifndef EMBEDDED
 static int dump_file = -1;
+#ifndef EMBEDDED
 static int dump_format;
 static hcidump_hdr header_bluez;
 static pktlog_hdr  header_packetlogger;
@@ -101,13 +102,22 @@ static int  nr_packets = 0;
 static char log_message_buffer[256];
 #endif
 
-void hci_dump_open(char *filename, hci_dump_format_t format){
-#ifndef EMBEDDED
+// levels: debug, info, error
+static int log_level_enabled[3] = { 1, 1, 1};
+
+void hci_dump_open(const char *filename, hci_dump_format_t format){
+#ifdef EMBEDDED
+    dump_file = 1;
+#else
     dump_format = format;
     if (dump_format == HCI_DUMP_STDOUT) {
         dump_file = fileno(stdout);
     } else {
+#ifdef _WIN32
+        dump_file = open(filename, O_WRONLY | O_CREAT | O_TRUNC);
+#else
         dump_file = open(filename, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+#endif
     }
 #endif
 }
@@ -118,11 +128,41 @@ void hci_dump_set_max_packets(int packets){
 }
 #endif
 
+static void printf_packet(uint8_t packet_type, uint8_t in, uint8_t * packet, uint16_t len){
+    switch (packet_type){
+        case HCI_COMMAND_DATA_PACKET:
+            printf("CMD => ");
+            break;
+        case HCI_EVENT_PACKET:
+            printf("EVT <= ");
+            break;
+        case HCI_ACL_DATA_PACKET:
+            if (in) {
+                printf("ACL <= ");
+            } else {
+                printf("ACL => ");
+            }
+            break;
+        case LOG_MESSAGE_PACKET:
+            printf("LOG -- %s\n", (char*) packet);
+            return;
+        default:
+            return;
+    }
+    printf_hexdump(packet, len);  
+}
+
 void hci_dump_packet(uint8_t packet_type, uint8_t in, uint8_t *packet, uint16_t len) {
-#ifndef EMBEDDED
 
     if (dump_file < 0) return; // not activated yet
 
+#ifdef EMBEDDED
+// #ifdef HAVE_TICK
+//     uint32_t time_ms = embedded_get_time_ms();
+//     printf("[%06u] ", time_ms);
+// #endif
+    printf_packet(packet_type, in, packet, len);
+#else
     // don't grow bigger than max_nr_packets
     if (dump_format != HCI_DUMP_STDOUT && max_nr_packets > 0){
         if (nr_packets >= max_nr_packets){
@@ -137,11 +177,12 @@ void hci_dump_packet(uint8_t packet_type, uint8_t in, uint8_t *packet, uint16_t 
     struct timeval curr_time;
     struct tm* ptm;
     gettimeofday(&curr_time, NULL);
-    
+    time_t curr_time_secs = curr_time.tv_sec;
+
     switch (dump_format){
         case HCI_DUMP_STDOUT: {
             /* Obtain the time of day, and convert it to a tm struct. */
-            ptm = localtime (&curr_time.tv_sec);
+            ptm = localtime (&curr_time_secs);
             /* Format the date and time, down to a single second. */
             strftime (time_string, sizeof (time_string), "[%Y-%m-%d %H:%M:%S", ptm);
             /* Compute milliseconds from microseconds. */
@@ -149,29 +190,7 @@ void hci_dump_packet(uint8_t packet_type, uint8_t in, uint8_t *packet, uint16_t 
             /* Print the formatted time, in seconds, followed by a decimal point
              and the milliseconds. */
             printf ("%s.%03u] ", time_string, milliseconds);
-            switch (packet_type){
-                case HCI_COMMAND_DATA_PACKET:
-                    printf("CMD => ");
-                    break;
-                case HCI_EVENT_PACKET:
-                    printf("EVT <= ");
-                    break;
-                case HCI_ACL_DATA_PACKET:
-                    if (in) {
-                        printf("ACL <= ");
-                    } else {
-                        printf("ACL => ");
-                    }
-                    break;
-                case LOG_MESSAGE_PACKET:
-                    // assume buffer is big enough
-                    packet[len] = 0;
-                    printf("LOG -- %s\n", (char*) packet);
-                    return;
-                default:
-                    return;
-            }
-            hexdump(packet, len);
+            printf_packet(packet_type, in, packet, len);
             break;
         }
             
@@ -187,9 +206,9 @@ void hci_dump_packet(uint8_t packet_type, uint8_t in, uint8_t *packet, uint16_t 
             break;
             
         case HCI_DUMP_PACKETLOGGER:
-            header_packetlogger.len = htonl( sizeof(pktlog_hdr) - 4 + len);
-            header_packetlogger.ts_sec =  htonl(curr_time.tv_sec);
-            header_packetlogger.ts_usec = htonl(curr_time.tv_usec);
+            net_store_32( (uint8_t *) &header_packetlogger, 0, sizeof(pktlog_hdr) - 4 + len);
+            net_store_32( (uint8_t *) &header_packetlogger, 4, curr_time.tv_sec);
+            net_store_32( (uint8_t *) &header_packetlogger, 8, curr_time.tv_usec);
             switch (packet_type){
                 case HCI_COMMAND_DATA_PACKET:
                     header_packetlogger.type = 0x00;
@@ -199,6 +218,13 @@ void hci_dump_packet(uint8_t packet_type, uint8_t in, uint8_t *packet, uint16_t 
                         header_packetlogger.type = 0x03;
                     } else {
                         header_packetlogger.type = 0x02;
+                    }
+                    break;
+                case HCI_SCO_DATA_PACKET:
+                    if (in) {
+                        header_packetlogger.type = 0x09;
+                    } else {
+                        header_packetlogger.type = 0x08;
                     }
                     break;
                 case HCI_EVENT_PACKET:
@@ -220,20 +246,49 @@ void hci_dump_packet(uint8_t packet_type, uint8_t in, uint8_t *packet, uint16_t 
 #endif
 }
 
-void hci_dump_log(const char * format, ...){
-#ifndef EMBEDDED
-    va_list argptr;
-    va_start(argptr, format);
-    int len = vsnprintf(log_message_buffer, sizeof(log_message_buffer), format, argptr);
-    hci_dump_packet(LOG_MESSAGE_PACKET, 0, (uint8_t*) log_message_buffer, len);
-    va_end(argptr);
-#endif    
+static int hci_dump_log_level_active(int log_level){
+    if (log_level < 0) return 0;
+    if (log_level > LOG_LEVEL_ERROR) return 0;
+    return log_level_enabled[log_level];
 }
 
-void hci_dump_close(){
+void hci_dump_log(int log_level, const char * format, ...){
+    if (!hci_dump_log_level_active(log_level)) return;
+    va_list argptr;
+    va_start(argptr, format);
+#ifdef EMBEDDED
+    printf("LOG -- ");
+    vprintf(format, argptr);
+    printf("\n");
+#else
+    int len = vsnprintf(log_message_buffer, sizeof(log_message_buffer), format, argptr);
+    hci_dump_packet(LOG_MESSAGE_PACKET, 0, (uint8_t*) log_message_buffer, len);
+#endif    
+    va_end(argptr);
+}
+
+#ifdef __AVR__
+void hci_dump_log_P(int log_level, PGM_P format, ...){
+    if (!hci_dump_log_level_active(log_level)) return;
+    va_list argptr;
+    va_start(argptr, format);
+    printf_P(PSTR("LOG -- "));
+    vfprintf_P(stdout, format, argptr);
+    printf_P(PSTR("\n"));
+    va_end(argptr);
+}
+#endif
+
+void hci_dump_close(void){
 #ifndef EMBEDDED
     close(dump_file);
     dump_file = -1;
 #endif
+}
+
+void hci_dump_enable_log_level(int log_level, int enable){
+    if (log_level < 0) return;
+    if (log_level > LOG_LEVEL_ERROR) return;
+    log_level_enabled[log_level] = enable;
 }
 

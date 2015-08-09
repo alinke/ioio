@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2012 by Matthias Ringwald
+ * Copyright (C) 2014 BlueKitchen GmbH
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -17,7 +17,7 @@
  *    personal benefit and not for any commercial purpose or for
  *    monetary gain.
  *
- * THIS SOFTWARE IS PROVIDED BY MATTHIAS RINGWALD AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY BLUEKITCHEN GMBH AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL MATTHIAS
@@ -30,7 +30,8 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * Please inquire about commercial licensing options at btstack@ringwald.ch
+ * Please inquire about commercial licensing options at 
+ * contact@bluekitchen-gmbh.com
  *
  */
 
@@ -40,11 +41,10 @@
  *  Created by Matthias Ringwald on 6/6/09.
  */
 
-#pragma once
+#ifndef __RUN_LOOP_PRIVATE_H
+#define __RUN_LOOP_PRIVATE_H
 
 #include <btstack/run_loop.h>
-
-#ifndef NO_RUN_LOOP
 
 #ifdef HAVE_TIME
 #include <sys/time.h>
@@ -52,12 +52,6 @@
 
 #if defined __cplusplus
 extern "C" {
-#endif
-
-#ifdef HAVE_TIME
-// compare timeval or timers - NULL is assumed to be before the Big Bang
-int run_loop_timeval_compare(struct timeval *a, struct timeval *b);
-int run_loop_timer_compare(timer_source_t *a, timer_source_t *b);
 #endif
 
 // 
@@ -68,15 +62,16 @@ typedef struct {
 	void (*init)(void);
 	void (*add_data_source)(data_source_t *dataSource);
 	int  (*remove_data_source)(data_source_t *dataSource);
+	void (*set_timer)(timer_source_t * timer, uint32_t timeout_in_ms);
 	void (*add_timer)(timer_source_t *timer);
 	int  (*remove_timer)(timer_source_t *timer); 
 	void (*execute)(void);
 	void (*dump_timer)(void);
+	uint32_t (*get_time_ms)(void);
 } run_loop_t;
 
 #if defined __cplusplus
 }
 #endif
 
-#endif  // NO_RUN_LOOP
-
+#endif // __RUN_LOOP_PRIVATE_H

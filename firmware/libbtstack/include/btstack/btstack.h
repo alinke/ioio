@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 by Matthias Ringwald
+ * Copyright (C) 2014 BlueKitchen GmbH
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -13,8 +13,11 @@
  * 3. Neither the name of the copyright holders nor the names of
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
+ * 4. Any redistribution, use, or modification is done solely for
+ *    personal benefit and not for any commercial purpose or for
+ *    monetary gain.
  *
- * THIS SOFTWARE IS PROVIDED BY MATTHIAS RINGWALD AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY BLUEKITCHEN GMBH AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL MATTHIAS
@@ -27,6 +30,9 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
+ * Please inquire about commercial licensing options at 
+ * contact@bluekitchen-gmbh.com
+ *
  */
 
 /*
@@ -38,11 +44,14 @@
  *  
  */
 
-#pragma once
+#ifndef __BTSTACK_H
+#define __BTSTACK_H
 
 #include <btstack/hci_cmds.h>
 #include <btstack/run_loop.h>
 #include <btstack/utils.h>
+
+#include "btstack-config.h"
 
 #include <stdint.h>
 
@@ -51,10 +60,14 @@ extern "C" {
 #endif
 	
 // Default TCP port for BTstack daemon
+#ifndef BTSTACK_PORT
 #define BTSTACK_PORT            13333
+#endif
 
 // UNIX domain socket for BTstack */
+#ifndef BTSTACK_UNIX
 #define BTSTACK_UNIX            "/tmp/BTstack"
+#endif
 
 // packet handler
 typedef void (*btstack_packet_handler_t) (uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t size);
@@ -84,3 +97,5 @@ void bt_send_rfcomm(uint16_t rfcom_cid, uint8_t *data, uint16_t len);
 #if defined __cplusplus
 }
 #endif
+
+#endif // __BTSTACK_H

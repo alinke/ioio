@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 by Matthias Ringwald
+ * Copyright (C) 2014 BlueKitchen GmbH
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -13,8 +13,11 @@
  * 3. Neither the name of the copyright holders nor the names of
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
+ * 4. Any redistribution, use, or modification is done solely for
+ *    personal benefit and not for any commercial purpose or for
+ *    monetary gain.
  *
- * THIS SOFTWARE IS PROVIDED BY MATTHIAS RINGWALD AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY BLUEKITCHEN GMBH AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL MATTHIAS
@@ -27,6 +30,9 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
+ * Please inquire about commercial licensing options at 
+ * contact@bluekitchen-gmbh.com
+ *
  */
 
 /*
@@ -35,13 +41,12 @@
  *  Created by Matthias Ringwald on 6/6/09.
  */
 
-#pragma once
+#ifndef __RUN_LOOP_H
+#define __RUN_LOOP_H
 
-#include "config.h"
+#include "btstack-config.h"
 
 #include <btstack/linked_list.h>
-
-#ifndef NO_RUN_LOOP
 
 #include <stdint.h>
 
@@ -70,70 +75,87 @@ typedef struct timer {
 #ifdef HAVE_TIME
     struct timeval timeout;                  // <-- next timeout
 #endif
-#ifdef HAVE_TICK
-    uint32_t timeout;                       // timeout in system ticks
+#if defined(HAVE_TICK) || defined(HAVE_TIME_MS)
+    uint32_t timeout;                       // timeout in system ticks (HAVE_TICK) or millis (HAVE_TIME_MS)
 #endif
     void  (*process)(struct timer *ts);      // <-- do processing
 } timer_source_t;
 
+/* API_START */
 
-// Set timer based on current time in milliseconds.
+/**
+ * @brief Set timer based on current time in milliseconds.
+ */
 void run_loop_set_timer(timer_source_t *a, uint32_t timeout_in_ms);
 
-// Set callback that will be executed when timer expires.
+/**
+ * @brief Set callback that will be executed when timer expires.
+ */
 void run_loop_set_timer_handler(timer_source_t *ts, void (*process)(timer_source_t *_ts));
 
-// Add/Remove timer source.
+/**
+ * @brief Add/Remove timer source.
+ */
 void run_loop_add_timer(timer_source_t *timer); 
 int  run_loop_remove_timer(timer_source_t *timer);
 
-// Init must be called before any other run_loop call. 
-// Use RUN_LOOP_EMBEDDED for embedded devices.
+/**
+ * @brief Get current time in ms
+ * @note 32-bit ms counter will overflow after approx. 52 days
+ */
+uint32_t run_loop_get_time_ms(void);
+
+/**
+ * @brief Init must be called before any other run_loop call. Use RUN_LOOP_EMBEDDED for embedded devices.
+ */
 void run_loop_init(RUN_LOOP_TYPE type);
 
-// Set data source callback.
+/**
+ * @brief Set data source callback.
+ */
 void run_loop_set_data_source_handler(data_source_t *ds, int (*process)(data_source_t *_ds));
 
-
-// Add/Remove data source.
+/**
+ * @brief Add/Remove data source.
+ */
 void run_loop_add_data_source(data_source_t *dataSource);
 int  run_loop_remove_data_source(data_source_t *dataSource);
 
-
-// Execute configured run loop. This function does not return.
+/**
+ * @brief Execute configured run loop. This function does not return.
+ */
 void run_loop_execute(void);
+
 
 // hack to fix HCI timer handling
 #ifdef HAVE_TICK
-// Sets how many miliseconds has one tick.
+/**
+ * @brief Sets how many milliseconds has one tick.
+ */
 uint32_t embedded_ticks_for_ms(uint32_t time_in_ms);
-// Queries the current time in ticks.
+/**
+ * @brief Queries the current time in ticks.
+ */
 uint32_t embedded_get_ticks(void);
+/**
+ * @brief Allows to update BTstack system ticks based on another already existing clock.
+ */
+void embedded_set_ticks(uint32_t ticks);
 #endif
 #ifdef EMBEDDED
-// Sets an internal flag that is checked in the critical section
-// just before entering sleep mode. Has to be called by the interupt
-// handler of a data source to signal the run loop that a new data 
-// is available.
-void     embedded_trigger(void);    
+/**
+ * @brief Sets an internal flag that is checked in the critical section just before entering sleep mode. Has to be called by the interrupt handler of a data source to signal the run loop that a new data is available.
+ */
+void embedded_trigger(void);    
+/**
+ * @brief Execute run_loop once. It can be used to integrate BTstack's timer and data source processing into a foreign run loop (it is not recommended).
+ */
+void embedded_execute_once(void);
 #endif
+/* API_END */
+
 #if defined __cplusplus
 }
 #endif
 
-#else  // NO_RUN_LOOP
-
-typedef struct timer {
-    linked_item_t item;
-    void  (*process)(struct timer *ts);      // <-- do processing
-} timer_source_t;
-
-#define run_loop_set_timer(...)
-#define run_loop_add_timer(...)
-#define run_loop_remove_timer(...) 0
-#define run_loop_init(...)
-#define run_loop_add_data_source(...)
-#define run_loop_remove_data_source(...) 0
-#define run_loop_execute()
-
-#endif  // NO_RUN_LOOP
+#endif // __RUN_LOOP_H

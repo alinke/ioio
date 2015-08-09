@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2012 by Matthias Ringwald
+ * Copyright (C) 2014 BlueKitchen GmbH
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -17,7 +17,7 @@
  *    personal benefit and not for any commercial purpose or for
  *    monetary gain.
  *
- * THIS SOFTWARE IS PROVIDED BY MATTHIAS RINGWALD AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY BLUEKITCHEN GMBH AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL MATTHIAS
@@ -30,7 +30,8 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * Please inquire about commercial licensing options at btstack@ringwald.ch
+ * Please inquire about commercial licensing options at 
+ * contact@bluekitchen-gmbh.com
  *
  */
 
@@ -40,27 +41,62 @@
  *  allow to funnel debug & error messages 
  */
 
-#pragma once
+#ifndef __DEBUG_H
+#define __DEBUG_H
 
-#include "config.h"
-#include "logging.h"
+#include "btstack-config.h"
+#include "hci_dump.h"
 
 #include <stdio.h>
 
-#ifdef ENABLE_LOG_DEBUG
-#define log_debug log_printf
+#ifdef __AVR__
+#include <avr/pgmspace.h>
+#endif
+
+#ifndef EMBEDDED
+// Avoid complaints of unused arguments when log levels are disabled.
+static inline void __log_unused(const char *format, ...) {
+}
 #else
-#define log_debug(...)
+#define __log_unused(...)
+#endif
+
+#ifdef __AVR__
+#define HCI_DUMP_LOG(log_level, format, ...) hci_dump_log_P(log_level, PSTR(format), ## __VA_ARGS__)
+#define PRINTF(format, ...)       printf_P(PSTR(format), ## __VA_ARGS__)
+#else
+#define HCI_DUMP_LOG(log_level, format, ...) hci_dump_log(log_level, format, ## __VA_ARGS__)
+#define PRINTF(format, ...)       printf(format, ## __VA_ARGS__)
+#endif
+
+#ifdef ENABLE_LOG_DEBUG
+#ifdef HAVE_HCI_DUMP
+#define log_debug(format, ...)  HCI_DUMP_LOG(LOG_LEVEL_DEBUG, format,  ## __VA_ARGS__)
+#else
+#define log_debug(format, ...)  PRINTF(format "\n",  ## __VA_ARGS__)
+#endif
+#else
+#define log_debug(...) __log_unused(__VA_ARGS__)
 #endif
 
 #ifdef ENABLE_LOG_INFO
-#define log_info log_printf
+#ifdef HAVE_HCI_DUMP
+#define log_info(format, ...)  HCI_DUMP_LOG(LOG_LEVEL_INFO, format,  ## __VA_ARGS__)
 #else
-#define log_info(...)
+#define log_info(format, ...)  PRINTF(format "\n",  ## __VA_ARGS__)
+#endif
+#else
+#define log_info(...) __log_unused(__VA_ARGS__)
 #endif
 
 #ifdef ENABLE_LOG_ERROR
-#define log_error  log_printf
+#ifdef HAVE_HCI_DUMP
+#define log_error(format, ...)  HCI_DUMP_LOG(LOG_LEVEL_ERROR, format,  ## __VA_ARGS__)
 #else
-#define log_error(...)
+#define log_error(format, ...)  PRINTF(format "\n",  ## __VA_ARGS__)
 #endif
+#else
+#define log_error(...) __log_unused(__VA_ARGS__)
+#endif
+
+#endif // __DEBUG_H

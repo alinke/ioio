@@ -1538,7 +1538,7 @@
         <property key="enable-symbols" value="true"/>
         <property key="enable-unroll-loops" value="false"/>
         <property key="extra-include-directories"
-                  value=".;../microchip/include;../microchip/include/USB;../common"/>
+                  value=".;../microchip/include;../microchip/include/USB;../common;../app_layer_v1"/>
         <property key="isolate-each-function" value="true"/>
         <property key="optimization-level" value="s"/>
         <property key="post-instruction-scheduling" value="default"/>

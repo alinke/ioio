@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2013 by Matthias Ringwald
+ * Copyright (C) 2014 BlueKitchen GmbH
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -17,7 +17,7 @@
  *    personal benefit and not for any commercial purpose or for
  *    monetary gain.
  *
- * THIS SOFTWARE IS PROVIDED BY MATTHIAS RINGWALD AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY BLUEKITCHEN GMBH AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL MATTHIAS
@@ -30,7 +30,8 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * Please inquire about commercial licensing options at btstack@ringwald.ch
+ * Please inquire about commercial licensing options at 
+ * contact@bluekitchen-gmbh.com
  *
  */
 
@@ -38,9 +39,10 @@
  *  sdp_client.h
  */
 
-#pragma once
+#ifndef __SDP_CLIENT_H
+#define __SDP_CLIENT_H
 
-#include "config.h"
+#include "btstack-config.h"
 
 #include <btstack/utils.h>
 
@@ -48,19 +50,21 @@
 extern "C" {
 #endif
 
-/* SDP Client */
+/* API_START */
  
-/* Queries the SDP service of the remote device given a service search pattern 
-and a list of attribute IDs. The remote data is handled by the SDP parser. The 
-SDP parser delivers attribute values and done event via a registered callback. */
-
+/** 
+ * @brief Queries the SDP service of the remote device given a service search pattern and a list of attribute IDs. The remote data is handled by the SDP parser. The SDP parser delivers attribute values and done event via a registered callback.
+ */
 void sdp_client_query(bd_addr_t remote, uint8_t * des_serviceSearchPattern, uint8_t * des_attributeIDList);
 
 #ifdef HAVE_SDP_EXTRA_QUERIES
 void sdp_client_service_attribute_search(bd_addr_t remote, uint32_t search_serviceRecordHandle, uint8_t * des_attributeIDList);
 void sdp_client_service_search(bd_addr_t remote, uint8_t * des_serviceSearchPattern);
 #endif
+/* API_END */
 
 #if defined __cplusplus
 }
 #endif
+
+#endif // __SDP_CLIENT_H

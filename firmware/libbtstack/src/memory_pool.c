@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2012 by Matthias Ringwald
+ * Copyright (C) 2014 BlueKitchen GmbH
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -17,7 +17,7 @@
  *    personal benefit and not for any commercial purpose or for
  *    monetary gain.
  *
- * THIS SOFTWARE IS PROVIDED BY MATTHIAS RINGWALD AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY BLUEKITCHEN GMBH AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL MATTHIAS
@@ -30,7 +30,8 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * Please inquire about commercial licensing options at btstack@ringwald.ch
+ * Please inquire about commercial licensing options at 
+ * contact@bluekitchen-gmbh.com
  *
  */
 
@@ -44,7 +45,9 @@
  */
 
 #include <btstack/memory_pool.h>
+
 #include <stddef.h>
+#include "debug.h"
 
 typedef struct node {
     struct node * next;
@@ -78,6 +81,16 @@ void * memory_pool_get(memory_pool_t *pool){
 void memory_pool_free(memory_pool_t *pool, void * block){
     node_t *free_blocks = (node_t*) pool;
     node_t *node        = (node_t*) block;
+
+    // raise error and abort if node already in list
+    node_t * it;
+    for (it = free_blocks->next; it ; it = it->next){
+        if (it == node) {
+            log_error("memory_pool_free: block %p freed twice for pool %p", block, pool);
+            return;
+        }
+    }
+
     // add block as node to list
     node->next          = free_blocks->next;
     free_blocks->next   = node;

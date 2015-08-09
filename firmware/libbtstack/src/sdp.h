@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2012 by Matthias Ringwald
+ * Copyright (C) 2014 BlueKitchen GmbH
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -17,7 +17,7 @@
  *    personal benefit and not for any commercial purpose or for
  *    monetary gain.
  *
- * THIS SOFTWARE IS PROVIDED BY MATTHIAS RINGWALD AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY BLUEKITCHEN GMBH AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL MATTHIAS
@@ -30,15 +30,17 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * Please inquire about commercial licensing options at btstack@ringwald.ch
+ * Please inquire about commercial licensing options at 
+ * contact@bluekitchen-gmbh.com
  *
  */
-#pragma once
+#ifndef __SDP_H
+#define __SDP_H
 
 #include <stdint.h>
 #include <btstack/linked_list.h>
 
-#include "config.h"
+#include "btstack-config.h"
 
 #if defined __cplusplus
 extern "C" {
@@ -69,43 +71,45 @@ typedef struct {
     uint8_t         service_record[1];  // waste 1 byte to allow compilation with older compilers
 } service_record_item_t;
 
-
-void sdp_register_packet_handler(void (*handler)(void * connection, uint8_t packet_type,
-                                                 uint16_t channel, uint8_t *packet, uint16_t size));
-
-
-//
 int sdp_handle_service_search_request(uint8_t * packet, uint16_t remote_mtu);
 int sdp_handle_service_attribute_request(uint8_t * packet, uint16_t remote_mtu);
 int sdp_handle_service_search_attribute_request(uint8_t * packet, uint16_t remote_mtu);
 
-#ifndef EMBEDDED
-// Register service record internally - this version creates a copy of the record
-// precondition: AttributeIDs are in ascending order => ServiceRecordHandle is first attribute if present
-// @returns ServiceRecordHandle or 0 if registration failed
-uint32_t sdp_register_service_internal(void *connection, uint8_t * service_record);
-#endif
 
-//
-void sdp_unregister_services_for_connection(void *connection);
+/* API_START */
 
-/** Embedded API **/
-
-// Set up SDP.
+/** 
+ * @brief Set up SDP.
+ */
 void sdp_init(void);
 
+void sdp_register_packet_handler(void (*handler)(void * connection, uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t size));
+
 #ifdef EMBEDDED
-// Register service record internally - this version doesn't copy the record therefore it must be forever accessible.
-// Preconditions:
-//     - AttributeIDs are in ascending order;
-//     - ServiceRecordHandle is first attribute and valid.
-// @returns ServiceRecordHandle or 0 if registration failed.
+/** 
+ * @brief Register service record internally - this version doesn't copy the record therefore it must be forever accessible. Preconditions:
+    - AttributeIDs are in ascending order;
+    - ServiceRecordHandle is first attribute and valid.
+ * @return ServiceRecordHandle or 0 if registration failed.
+ */
 uint32_t sdp_register_service_internal(void *connection, service_record_item_t * record_item);
 #endif
 
-// Unregister service record internally.
+#ifndef EMBEDDED
+/** 
+ * @brief Register service record internally - this version creates a copy of the record precondition: AttributeIDs are in ascending order => ServiceRecordHandle is first attribute if present. 
+ * @return ServiceRecordHandle or 0 if registration failed
+ */
+uint32_t sdp_register_service_internal(void *connection, uint8_t * service_record);
+#endif
+
+/** 
+ * @brief Unregister service record internally.
+ */
 void sdp_unregister_service_internal(void *connection, uint32_t service_record_handle);
+/* API_END */
 
 #if defined __cplusplus
 }
 #endif
+#endif // __SDP_H

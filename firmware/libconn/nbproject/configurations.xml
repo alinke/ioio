@@ -11,10 +11,6 @@
       <itemPath>adb_connection.h</itemPath>
       <itemPath>cdc_connection.h</itemPath>
     </logicalFolder>
-    <logicalFolder name="f1" displayName="New Folder 1" projectFiles="true">
-    </logicalFolder>
-    <logicalFolder name="f2" displayName="New Folder 2" projectFiles="true">
-    </logicalFolder>
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
@@ -75,7 +71,7 @@
         <property key="enable-symbols" value="true"/>
         <property key="enable-unroll-loops" value="false"/>
         <property key="extra-include-directories"
-                  value=".;../common;../microchip/include;../libusb;../libbtstack;../libbtstack/include;../libbtstack/src;../libadb"/>
+                  value=".;../common;../microchip/include;../libusb;../libbtstack;../libbtstack/include;../libbtstack/src;../libbtstack/ble;../libadb;../app_layer_v1"/>
         <property key="isolate-each-function" value="true"/>
         <property key="optimization-level" value="s"/>
         <property key="post-instruction-scheduling" value="default"/>
@@ -178,7 +174,7 @@
         <property key="enable-symbols" value="true"/>
         <property key="enable-unroll-loops" value="false"/>
         <property key="extra-include-directories"
-                  value=".;../common;../microchip/include;../libusb;../libbtstack;../libbtstack/include;../libbtstack/src;../libadb"/>
+                  value=".;../common;../microchip/include;../libusb;../libbtstack;../libbtstack/include;../libbtstack/src;../libbtstack/ble;../libadb;../app_layer_v1"/>
         <property key="isolate-each-function" value="true"/>
         <property key="optimization-level" value="s"/>
         <property key="post-instruction-scheduling" value="default"/>
@@ -281,7 +277,7 @@
         <property key="enable-symbols" value="true"/>
         <property key="enable-unroll-loops" value="false"/>
         <property key="extra-include-directories"
-                  value=".;../common;../microchip/include;../libusb;../libbtstack;../libbtstack/include;../libbtstack/src;../libadb"/>
+                  value=".;../common;../microchip/include;../libusb;../libbtstack;../libbtstack/include;../libbtstack/src;../libbtstack/ble;../libadb;../app_layer_v1"/>
         <property key="isolate-each-function" value="true"/>
         <property key="optimization-level" value="s"/>
         <property key="post-instruction-scheduling" value="default"/>
@@ -384,7 +380,7 @@
         <property key="enable-symbols" value="true"/>
         <property key="enable-unroll-loops" value="false"/>
         <property key="extra-include-directories"
-                  value=".;../common;../microchip/include;../libusb;../libbtstack;../libbtstack/include;../libbtstack/src;../libadb"/>
+                  value=".;../common;../microchip/include;../libusb;../libbtstack;../libbtstack/include;../libbtstack/src;../libbtstack/ble;../libadb;../app_layer_v1"/>
         <property key="isolate-each-function" value="true"/>
         <property key="optimization-level" value="s"/>
         <property key="post-instruction-scheduling" value="default"/>

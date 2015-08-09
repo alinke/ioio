@@ -42,9 +42,52 @@
 #include "l2cap.h"
 #include "rfcomm.h"
 #include "sdp.h"
+
 #include "btstack_memory.h"
 #include "hci_transport.h"
 #include "btstack/sdp_util.h"
+
+
+//
+//#include "spp_and_le_counter.h"
+#include "le_conn.h"
+
+
+#include "att.h"
+#include "att_server.h"
+#include "le_device_db.h"
+#include "gap_le.h"
+#include "sm.h"
+//
+
+/*
+ * @section Advertisements 
+ *
+ * @text The Flags attribute in the Advertisement Data indicates if a device is in dual-mode or not.
+ * Flag 0x02 indicates LE General Discoverable, Dual-Mode device. See Listing advertisements.
+ */
+/* LISTING_START(advertisements): Advertisement data: Flag 0x02 indicates a dual mode device */
+const uint8_t adv_data[] = {
+    // Flags: General Discoverable
+    0x02, 0x01, 0x02, 
+    // Name
+    0x0b, 0x09, 'L', 'E', ' ', 'C', 'o', 'u', 'n', 't', 'e', 'r', 
+};
+/* LISTING_END */
+uint8_t adv_data_len = sizeof(adv_data);
+
+
+
+
+#include "log.h"
+#include "bt_log.h"
+
+// logging state
+//static int log_event_packets = 1;
+//static int log_data_packets = 1;
+//static int log_send_packets = 1;
+
+
 
 typedef enum {
   STATE_DETACHED,
@@ -66,6 +109,8 @@ static void *bt_buf;
 static int bt_buf_size;
 
 static void PacketHandler(void * connection, uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t size) {
+  LogConnPacket("PacketHandler", packet, (int)size);
+
   bd_addr_t event_addr;
   uint8_t rfcomm_channel_nr;
   uint16_t mtu;
@@ -149,14 +194,113 @@ static void PacketHandler(void * connection, uint8_t packet_type, uint16_t chann
   }
 }
 
+static void L2CAP_PacketHandler(void * connection, uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t size) {
+  LogConn("L2CAP_PacketHandler");
+  PacketHandler( connection, packet_type, channel, packet, size );
+}
+
+static void RFCOMM_PacketHandler(void * connection, uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t size) {
+  LogConn("RFCOMM_PacketHandler");
+  PacketHandler( connection, packet_type, channel, packet, size );
+}
+
+
+
 static void BTInit(void *buf, int size) {
+  LogConn("BTInit( %p, %d )", buf, size);
+
   state = STATE_DETACHED;
   bt_buf = buf;
   bt_buf_size = size;
 }
 
+
+// hci_transport_mchpusb.c
+hci_transport_t * hci_transport_mchpusb_instance(void *buf, int size);
+void hci_transport_mchpusb_tasks();
+
+
+
+
+
+#define HEARTBEAT_PERIOD_MS 1000
+//static int le_notification_enabled = 0;
+
+static timer_source_t heartbeat;
+static int  counter = 0;
+//static char counter_string[30];
+//static int  counter_string_len;
+
+static void  heartbeat_handler(struct timer *ts) {
+  LogConn("heartbeat %d", counter);
+  counter++;
+  /*
+  counter_string_len = sprintf(counter_string, "BTstack counter %04u\n", counter);
+
+
+//    if (rfcomm_channel_id){
+//        if (rfcomm_can_send_packet_now(rfcomm_channel_id)){
+//            int err = rfcomm_send_internal(rfcomm_channel_id, (uint8_t*) counter_string, counter_string_len);
+//            if (err) {
+//                log_error("rfcomm_send_internal -> error 0X%02x", err);
+//            }
+//        }
+//    }
+
+
+    if (le_notification_enabled) {
+        att_server_notify(ATT_CHARACTERISTIC_0000FF11_0000_1000_8000_00805F9B34FB_01_VALUE_HANDLE, (uint8_t*) counter_string, counter_string_len);
+    }
+  */
+  run_loop_set_timer(ts, HEARTBEAT_PERIOD_MS);
+  run_loop_add_timer(ts);
+}
+
+
+// ATT Client Read Callback for Dynamic Data
+// - if buffer == NULL, don't copy data, just return size of value
+// - if buffer != NULL, copy data and return number bytes copied
+// @param offset defines start of attribute value
+static uint16_t att_read_callback(uint16_t con_handle, uint16_t att_handle, uint16_t offset, uint8_t * buffer, uint16_t buffer_size){
+  LedSetFlag(0, 18, GREEN);
+  //  LogConn("att_read_callback");
+  /*
+    if (att_handle == ATT_CHARACTERISTIC_0000FF11_0000_1000_8000_00805F9B34FB_01_VALUE_HANDLE){
+        if (buffer){
+            memcpy(buffer, &counter_string[offset], counter_string_len - offset);
+        }
+        return counter_string_len - offset;
+    }
+  */
+    return 0;
+}
+
+// write requests
+static int att_write_callback(uint16_t con_handle, uint16_t att_handle, uint16_t transaction_mode, uint16_t offset, uint8_t *buffer, uint16_t buffer_size){
+  LedSetFlag(0, 19, GREEN);
+  //  LogConn("att_write_callback");
+  /*
+    // printf("WRITE Callback, handle %04x, mode %u, offset %u, data: ", handle, transaction_mode, offset);
+    // printf_hexdump(buffer, buffer_size);
+    if (att_handle != ATT_CHARACTERISTIC_0000FF11_0000_1000_8000_00805F9B34FB_01_CLIENT_CONFIGURATION_HANDLE) return 0;
+    le_notification_enabled = READ_BT_16(buffer, 0) == GATT_CLIENT_CHARACTERISTICS_CONFIGURATION_NOTIFICATION;
+  */
+    return 0;
+}
+
+
+
+void sm_init2(void (*handler)(void * connection, uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t size));
+
+
 static void BTAttached() {
+  LogConn("");
+  LogConn("BTAttach()");
+
   btstack_memory_init();
+
+  // KAL -
+  run_loop_init(RUN_LOOP_EMBEDDED);
 
   // init HCI
   hci_transport_t * transport = hci_transport_mchpusb_instance(bt_buf, bt_buf_size);
@@ -169,25 +313,80 @@ static void BTAttached() {
 
   // init L2CAP
   l2cap_init();
-  l2cap_register_packet_handler(PacketHandler);
+  //  l2cap_register_packet_handler(PacketHandler);
+  l2cap_register_packet_handler(L2CAP_PacketHandler);
 
   // init RFCOMM
   rfcomm_init();
-  rfcomm_register_packet_handler(PacketHandler);
+  //  rfcomm_register_packet_handler(PacketHandler);
+  rfcomm_register_packet_handler(RFCOMM_PacketHandler);
   rfcomm_register_service_internal(NULL, rfcomm_channel_nr, 100); // reserved channel, mtu=100
 
   // init SDP, create record for SPP and register with SDP
   sdp_init();
+
   memset(spp_service_buffer, 0, sizeof (spp_service_buffer));
   service_record_item_t * service_record_item = (service_record_item_t *) spp_service_buffer;
   sdp_create_spp_service((uint8_t*) & service_record_item->service_record, 1, "IOIO-App");
   log_printf("SDP service buffer size: %u\n\r", (uint16_t) (sizeof (service_record_item_t) + de_get_len((uint8_t*) & service_record_item->service_record)));
   sdp_register_service_internal(NULL, service_record_item);
 
+
+  LogConn("  setup heartbeat");
+  // set one-shot timer
+  heartbeat.process = &heartbeat_handler;
+  run_loop_set_timer(&heartbeat, HEARTBEAT_PERIOD_MS);
+  run_loop_add_timer(&heartbeat);
+
+
+  // BLE - setup
+  //    hci_ssp_set_io_capability(SSP_IO_CAPABILITY_DISPLAY_YES_NO);
+
+  LogConn("  CALL le_device_db_init()");
+
+  // setup le device db
+  le_device_db_init();
+
+  // setup SM: Display only
+  sm_init2(L2CAP_PacketHandler);
+
+  LogConn("  CALL att init 0x%04x", profile_data);
+
+  // setup ATT server
+  att_server_init(profile_data, att_read_callback, att_write_callback);    
+
+  LogConn("  POST att init");
+  LogConn("");
+
+
+  LogConn("  setup adv");
+  // setup advertisements
+  uint16_t adv_int_min = 0x0030;
+  uint16_t adv_int_max = 0x0030;
+  uint8_t adv_type = 0;
+  bd_addr_t null_addr;
+  memset(null_addr, 0, 6);
+  
+  LogConn("  setup adv params");
+  
+  gap_advertisements_set_params(adv_int_min, adv_int_max, adv_type, 0, null_addr, 0x07, 0x00);
+  gap_advertisements_set_data(adv_data_len, (uint8_t*) adv_data);
+  
+  LogConn("  enable adv");
+  gap_advertisements_enable(1);
+
+  // BLE - setup  DONE
+
+
+  LogConn("  TURN ON");
   hci_power_control(HCI_POWER_ON);
 
   client_callback = DummyCallback;
+
+  LogConn("BTAttach() - DONE");
+  LogConn("");
 }
+
 
 static void BTTasks() {
   switch (state) {
@@ -238,7 +437,8 @@ static void BTSend(int h, const void *data, int size) {
 
 static int BTCanSend(int h) {
   assert(h == 0);
-  return rfcomm_can_send(rfcomm_channel_id);
+  // return rfcomm_can_send(rfcomm_channel_id);
+  return rfcomm_can_send_packet_now(rfcomm_channel_id);
 }
 
 static void BTClose(int h) {

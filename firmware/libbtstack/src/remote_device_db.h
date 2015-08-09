@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2012 by Matthias Ringwald
+ * Copyright (C) 2014 BlueKitchen GmbH
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -17,7 +17,7 @@
  *    personal benefit and not for any commercial purpose or for
  *    monetary gain.
  *
- * THIS SOFTWARE IS PROVIDED BY MATTHIAS RINGWALD AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY BLUEKITCHEN GMBH AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL MATTHIAS
@@ -30,7 +30,8 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * Please inquire about commercial licensing options at btstack@ringwald.ch
+ * Please inquire about commercial licensing options at 
+ * contact@bluekitchen-gmbh.com
  *
  */
 
@@ -38,13 +39,17 @@
  * interface to provide link key and remote name storage
  */
 
-#pragma once
+#ifndef __REMOTE_DEVICE_DB_H
+#define __REMOTE_DEVICE_DB_H
 
 #include <btstack/utils.h>
+#include "gap.h"
 
 #if defined __cplusplus
 extern "C" {
 #endif
+
+/* API_START */
 
 typedef struct {
 
@@ -53,24 +58,38 @@ typedef struct {
     void (*close)(void);
     
     // link key
-    int  (*get_link_key)(bd_addr_t *bd_addr, link_key_t *link_key);
-    void (*put_link_key)(bd_addr_t *bd_addr, link_key_t *key);
-    void (*delete_link_key)(bd_addr_t *bd_addr);
+    int  (*get_link_key)(bd_addr_t bd_addr, link_key_t link_key, link_key_type_t * type);
+    void (*put_link_key)(bd_addr_t bd_addr, link_key_t link_key, link_key_type_t   type);
+    void (*delete_link_key)(bd_addr_t bd_addr);
     
     // remote name
-    int  (*get_name)(bd_addr_t *bd_addr, device_name_t *device_name);
-    void (*put_name)(bd_addr_t *bd_addr, device_name_t *device_name);
-    void (*delete_name)(bd_addr_t *bd_addr);
+    int  (*get_name)(bd_addr_t bd_addr, device_name_t *device_name);
+    void (*put_name)(bd_addr_t bd_addr, device_name_t *device_name);
+    void (*delete_name)(bd_addr_t bd_addr);
 
     // persistent rfcomm channel
     uint8_t (*persistent_rfcomm_channel)(char *servicename);
 
 } remote_device_db_t;
 
-extern remote_device_db_t remote_device_db_iphone;
+/*
+ * @brief
+ */
+extern       remote_device_db_t remote_device_db_iphone;
+
+/*
+ * @brief
+ */
 extern const remote_device_db_t remote_device_db_memory;
 
-// MARK: non-persisten implementation
+/*
+ * @brief
+ */
+extern const remote_device_db_t remote_device_db_fs;
+
+/* API_END */
+
+// MARK: non-persistent implementation
 #include <btstack/linked_list.h>
 #define MAX_NAME_LEN 32
 typedef struct {
@@ -83,6 +102,7 @@ typedef struct {
 typedef struct {
     db_mem_device_t device;
     link_key_t link_key;
+    link_key_type_t link_key_type;
 } db_mem_device_link_key_t;
 
 typedef struct {
@@ -101,3 +121,5 @@ typedef struct {
 #if defined __cplusplus
 }
 #endif
+
+#endif // __REMOTE_DEVICE_DB_H
