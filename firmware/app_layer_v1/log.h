@@ -4,7 +4,22 @@
 
 #include <stdarg.h>
 
-#define NO_ANIMATION
+//#define NO_ANIMATION
+
+
+// from  <stdint.h>
+#ifndef uint8_t
+typedef unsigned char uint8_t;
+#define uint8_t uint8_t
+#define UINT8_MAX (255)
+#endif
+//
+void LogUARTInit(void);
+
+void LogBytes( uint8_t *data, int size );
+void LogHALTick(void);
+void LogHALTick2(void);
+
 
 
 //--------------------------------------------------------------------------------
@@ -26,6 +41,7 @@ void LogMain( const char * format, ...);
 void LogFeature( const char * format, ...);
 void LogPixel( const char * format, ...);
 void LogRgb( const char * format, ...);
+void LogProtocol( const char * format, ...);
 
 void LogConn( const char * format, ...);
 void LogUSB( const char * format, ...);
@@ -53,7 +69,7 @@ void LogBLE( const char * format, ...);
 // LED Debugging
 //
 
-#define LED_DEBUG
+//#define LED_DEBUG
 
 
 #ifdef LED_DEBUG

@@ -145,6 +145,8 @@ int main() {
 
   SoftReset();
 
+  // Init UART
+  LogUARTInit();
 
   LogInit();
 #ifdef LED_DEBUG
