@@ -6,4 +6,12 @@ tools/pixl0005.hex
 pixel.ioioapp
 pixeltest.txt
 
+## OSX Finder
+.DS_Store
+
+## emacs backup files
 *~
+
+## Xcode
+build/
+xcuserdata
