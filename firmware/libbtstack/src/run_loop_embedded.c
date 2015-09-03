@@ -179,9 +179,8 @@ static void embedded_dump_timer(void){
  * Execute run_loop once
  */
 void embedded_execute_once(void) {
-  //    if ( log_execute_once )
-  //      LogRunLoop("exec");
-
+  if ( log_execute_once )
+    LogRunLoop("exec");
 
     data_source_t *ds;
 
@@ -194,13 +193,17 @@ void embedded_execute_once(void) {
     
 #ifdef HAVE_TICK
     uint32_t now = system_ticks;
+    if ( log_execute_once )
+      LogRunLoop("  tick     now: 0x%08x", now);
 #endif
 #ifdef HAVE_TIME_MS
     uint32_t now = hal_time_ms();
+    if ( log_execute_once )
+      LogRunLoop("  time_ms  now: 0x%08x", now);
 #endif
 #ifdef TIMER_SUPPORT
-//    if ( log_execute_once )
-//      LogRunLoop("  process timers");
+    if ( log_execute_once )
+      LogRunLoop("  process timers");
 
     // process timers
     while (timers) {
@@ -213,8 +216,8 @@ void embedded_execute_once(void) {
         run_loop_remove_timer(ts);
         ts->process(ts);
     }
-    //    if ( log_execute_once )
-    //      LogRunLoop("  process timers - DONE");
+    if ( log_execute_once )
+      LogRunLoop("  process timers - DONE");
 #endif
     
     /*

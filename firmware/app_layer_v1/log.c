@@ -16,6 +16,8 @@
 // UART Logging
 //
 
+static int enable_uart_logging = 0;
+
 void LogUARTInit(void) {
   /*
   _uartMsg[0] = 0x01;
@@ -43,10 +45,13 @@ void LogUARTInit(void) {
 
 void LogInit(void) {
   int i;
-  for ( i = 0; i < 128; i++ )
-    UARTTransmit(1, "-", 1);
-  UARTTransmit(1, "\n", 1);
-  UARTTransmit(1, "\n", 1);
+  if ( enable_uart_logging ) {
+    for ( i = 0; i < 128; i++ )
+      UARTTransmit(1, "-", 1);
+
+    UARTTransmit(1, "\n", 1);
+    UARTTransmit(1, "\n", 1);
+  }
 }
 
 
@@ -75,209 +80,250 @@ void LogUARTWrite(int len0, int len1)
 
 
 void LogBytes( uint8_t *data, int size ) {
-  int len = LogWriteModule( "main" );
-  UARTTransmit(1, p_log_buf, len);
+  if ( enable_uart_logging ) {
+    int len = LogWriteModule( "main" );
+    UARTTransmit(1, p_log_buf, len);
 
-  int num = size;
-  for ( int i = 0; i < num; i++ ) {
-    int len1 = sprintf( p_log_buf, " %02x", data[i] );
-    UARTTransmit(1, p_log_buf, len1);
+    int num = size;
+    for ( int i = 0; i < num; i++ ) {
+      int len1 = sprintf( p_log_buf, " %02x", data[i] );
+      UARTTransmit(1, p_log_buf, len1);
+    }
+
+    int len2 = sprintf( p_log_buf, "\n" );
+    UARTTransmit(1, p_log_buf, len2);
   }
-
-  int len2 = sprintf( p_log_buf, "\n" );
-  UARTTransmit(1, p_log_buf, len2);
 }
-
 
 
 void LogLine( const char * format, ...)
 {
-  log_num++;
-  int len0 = sprintf( p_log_buf, "%04d ", log_num );
+  if ( enable_uart_logging ) {
+    log_num++;
+    int len0 = sprintf( p_log_buf, "%04d ", log_num );
 
-  va_list argptr;
-  va_start(argptr, format);
-  int len1 = vsnprintf( &p_log_buf[len0], ( sizeof(p_log_buf) - len0 ), format, argptr);
-  va_end(argptr);
-
-  LogUARTWrite( len0, len1 );
+    va_list argptr;
+    va_start(argptr, format);
+    int len1 = vsnprintf( &p_log_buf[len0], ( sizeof(p_log_buf) - len0 ), format, argptr);
+    va_end(argptr);
+    
+    LogUARTWrite( len0, len1 );
+  }
 }
 
 void LogMain( const char * format, ...)
 {
-  int len0 = LogWriteModule( "main" );
-  va_list argptr;
-  va_start(argptr, format);
-  int len1 = vsnprintf( &p_log_buf[len0], ( sizeof(p_log_buf) - len0 ), format, argptr);
-  va_end(argptr);
-  LogUARTWrite( len0, len1 );
+  if ( enable_uart_logging ) {
+    int len0 = LogWriteModule( "main" );
+    va_list argptr;
+    va_start(argptr, format);
+    int len1 = vsnprintf( &p_log_buf[len0], ( sizeof(p_log_buf) - len0 ), format, argptr);
+    va_end(argptr);
+    LogUARTWrite( len0, len1 );
+  }
 }
 
 void LogFeature( const char * format, ...)
 {
-  int len0 = LogWriteModule( "feature" );
-  va_list argptr;
-  va_start(argptr, format);
-  int len1 = vsnprintf( &p_log_buf[len0], ( sizeof(p_log_buf) - len0 ), format, argptr);
-  va_end(argptr);
-  LogUARTWrite( len0, len1 );
+  if ( enable_uart_logging ) {
+    int len0 = LogWriteModule( "feature" );
+    va_list argptr;
+    va_start(argptr, format);
+    int len1 = vsnprintf( &p_log_buf[len0], ( sizeof(p_log_buf) - len0 ), format, argptr);
+    va_end(argptr);
+    LogUARTWrite( len0, len1 );
+  }
 }
 void LogPixel( const char * format, ...)
 {
-  int len0 = LogWriteModule( "pixel" );
-  va_list argptr;
-  va_start(argptr, format);
-  int len1 = vsnprintf( &p_log_buf[len0], ( sizeof(p_log_buf) - len0 ), format, argptr);
-  va_end(argptr);
-  LogUARTWrite( len0, len1 );
+  if ( enable_uart_logging ) {
+    int len0 = LogWriteModule( "pixel" );
+    va_list argptr;
+    va_start(argptr, format);
+    int len1 = vsnprintf( &p_log_buf[len0], ( sizeof(p_log_buf) - len0 ), format, argptr);
+    va_end(argptr);
+    LogUARTWrite( len0, len1 );
+  }
 }
 void LogRgb( const char * format, ...)
 {
-  int len0 = LogWriteModule( "rgb" );
-  va_list argptr;
-  va_start(argptr, format);
-  int len1 = vsnprintf( &p_log_buf[len0], ( sizeof(p_log_buf) - len0 ), format, argptr);
-  va_end(argptr);
-  LogUARTWrite( len0, len1 );
+  if ( enable_uart_logging ) {
+    int len0 = LogWriteModule( "rgb" );
+    va_list argptr;
+    va_start(argptr, format);
+    int len1 = vsnprintf( &p_log_buf[len0], ( sizeof(p_log_buf) - len0 ), format, argptr);
+    va_end(argptr);
+    LogUARTWrite( len0, len1 );
+  }
 }
 
 void LogProtocol( const char * format, ...)
 {
-  int len0 = LogWriteModule( "protocol" );
-  va_list argptr;
-  va_start(argptr, format);
-  int len1 = vsnprintf( &p_log_buf[len0], ( sizeof(p_log_buf) - len0 ), format, argptr);
-  va_end(argptr);
-  LogUARTWrite( len0, len1 );
+  if ( enable_uart_logging ) {
+    int len0 = LogWriteModule( "protocol" );
+    va_list argptr;
+    va_start(argptr, format);
+    int len1 = vsnprintf( &p_log_buf[len0], ( sizeof(p_log_buf) - len0 ), format, argptr);
+    va_end(argptr);
+    LogUARTWrite( len0, len1 );
+  }
 }
 
 void LogConn( const char * format, ...)
 {
-  int len0 = LogWriteModule( "conn" );
-  va_list argptr;
-  va_start(argptr, format);
-  int len1 = vsnprintf( &p_log_buf[len0], ( sizeof(p_log_buf) - len0 ), format, argptr);
-  va_end(argptr);
-  LogUARTWrite( len0, len1 );
+  if ( enable_uart_logging ) {
+    int len0 = LogWriteModule( "conn" );
+    va_list argptr;
+    va_start(argptr, format);
+    int len1 = vsnprintf( &p_log_buf[len0], ( sizeof(p_log_buf) - len0 ), format, argptr);
+    va_end(argptr);
+    LogUARTWrite( len0, len1 );
+  }
 }
 void LogUSB( const char * format, ...)
 {
-  int len0 = LogWriteModule( "usb" );
-  va_list argptr;
-  va_start(argptr, format);
-  int len1 = vsnprintf( &p_log_buf[len0], ( sizeof(p_log_buf) - len0 ), format, argptr);
-  va_end(argptr);
-  LogUARTWrite( len0, len1 );
+  if ( enable_uart_logging ) {
+    int len0 = LogWriteModule( "usb" );
+    va_list argptr;
+    va_start(argptr, format);
+    int len1 = vsnprintf( &p_log_buf[len0], ( sizeof(p_log_buf) - len0 ), format, argptr);
+    va_end(argptr);
+    LogUARTWrite( len0, len1 );
+  }
 }
 
 
 void LogHCI( const char * format, ...)
 {
-  int len0 = LogWriteModule( "hci" );
-  va_list argptr;
-  va_start(argptr, format);
-  int len1 = vsnprintf( &p_log_buf[len0], ( sizeof(p_log_buf) - len0 ), format, argptr);
-  va_end(argptr);
-  LogUARTWrite( len0, len1 );
+  if ( enable_uart_logging ) {
+    int len0 = LogWriteModule( "hci" );
+    va_list argptr;
+    va_start(argptr, format);
+    int len1 = vsnprintf( &p_log_buf[len0], ( sizeof(p_log_buf) - len0 ), format, argptr);
+    va_end(argptr);
+    LogUARTWrite( len0, len1 );
+  }
 }
 void LogHCI_error( const char * format, ...)
 {
-  int len0 = LogWriteModule( "hci ERROR" );
-  va_list argptr;
-  va_start(argptr, format);
-  int len1 = vsnprintf( &p_log_buf[len0], ( sizeof(p_log_buf) - len0 ), format, argptr);
-  va_end(argptr);
-  LogUARTWrite( len0, len1 );
+  if ( enable_uart_logging ) {
+    int len0 = LogWriteModule( "hci ERROR" );
+    va_list argptr;
+    va_start(argptr, format);
+    int len1 = vsnprintf( &p_log_buf[len0], ( sizeof(p_log_buf) - len0 ), format, argptr);
+    va_end(argptr);
+    LogUARTWrite( len0, len1 );
+  }
 }
 
 void LogL2CAP( const char * format, ...)
 {
-  int len0 = LogWriteModule( "l2cap" );
-  va_list argptr;
-  va_start(argptr, format);
-  int len1 = vsnprintf( &p_log_buf[len0], ( sizeof(p_log_buf) - len0 ), format, argptr);
-  va_end(argptr);
-  LogUARTWrite( len0, len1 );
+  if ( enable_uart_logging ) {
+    int len0 = LogWriteModule( "l2cap" );
+    va_list argptr;
+    va_start(argptr, format);
+    int len1 = vsnprintf( &p_log_buf[len0], ( sizeof(p_log_buf) - len0 ), format, argptr);
+    va_end(argptr);
+    LogUARTWrite( len0, len1 );
+  }
 }
 void LogRFCOMM( const char * format, ...)
 {
-  int len0 = LogWriteModule( "rfcomm" );
-  va_list argptr;
-  va_start(argptr, format);
-  int len1 = vsnprintf( &p_log_buf[len0], ( sizeof(p_log_buf) - len0 ), format, argptr);
-  va_end(argptr);
-  LogUARTWrite( len0, len1 );
+  if ( enable_uart_logging ) {
+    int len0 = LogWriteModule( "rfcomm" );
+    va_list argptr;
+    va_start(argptr, format);
+    int len1 = vsnprintf( &p_log_buf[len0], ( sizeof(p_log_buf) - len0 ), format, argptr);
+    va_end(argptr);
+    LogUARTWrite( len0, len1 );
+  }
 }
 
 
 void LogRunLoop( const char * format, ...)
 {
-  int len0 = LogWriteModule( "run_loop" );
-  va_list argptr;
-  va_start(argptr, format);
-  int len1 = vsnprintf( &p_log_buf[len0], ( sizeof(p_log_buf) - len0 ), format, argptr);
-  va_end(argptr);
-  LogUARTWrite( len0, len1 );
+  if ( enable_uart_logging ) {
+    int len0 = LogWriteModule( "run_loop" );
+    va_list argptr;
+    va_start(argptr, format);
+    int len1 = vsnprintf( &p_log_buf[len0], ( sizeof(p_log_buf) - len0 ), format, argptr);
+    va_end(argptr);
+    LogUARTWrite( len0, len1 );
+  }
 }
 void LogTransport( const char * format, ...)
 {
-  int len0 = LogWriteModule( "hci_transport" );
-  va_list argptr;
-  va_start(argptr, format);
-  int len1 = vsnprintf( &p_log_buf[len0], ( sizeof(p_log_buf) - len0 ), format, argptr);
-  va_end(argptr);
-  LogUARTWrite( len0, len1 );
+  if ( enable_uart_logging ) {
+    int len0 = LogWriteModule( "hci_transport" );
+    va_list argptr;
+    va_start(argptr, format);
+    int len1 = vsnprintf( &p_log_buf[len0], ( sizeof(p_log_buf) - len0 ), format, argptr);
+    va_end(argptr);
+    LogUARTWrite( len0, len1 );
+  }
 }
 
 static char *tick_str = ".";
 void LogHALTick(void)
 {
-  UARTTransmit(1, tick_str, 1);
+  if ( enable_uart_logging ) {
+    UARTTransmit(1, tick_str, 1);
+  }
 }
 static char *tick_str2 = "#";
 void LogHALTick2(void)
 {
-  UARTTransmit(1, tick_str2, 1);
+  if ( enable_uart_logging ) {
+    UARTTransmit(1, tick_str2, 1);
+  }
 }
 
 void LogHAL( const char * format, ...)
 {
-  int len0 = LogWriteModule( "hal" );
-  va_list argptr;
-  va_start(argptr, format);
-  int len1 = vsnprintf( &p_log_buf[len0], ( sizeof(p_log_buf) - len0 ), format, argptr);
-  va_end(argptr);
-  LogUARTWrite( len0, len1 );
+  if ( enable_uart_logging ) {
+    int len0 = LogWriteModule( "hal" );
+    va_list argptr;
+    va_start(argptr, format);
+    int len1 = vsnprintf( &p_log_buf[len0], ( sizeof(p_log_buf) - len0 ), format, argptr);
+    va_end(argptr);
+    LogUARTWrite( len0, len1 );
+  }
 }
 
 void LogSDP( const char * format, ...)
 {
-  int len0 = LogWriteModule( "sdp" );
-  va_list argptr;
-  va_start(argptr, format);
-  int len1 = vsnprintf( &p_log_buf[len0], ( sizeof(p_log_buf) - len0 ), format, argptr);
-  va_end(argptr);
-  LogUARTWrite( len0, len1 );
+  if ( enable_uart_logging ) {
+    int len0 = LogWriteModule( "sdp" );
+    va_list argptr;
+    va_start(argptr, format);
+    int len1 = vsnprintf( &p_log_buf[len0], ( sizeof(p_log_buf) - len0 ), format, argptr);
+    va_end(argptr);
+    LogUARTWrite( len0, len1 );
+  }
 }
 
 void LogSM( const char * format, ...)
 {
-  int len0 = LogWriteModule( "sm" );
-  va_list argptr;
-  va_start(argptr, format);
-  int len1 = vsnprintf( &p_log_buf[len0], ( sizeof(p_log_buf) - len0 ), format, argptr);
-  va_end(argptr);
-  LogUARTWrite( len0, len1 );
+  if ( enable_uart_logging ) {
+    int len0 = LogWriteModule( "sm" );
+    va_list argptr;
+    va_start(argptr, format);
+    int len1 = vsnprintf( &p_log_buf[len0], ( sizeof(p_log_buf) - len0 ), format, argptr);
+    va_end(argptr);
+    LogUARTWrite( len0, len1 );
+  }
 }
 
 void LogBLE( const char * format, ...)
 {
-  int len0 = LogWriteModule( "ble" );
-  va_list argptr;
-  va_start(argptr, format);
-  int len1 = vsnprintf( &p_log_buf[len0], ( sizeof(p_log_buf) - len0 ), format, argptr);
-  va_end(argptr);
-  LogUARTWrite( len0, len1 );
+  if ( enable_uart_logging ) {
+    int len0 = LogWriteModule( "ble" );
+    va_list argptr;
+    va_start(argptr, format);
+    int len1 = vsnprintf( &p_log_buf[len0], ( sizeof(p_log_buf) - len0 ), format, argptr);
+    va_end(argptr);
+    LogUARTWrite( len0, len1 );
+  }
 }
 
 

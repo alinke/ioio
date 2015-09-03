@@ -20,6 +20,13 @@
 
 #include "log.h"
 
+#include "uart.h"
+
+
+
+//
+// Pixel
+//
 
 typedef enum {
   STATE_NONE,
@@ -43,17 +50,96 @@ static FSFILE *shifter_length_file;
 // purpose in RgbLedMatrix.
 // BYTE frame[1536 * 4] __attribute__((far));
 
+
+
+
+
+void hal_tick_call_handler(void);
+
+//static frame_timer_enable = 0;
+
+
+void PixelStartTimer(int period) {
+  // Stop the timer
+  T1CON = 0x0000;
+  // Period is (PR1 + 1) / 62500 (seconds)
+  PR1 = period;
+  TMR1 = 0x0000;
+  _T1IF = 0;
+
+  // Enable interrupt
+  _T1IE = 1;
+
+  //  frame_timer_enable = 1;
+
+  // Start the timer @ 62.5[kHz]
+  T1CON = 0x8030;
+}
+
+void PixelStopTimer() {
+  //  frame_timer_enable = 0;
+  //T1CON = 0x0000;
+}
+
+
+static int hal_tick_enabled = 0;
+
+void PixelEnableHalTick(void) {
+  PixelStopTimer();
+
+  // Start the timer @ 62.5[kHz]
+  T1CON = 0x8030;
+
+  hal_tick_enabled = 1;
+}
+
+
+static unsigned timer_tick = 0;
+
+void __attribute__((__interrupt__, auto_psv)) _T1Interrupt() {
+  if ( state == STATE_PLAY_FILE )
+    timer_tick = 1;
+  else
+    timer_tick = 0;
+
+  _T1IF = 0;  // clear interrupt
+
+  if ( hal_tick_enabled )
+    hal_tick_call_handler();
+}
+
+
+unsigned PixelHasTimerInterrupt(void) {
+  //return _T1IF;
+  return timer_tick;
+}
+void PixelClearTimerInterrupt(void) {
+  LogHALTick2();
+
+  //_T1IF = 0;
+  timer_tick = 0;
+}
+
+void PixelFrameTick(void) {
+  //  hal_tick_call_handler();
+}
+
+
+
+
 ////////////////////////////////////////////////////////////////////////////////
 // PlayFile stuff
 
 static void StartPlayFile() {
-  
+
+  LogPixel("==== StartPlayFile");
 #ifndef NO_ANIMATION
   if (!FSInit()) {
     // Failed to initialize FAT16 ? do something?
     return;
   }
 #endif // NO_ANIMATION
+  LogPixel("       FSInit Ok");
 
 
   // Read metadata file.
@@ -83,6 +169,7 @@ static void StartPlayFile() {
   }
   num_rows = rows == 0 ? 8 : 16;
 
+  LogPixel("       play  sl: %d  rows: %d", shifter_len_32, num_rows);
 
 #ifndef NO_ANIMATION
   //Open the metadata File
@@ -102,6 +189,8 @@ static void StartPlayFile() {
 
 
 #ifndef NO_ANIMATION
+  LogPixel("       open Animation file");
+
   // Open the animation file.
   animation_file = FSfopen(ANIMATION_FILENAME, "r");
   if (!animation_file) return;
@@ -120,6 +209,8 @@ static void StartPlayFile() {
   RgbLedMatrixEnable(shifter_len_32, rows);
 
   // Initialize the timer.
+  PixelStartTimer(frame_delay);
+  /*
   // Stop the timer
   T1CON = 0x0000;
   // Period is (PR1 + 1) / 62500 (seconds)
@@ -128,7 +219,7 @@ static void StartPlayFile() {
   _T1IF = 0;
   // Start the timer @ 62.5[kHz]
   T1CON = 0x8030;
-
+  */
   state = STATE_PLAY_FILE;
 }
 
@@ -140,28 +231,30 @@ static void StartPlayFile() {
 //    return sz;
 //}
 
-void hal_tick_call_handler(void);
 
 
 static void MaybeFrameFromFile() {
   // If our timer elapsed, push a frame to the display.
-  if (_T1IF) {
+  if ( PixelHasTimerInterrupt() ) {
     void * frame;
     unsigned int dswpag;
     RgbLedMatrixGetBackBuffer(&frame, &dswpag);
     // There's already a frame in the back-buffer, we're not keeping up...
     if (!frame) return;
 
-    _T1IF = 0;
+    PixelClearTimerInterrupt();
 
     DSWPAG = dswpag;
     
+    //LogPixel("       read frame  sl: %d  rows: %d  size: %d", shifter_len_32, num_rows, RgbLedMatrixFrameSize());
 
 #ifndef NO_ANIMATION
     FSfread(frame, RgbLedMatrixFrameSize(), 1, animation_file);
 #endif // NO_ANIMATION
 
-    hal_tick_call_handler();
+    //hal_tick_call_handler();
+    PixelFrameTick();
+
 
 #ifdef LED_DEBUG
     LedDebugFrame(frame, RgbLedMatrixFrameSize());
@@ -180,9 +273,11 @@ static void MaybeFrameFromFile() {
 
 static void StopPlayFile() {
   // Stop the timer.
-  T1CON = 0x0000;
+  PixelStopTimer();
 
 #ifndef NO_ANIMATION
+  LogPixel("==== StopPlayFile");
+
   // Close the file.
   FSfclose(animation_file);
 #endif // NO_ANIMATION
@@ -201,6 +296,7 @@ static void StopPlayFile() {
 // WriteFile stuff
 
 static void StartWriteFile(int fd, int sl32, int rows) {  //was int fd
+  LogPixel("==== StartWriteFile  fd: %d  sl32: %d  rows: %d", fd, sl32, rows);
 
 #ifndef NO_ANIMATION 
   // Initialize
@@ -209,6 +305,8 @@ static void StartWriteFile(int fd, int sl32, int rows) {  //was int fd
     return;
   }
 #endif // NO_ANIMATION 
+  LogPixel("       FSInit ok");
+
   
   // Write the shifterlength file.
   BYTE shiftbuff[sizeof( int ) ];
@@ -239,6 +337,9 @@ static void StartWriteFile(int fd, int sl32, int rows) {  //was int fd
 #ifndef NO_ANIMATION 
   // Open the animation file for writing.
   animation_file = FSfopen(ANIMATION_FILENAME, "w");
+
+  LogPixel("       open Animation file  %d", animation_file);
+
   if (!animation_file) {
     // Either file is not present or card is not present
     return;
@@ -254,13 +355,39 @@ static void StartWriteFile(int fd, int sl32, int rows) {  //was int fd
 static void WriteFrameToFile(const BYTE f[]) {
 #ifndef NO_ANIMATION 
   // Write the frame to the animation file.
+  int size = (3 * 32 * shifter_len_32 * num_rows);
+  LogPixel("==== WriteFrameToFile  %d  sl: %d   rows: %d", size, shifter_len_32, num_rows);
+
+  /*
+  // dump frame
+  int len = 0;
+  char buf[32];
+  for ( int subframe = 0; subframe < 3; subframe++ ) {
+    for ( int row = 0; row < num_rows; row++ ) {
+      len = sprintf(buf, "[%02d : %02d]: ", subframe, row);
+      UARTTransmit(1, buf, len);
+
+      for ( int col = 0; col < 32; col++ ) {
+        BYTE b = f[(subframe * 256) + (row * 32) + col];
+        len = sprintf(buf, " %02x", b);
+        UARTTransmit(1, buf, len);
+      }
+
+      UARTTransmit(1, "\n", 1);
+    }
+    UARTTransmit(1, "\n", 1);
+  }
+  */
+
   FSfwrite(f, 3 * 32 * shifter_len_32 * num_rows, 1, animation_file);
+
 #endif // NO_ANIMATION 
 }
 
 static void StopWriteFile() {
 #ifndef NO_ANIMATION 
   // Close the animation file.
+  LogPixel("==== StopWritefile");
   FSfclose(animation_file);
   state = STATE_NONE;
 #endif // NO_ANIMATION 
@@ -275,6 +402,7 @@ static void StartInteractive(int shifter_len_32, int num_rows) {
   // Intialize the matrix.
   RgbLedMatrixEnable(shifter_len_32, num_rows);
 
+  LogPixel("==== StartInteractive");
   state = STATE_INTERACTIVE;
 }
 
@@ -282,6 +410,7 @@ static void StopInteractive() {
   // Close the matrix.
   RgbLedMatrixEnable(0, 0);
 
+  LogPixel("==== StopInteractive");
   state = STATE_NONE;
 }
 

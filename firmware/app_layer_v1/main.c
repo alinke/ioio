@@ -143,7 +143,7 @@ int main() {
   log_init();
   log_printf("***** Hello from app-layer! *******");
 
-  SoftReset();
+  SoftReset();    // PixelInit gets called by this
 
   // Init UART
   LogUARTInit();

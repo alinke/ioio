@@ -87,6 +87,7 @@ static int log_hci_send_cmd = 1;
 static int log_hci_power_control = 0; // 0
 static int log_hci_run = 0; // 0
 static int log_hci_initializing_run = 0; // 0
+static int log_initialization_timeout_handler = 0;
 
 
 static void hci_update_scan_enable(void);
@@ -834,20 +835,35 @@ void le_handle_advertisement_report(uint8_t *packet, int size){
 #endif
 
 static void hci_initialization_timeout_handler(timer_source_t * ds){
+  if ( log_initialization_timeout_handler )
+    LogHCI("hci_initialization_timeout_handler");
+
     switch (hci_stack->substate){
-        case HCI_INIT_W4_SEND_RESET:
-            log_info("Resend HCI Reset");
+    case HCI_INIT_W4_SEND_RESET:
+      log_info("Resend HCI Reset");
+      
+      if ( log_initialization_timeout_handler )
+        LogHCI("  Resend HCI Reset");            
+      
             hci_stack->substate = HCI_INIT_SEND_RESET;
             hci_stack->num_cmd_packets = 1;
             hci_run();
             break;
         case HCI_INIT_W4_CUSTOM_INIT_CSR_WARM_BOOT:
             log_info("Resend HCI Reset - CSR Warm Boot");
+
+      if ( log_initialization_timeout_handler )
+        LogHCI("  Resend HCI Reset - CSR Warm Boot");
+
             hci_stack->substate = HCI_INIT_SEND_RESET_CSR_WARM_BOOT;
             hci_stack->num_cmd_packets = 1;
             hci_run();
         case HCI_INIT_W4_SEND_BAUD_CHANGE:
             log_info("Local baud rate change to %lu", ((hci_uart_config_t *)hci_stack->config)->baudrate_main);
+
+      if ( log_initialization_timeout_handler )
+        LogHCI("Local baud rate change to %lu", ((hci_uart_config_t *)hci_stack->config)->baudrate_main);
+
             hci_stack->hci_transport->set_baudrate(((hci_uart_config_t *)hci_stack->config)->baudrate_main);
             break;
         default:
@@ -885,7 +901,8 @@ static void hci_initializing_run(void) {
           }
 
             // prepare reset if command complete not received in 100ms
-            run_loop_set_timer(&hci_stack->timeout, 100);
+          //            run_loop_set_timer(&hci_stack->timeout, 100);
+            run_loop_set_timer(&hci_stack->timeout, 300);
             run_loop_set_timer_handler(&hci_stack->timeout, hci_initialization_timeout_handler);
             run_loop_add_timer(&hci_stack->timeout);
 
@@ -2812,9 +2829,33 @@ void hci_ssp_set_auto_accept(int auto_accept){
     hci_stack->ssp_auto_accept = auto_accept;
 }
 
+
 /**
  * pre: numcmds >= 0 - it's allowed to send a command to the controller
  */
+int hci_send_cmd(const hci_cmd_t *cmd, ...){
+
+    if (!hci_can_send_command_packet_now()){ 
+        log_error("hci_send_cmd called but cannot send packet now");
+        return 0;
+    }
+
+    // for HCI INITIALIZATION
+    // log_info("hci_send_cmd: opcode %04x", cmd->opcode);
+    hci_stack->last_cmd_opcode = cmd->opcode;
+
+    hci_reserve_packet_buffer();
+    uint8_t * packet = hci_stack->hci_packet_buffer;
+
+    va_list argptr;
+    va_start(argptr, cmd);
+    uint16_t size = hci_create_cmd_internal(packet, cmd, argptr);
+    va_end(argptr);
+
+    return hci_send_cmd_packet(packet, size);
+}
+
+/*
 int hci_send_cmd(const hci_cmd_t *cmd, ...) {
 //  if ( log_hci_send_cmd )
 //    LogHCI("hci_send_cmd");
@@ -2858,6 +2899,8 @@ int hci_send_cmd(const hci_cmd_t *cmd, ...) {
 
     return err;
 }
+*/
+
 
 // Create various non-HCI events. 
 // TODO: generalize, use table similar to hci_create_command

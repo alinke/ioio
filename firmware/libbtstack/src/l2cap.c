@@ -57,7 +57,10 @@
 
 #include "bt_log.h"
 
-static int log_l2cap_register_service_internal = 1;
+static int log_l2cap_init = 0;
+static int log_l2cap_register_packet_handler = 0;
+static int log_l2cap_register_service_internal = 0;
+static int log_l2cap_event_handler = 0;
 
 
 // nr of buffered acl packets in outgoing queue to get max performance 
@@ -116,7 +119,9 @@ void l2cap_init(void){
     // register callback with HCI
     //
 
-    LogL2CAP("CALL hci_register_packet_handler");
+    if ( log_l2cap_init )
+      LogL2CAP("CALL hci_register_packet_handler");
+
     hci_register_packet_handler(&l2cap_packet_handler);
     hci_connectable_control(0); // no services yet
 }
@@ -126,8 +131,10 @@ void l2cap_init(void){
 static void null_packet_handler(void * connection, uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t size){
 }
 void l2cap_register_packet_handler(void (*handler)(void * connection, uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t size)){
-  LogL2CAP("l2cap_register_packet_handler  0x%04x", handler);
-    packet_handler = handler;
+  if ( log_l2cap_register_packet_handler )
+    LogL2CAP("l2cap_register_packet_handler  0x%04x", handler);
+  
+  packet_handler = handler;
 }
 
 //  notify client/protocol handler
@@ -880,7 +887,8 @@ static void l2cap_handle_connection_success_for_addr(bd_addr_t address, hci_con_
 }
 
 void l2cap_event_handler(uint8_t *packet, uint16_t size){
-  LogL2CAP("l2cap_event_handler");
+  if ( log_l2cap_event_handler )
+    LogL2CAP("l2cap_event_handler");
     
     bd_addr_t address;
     hci_con_handle_t handle;
@@ -1026,7 +1034,8 @@ void l2cap_event_handler(uint8_t *packet, uint16_t size){
     }
     
     // pass on: main packet handler, att and sm packet handlers
-    LogL2CAP("  call packet_handler  0x%04x", packet_handler);
+    if ( log_l2cap_event_handler )
+      LogL2CAP("  call packet_handler  0x%04x", packet_handler);
 
     (*packet_handler)(NULL, HCI_EVENT_PACKET, 0, packet, size);
 
@@ -1041,7 +1050,9 @@ void l2cap_event_handler(uint8_t *packet, uint16_t size){
         (*connectionless_channel_packet_handler)(HCI_EVENT_PACKET, 0, packet, size);
     }
 
-    LogL2CAP("  call l2cap run");
+    if ( log_l2cap_event_handler )
+      LogL2CAP("  call l2cap run");
+
     l2cap_run();
 }
 
@@ -1529,7 +1540,8 @@ l2cap_service_t * l2cap_get_service(uint16_t psm){
 }
 
 void l2cap_register_service_internal(void *connection, btstack_packet_handler_t packet_handler, uint16_t psm, uint16_t mtu, gap_security_level_t security_level){
-  LogL2CAP("log_l2cap_register_service_internal()");
+  if ( log_l2cap_register_service_internal )
+    LogL2CAP("log_l2cap_register_service_internal()");
     
     log_info("L2CAP_REGISTER_SERVICE psm 0x%x mtu %u connection %p", psm, mtu, connection);
     

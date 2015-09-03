@@ -52,6 +52,10 @@
 #include "libconn/connection.h"
 #include "pixel.h"
 
+
+#include "log.h"
+
+
 #define CHECK(cond) do { if (!(cond)) { log_printf("Check failed: %s", #cond); return FALSE; }} while(0)
 
 const BYTE incoming_arg_size[MESSAGE_TYPE_LIMIT] = {
@@ -503,6 +507,8 @@ static BOOL MessageDone() {
       break;
 
     case RGB_LED_MATRIX_ENABLE:
+      LogProtocol("Led Enable");
+
       if (rx_msg.args.rgb_led_matrix_enable.len) {
           PixelInteractive(rx_msg.args.rgb_led_matrix_enable.len,
                            rx_msg.args.rgb_led_matrix_enable.rows);
@@ -512,10 +518,14 @@ static BOOL MessageDone() {
       break;
 
     case RGB_LED_MATRIX_FRAME:
+      //LogProtocol("Led Frame");
+
       PixelFrame(rx_msg.args.rgb_led_matrix_frame.data);
       break;
 
     case RGB_LED_MATRIX_WRITE_FILE:
+      LogProtocol("Led WriteFile");
+
       PixelWriteFile(rx_msg.args.rgb_led_matrix_write_file.frame_delay,
                      rx_msg.args.rgb_led_matrix_write_file.shifter_len,
                      rx_msg.args.rgb_led_matrix_write_file.rows);

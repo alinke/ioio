@@ -181,10 +181,19 @@ const char *ogfName(uint16_t opcode) {
 // Events
 //
 
+#define HCI_EVENT_PAGE_SCAN_REPETITION_MODE_CHANGE    0x20
+#define HCI_EVENT_LINK_SUPERVISION_TIMEOUT_CHANGED    0x38
+
 static char _hciEventBuf[6];
 
 char *hciEventName(uint8_t code) {
   switch ( code ) {
+
+  case HCI_EVENT_PAGE_SCAN_REPETITION_MODE_CHANGE:
+    return "HCI_EVENT_PAGE_SCAN_REPETITION_MODE_CHANGE";
+  case HCI_EVENT_LINK_SUPERVISION_TIMEOUT_CHANGED:
+    return "HCI_EVENT_LINK_SUPERVISION_TIMEOUT_CHANGED";
+
 
   case DAEMON_EVENT_HCI_PACKET_SENT:
     return "DAEMON_EVENT_HCI_PACKET_SENT";
@@ -192,7 +201,6 @@ char *hciEventName(uint8_t code) {
     //  case HCI_EVENT_COMMAND_COMPLETE:
     //    return "HCI_EVENT_COMMAND_COMPLETE";
 
-    /*
   case HCI_EVENT_INQUIRY_COMPLETE:
     return "HCI_EVENT_INQUIRY_COMPLETE";
   case HCI_EVENT_INQUIRY_RESULT:
@@ -201,12 +209,11 @@ char *hciEventName(uint8_t code) {
     return "HCI_EVENT_CONNECTION_COMPLETE";
   case HCI_EVENT_CONNECTION_REQUEST:
     return "HCI_EVENT_CONNECTION_REQUEST";
-    */
   case HCI_EVENT_DISCONNECTION_COMPLETE:
     return "HCI_EVENT_DISCONNECTION_COMPLETE";
-    /*
   case HCI_EVENT_AUTHENTICATION_COMPLETE_EVENT:
     return "HCI_EVENT_AUTHENTICATION_COMPLETE_EVENT";
+    /*
   case HCI_EVENT_REMOTE_NAME_REQUEST_COMPLETE:
     return "HCI_EVENT_REMOTE_NAME_REQUEST_COMPLETE";
   case HCI_EVENT_ENCRYPTION_CHANGE:
@@ -215,16 +222,20 @@ char *hciEventName(uint8_t code) {
     return "HCI_EVENT_CHANGE_CONNECTION_LINK_KEY_COMPLETE";
   case HCI_EVENT_MASTER_LINK_KEY_COMPLETE:
     return "HCI_EVENT_MASTER_LINK_KEY_COMPLETE";
+    */
   case HCI_EVENT_READ_REMOTE_SUPPORTED_FEATURES_COMPLETE:
     return "HCI_EVENT_READ_REMOTE_SUPPORTED_FEATURES_COMPLETE";
+    /*
   case HCI_EVENT_READ_REMOTE_VERSION_INFORMATION_COMPLETE:
     return "HCI_EVENT_READ_REMOTE_VERSION_INFORMATION_COMPLETE";
   case HCI_EVENT_QOS_SETUP_COMPLETE:
     return "HCI_EVENT_QOS_SETUP_COMPLETE";
   case HCI_EVENT_COMMAND_COMPLETE:
     return "HCI_EVENT_COMMAND_COMPLETE";
+    */
   case HCI_EVENT_COMMAND_STATUS:
     return "HCI_EVENT_COMMAND_STATUS";
+    /*
   case HCI_EVENT_HARDWARE_ERROR:
     return "HCI_EVENT_HARDWARE_ERROR";
   case HCI_EVENT_FLUSH_OCCURED:
@@ -239,6 +250,7 @@ char *hciEventName(uint8_t code) {
     return "HCI_EVENT_MODE_CHANGE_EVENT";
   case HCI_EVENT_RETURN_LINK_KEYS:
     return "HCI_EVENT_RETURN_LINK_KEYS";
+    */
   case HCI_EVENT_PIN_CODE_REQUEST:
     return "HCI_EVENT_PIN_CODE_REQUEST";
   case HCI_EVENT_LINK_KEY_REQUEST:
@@ -249,6 +261,7 @@ char *hciEventName(uint8_t code) {
     return "HCI_EVENT_DATA_BUFFER_OVERFLOW";
   case HCI_EVENT_MAX_SLOTS_CHANGED:
     return "HCI_EVENT_MAX_SLOTS_CHANGED";
+    /*
   case HCI_EVENT_READ_CLOCK_OFFSET_COMPLETE:
     return "HCI_EVENT_READ_CLOCK_OFFSET_COMPLETE";
   case HCI_EVENT_PACKET_TYPE_CHANGED:
@@ -937,7 +950,15 @@ void LogTransportPacket(const char *tag, const char *usbStatus, const char *blue
 
 
 void LogConnPacket(const char *tag, uint8_t *packet, int size) {
-  LogConn("LogConnPacket  size: %d", size);
+  LogConn("%s  size: %d  %02x %02x", tag, size, packet[0], packet[1] );
+  /*
+  if ( size > 1 ) {
+    uint8_t code = packet[0];
+    if ( code != 0x6c )
+      LogConn("%s  size: %d  %02x %02x", tag, size, packet[0], packet[1] );
+  } else
+    LogConn("%s  size: %d", tag, size);
+  */
 
   /*
   uint16_t opcode = ( ( packet[1] << 8 ) | packet[0] );
@@ -1067,7 +1088,7 @@ void LogEvent(const char *tag, uint8_t *packet, int size) {
 
   switch ( code ) {
   case DAEMON_EVENT_HCI_PACKET_SENT:
-    LogHCI("-> HCI Event         %s", hciEventName(code) );
+    //LogHCI("-> HCI Event         %s", hciEventName(code) );
     // LogHCI("-> HCI Event         0x%02x", code );
     return;
 
@@ -1082,9 +1103,13 @@ void LogEvent(const char *tag, uint8_t *packet, int size) {
     //        num_cmd_packets, size, packet[0], packet[1], packet[2] );
     return;
 
+    //  case HCI_EVENT_NUMBER_OF_COMPLETED_PACKETS:
+    //    LogHCI("-> HCI Event         %s   param_len(%02x)  size(%d)  %02x %02x %02x %02x %02x %02x %02x", hciEventName(code), param_len, packet[2], size,
+    //           packet[0], packet[1], packet[2], packet[3], packet[4], packet[5], packet[6] );
+    //    return;
 
   default:
-    LogHCI("-> HCI Event         code(0x%02x) %s   param_len(%02x)  size(%d)  %02x %02x", code, hciEventName(code), param_len, size, packet[0], packet[1] );
+    //LogHCI("-> HCI Event         code(0x%02x) %s   param_len(%02x)  size(%d)  %02x %02x", code, hciEventName(code), param_len, size, packet[0], packet[1] );
     // LogHCI("-> HCI Event         code(0x%02x)  0x%02x   param_len(%02x)  size(%d)  %02x %02x", code, code, param_len, size, packet[0], packet[1] );
     return;
   }

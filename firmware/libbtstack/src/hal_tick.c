@@ -17,6 +17,7 @@ static int tick_number = 0;
 
 static int tick_toggle = 0;
 
+void PixelEnableHalTick(void);
 
 // 1/4 of second interrupt rate  250 milliseconds
 
@@ -26,6 +27,7 @@ void hal_tick_init(void) {
   //    TA1CCTL0 = CCIE;                   // CCR0 interrupt enabled
   //    TA1CTL = TASSEL_1 | MC_2 | TACLR;  // use ACLK (32768), contmode, clear TAR
   //    TA1CCR0 = TIMER_COUNTDOWN;    // -> 1/4 s
+  PixelEnableHalTick();
 }
 
 void hal_tick_set_handler(void (*handler)(void)) {
@@ -54,9 +56,13 @@ void hal_tick_call_handler(void) {
   }
 
   tick_number++;
-  //  LogHAL("hal_tick  handler  %d   HCI stack state %s", tick_number, hciStackStateName() );
-  //LogHAL("-------- hal_tick: %d - %s", tick_number, hciStackStateName() );
-  LogHAL("-tick- % 4d %s", tick_number, hciStackStateName() );
+  // LogHAL("hal_tick  handler  %d   HCI stack state %s", tick_number, hciStackStateName() );
+  // LogHAL("-------- hal_tick: %d - %s", tick_number, hciStackStateName() );
+  // LogHAL("-tick- % 4d %s", tick_number, hciStackStateName() );
+
+  //LogHAL("hal_tick - %d", tick_number);
+  LogHALTick();
+
 
   (*tick_handler)();
 

@@ -60,6 +60,9 @@
 #include "sm.h"
 //
 
+#include "uart.h"
+
+
 /*
  * @section Advertisements 
  *
@@ -70,8 +73,10 @@
 const uint8_t adv_data[] = {
     // Flags: General Discoverable
     0x02, 0x01, 0x02, 
+    // Service
+    0x11, 0x06, 0xFB, 0x34, 0x9B, 0x5F, 0x80, 0x00, 0x00, 0x80, 0x00, 0x10, 0x00, 0x00, 0x10, 0xFF, 0x00, 0x00, 
     // Name
-    0x0b, 0x09, 'L', 'E', ' ', 'C', 'o', 'u', 'n', 't', 'e', 'r', 
+    0x04, 0x09, 'C', 'A', 'T',
 };
 /* LISTING_END */
 uint8_t adv_data_len = sizeof(adv_data);
@@ -108,8 +113,14 @@ static STATE state;
 static void *bt_buf;
 static int bt_buf_size;
 
-static void PacketHandler(void * connection, uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t size) {
-  LogConnPacket("PacketHandler", packet, (int)size);
+static void PacketHandler(int l2cap_event, void * connection, uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t size) {
+  /*
+  if ( l2cap_event ) {
+    LogConnPacket("L2CAP PacketHandler", packet, (int)size);
+  } else {
+    LogConnPacket("RFCOMM PacketHandler", packet, (int)size);
+  }
+  */
 
   bd_addr_t event_addr;
   uint8_t rfcomm_channel_nr;
@@ -195,13 +206,11 @@ static void PacketHandler(void * connection, uint8_t packet_type, uint16_t chann
 }
 
 static void L2CAP_PacketHandler(void * connection, uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t size) {
-  LogConn("L2CAP_PacketHandler");
-  PacketHandler( connection, packet_type, channel, packet, size );
+  PacketHandler( 1, connection, packet_type, channel, packet, size );
 }
 
 static void RFCOMM_PacketHandler(void * connection, uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t size) {
-  LogConn("RFCOMM_PacketHandler");
-  PacketHandler( connection, packet_type, channel, packet, size );
+  PacketHandler( 0, connection, packet_type, channel, packet, size );
 }
 
 
@@ -220,11 +229,14 @@ hci_transport_t * hci_transport_mchpusb_instance(void *buf, int size);
 void hci_transport_mchpusb_tasks();
 
 
-
+//--------------------------------------------------------------------------------
+//
+// Packet Handling
+//
+static int le_notification_enabled = 0;
 
 
 #define HEARTBEAT_PERIOD_MS 1000
-//static int le_notification_enabled = 0;
 
 static timer_source_t heartbeat;
 static int  counter = 0;
@@ -234,27 +246,18 @@ static int  counter = 0;
 static void  heartbeat_handler(struct timer *ts) {
   LogConn("heartbeat %d", counter);
   counter++;
-  /*
-  counter_string_len = sprintf(counter_string, "BTstack counter %04u\n", counter);
 
-
-//    if (rfcomm_channel_id){
-//        if (rfcomm_can_send_packet_now(rfcomm_channel_id)){
-//            int err = rfcomm_send_internal(rfcomm_channel_id, (uint8_t*) counter_string, counter_string_len);
-//            if (err) {
-//                log_error("rfcomm_send_internal -> error 0X%02x", err);
-//            }
-//        }
-//    }
-
-
-    if (le_notification_enabled) {
-        att_server_notify(ATT_CHARACTERISTIC_0000FF11_0000_1000_8000_00805F9B34FB_01_VALUE_HANDLE, (uint8_t*) counter_string, counter_string_len);
-    }
-  */
   run_loop_set_timer(ts, HEARTBEAT_PERIOD_MS);
   run_loop_add_timer(ts);
 }
+
+static void StartHeartbeat(void) {
+  // set one-shot timer
+  heartbeat.process = &heartbeat_handler;
+  run_loop_set_timer(&heartbeat, HEARTBEAT_PERIOD_MS);
+  run_loop_add_timer(&heartbeat);
+}
+
 
 
 // ATT Client Read Callback for Dynamic Data
@@ -262,7 +265,7 @@ static void  heartbeat_handler(struct timer *ts) {
 // - if buffer != NULL, copy data and return number bytes copied
 // @param offset defines start of attribute value
 static uint16_t att_read_callback(uint16_t con_handle, uint16_t att_handle, uint16_t offset, uint8_t * buffer, uint16_t buffer_size){
-  LedSetFlag(0, 18, GREEN);
+  //LedSetFlag(0, 18, GREEN);
   //  LogConn("att_read_callback");
   /*
     if (att_handle == ATT_CHARACTERISTIC_0000FF11_0000_1000_8000_00805F9B34FB_01_VALUE_HANDLE){
@@ -277,15 +280,37 @@ static uint16_t att_read_callback(uint16_t con_handle, uint16_t att_handle, uint
 
 // write requests
 static int att_write_callback(uint16_t con_handle, uint16_t att_handle, uint16_t transaction_mode, uint16_t offset, uint8_t *buffer, uint16_t buffer_size){
-  LedSetFlag(0, 19, GREEN);
-  //  LogConn("att_write_callback");
+  //LedSetFlag(0, 19, GREEN);
+
+
+  if ( att_handle == ATT_CHARACTERISTIC_0000FF11_0000_1000_8000_00805F9B34FB_01_VALUE_HANDLE ) {
+    //LogConn("att_write  mode: %u  offset: %u  size: %u", (unsigned int)transaction_mode, (unsigned int)offset, (unsigned int)buffer_size );
+    //    LogConn("att_write  mode: %u  offset: %u  size: %u", (unsigned int)transaction_mode, (unsigned int)offset, (unsigned int)buffer_size );
+
+    if ( buffer_size > 0 ) {
+      //if ( packet_received(offset, buffer, buffer_size) ) {
+        // Send the packet data to the App protocol handler
+      //      LogConn("  forward packet to protocol");
+
+      client_callback(&buffer[2], ( buffer_size - 2 ), client_callback_arg);
+    }
+
   /*
     // printf("WRITE Callback, handle %04x, mode %u, offset %u, data: ", handle, transaction_mode, offset);
     // printf_hexdump(buffer, buffer_size);
     if (att_handle != ATT_CHARACTERISTIC_0000FF11_0000_1000_8000_00805F9B34FB_01_CLIENT_CONFIGURATION_HANDLE) return 0;
     le_notification_enabled = READ_BT_16(buffer, 0) == GATT_CLIENT_CHARACTERISTICS_CONFIGURATION_NOTIFICATION;
   */
-    return 0;
+  }
+
+  // handle notification enable / disable
+  if ( att_handle == ATT_CHARACTERISTIC_0000FF11_0000_1000_8000_00805F9B34FB_01_CLIENT_CONFIGURATION_HANDLE ) {
+    int le_not = READ_BT_16(buffer, 0) == GATT_CLIENT_CHARACTERISTICS_CONFIGURATION_NOTIFICATION;
+    LogConn("  le_notification_enabled  %d", le_not);
+
+    le_notification_enabled = READ_BT_16(buffer, 0) == GATT_CLIENT_CHARACTERISTICS_CONFIGURATION_NOTIFICATION;
+  }
+  return 0;
 }
 
 
@@ -333,10 +358,8 @@ static void BTAttached() {
 
 
   LogConn("  setup heartbeat");
-  // set one-shot timer
-  heartbeat.process = &heartbeat_handler;
-  run_loop_set_timer(&heartbeat, HEARTBEAT_PERIOD_MS);
-  run_loop_add_timer(&heartbeat);
+  StartHeartbeat();
+
 
 
   // BLE - setup
@@ -419,7 +442,10 @@ static void BTTasks() {
 }
 
 static int BTIsReadyToOpen() {
-  return rfcomm_channel_id != 0 && client_callback == DummyCallback;
+  LogConn("BTIsReadyToOpen()  rfcid 0x%04x  %d", rfcomm_channel_id, ( client_callback == DummyCallback ) );
+
+  // return rfcomm_channel_id != 0 && client_callback == DummyCallback;
+  return ( client_callback == DummyCallback );
 }
 
 static int BTOpen(ChannelCallback cb, int_or_ptr_t open_arg, int_or_ptr_t cb_args) {
@@ -447,7 +473,12 @@ static void BTClose(int h) {
 }
 
 static int BTIsAvailable() {
-  return USBHostBluetoothIsDeviceAttached();
+  //  return USBHostBluetoothIsDeviceAttached();
+  int res = USBHostBluetoothIsDeviceAttached();
+  if ( res )
+    LogConn("BTIsAvailable()");
+
+  return res;
 }
 
 static int BTMaxPacketSize(int h) {
