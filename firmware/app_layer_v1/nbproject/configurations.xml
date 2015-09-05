@@ -106,8 +106,11 @@
           <linkerLibItems>
           </linkerLibItems>
         </linkerTool>
+        <archiverTool>
+        </archiverTool>
         <loading>
           <useAlternateLoadableFile>false</useAlternateLoadableFile>
+          <parseOnProdLoad>false</parseOnProdLoad>
           <alternateLoadableFile></alternateLoadableFile>
         </loading>
       </compileType>
@@ -199,8 +202,6 @@
         <property key="legacy-libc" value="false"/>
         <property key="output-file-format" value="coff"/>
       </C30Global>
-      <Simulator>
-      </Simulator>
     </conf>
     <conf name="PIXL0025" type="2">
       <toolsSet>
@@ -218,8 +219,11 @@
           <linkerLibItems>
           </linkerLibItems>
         </linkerTool>
+        <archiverTool>
+        </archiverTool>
         <loading>
           <useAlternateLoadableFile>false</useAlternateLoadableFile>
+          <parseOnProdLoad>false</parseOnProdLoad>
           <alternateLoadableFile></alternateLoadableFile>
         </loading>
       </compileType>
@@ -311,8 +315,6 @@
         <property key="legacy-libc" value="false"/>
         <property key="output-file-format" value="coff"/>
       </C30Global>
-      <Simulator>
-      </Simulator>
     </conf>
   </confs>
 </configurationDescriptor>

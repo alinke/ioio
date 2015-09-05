@@ -8,7 +8,7 @@
     <logicalFolder name="LoadableFiles"
                    displayName="Prebuilt Files"
                    projectFiles="true">
-      <itemPath>/Users/al/pixel/pixel5/ioio/tools/pixlq009.hex</itemPath>
+      <itemPath>/Users/al/pixel/pixel5/ioio/builds/PIXL low power for CAT/pixll009.hex</itemPath>
     </logicalFolder>
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"

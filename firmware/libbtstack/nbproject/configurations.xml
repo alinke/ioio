@@ -89,8 +89,17 @@
         <platform>3</platform>
       </toolsSet>
       <compileType>
+        <linkerTool>
+          <linkerLibItems>
+          </linkerLibItems>
+        </linkerTool>
         <archiverTool>
         </archiverTool>
+        <loading>
+          <useAlternateLoadableFile>false</useAlternateLoadableFile>
+          <parseOnProdLoad>false</parseOnProdLoad>
+          <alternateLoadableFile></alternateLoadableFile>
+        </loading>
       </compileType>
       <makeCustomizationType>
         <makeCustomizationPreStepEnabled>false</makeCustomizationPreStepEnabled>
@@ -124,17 +133,11 @@
         <property key="preprocessor-macros" value="NDEBUG;USB_SUPPORT_HOST"/>
         <property key="scalar-model" value="default"/>
       </C30>
-      <C30-AS>
-      </C30-AS>
-      <C30-LD>
-      </C30-LD>
       <C30Global>
         <property key="fast-math" value="false"/>
         <property key="legacy-libc" value="false"/>
         <property key="output-file-format" value="coff"/>
       </C30Global>
-      <Simulator>
-      </Simulator>
     </conf>
     <conf name="PIC24FJ128DA206" type="3">
       <toolsSet>
@@ -148,8 +151,17 @@
         <platform>3</platform>
       </toolsSet>
       <compileType>
+        <linkerTool>
+          <linkerLibItems>
+          </linkerLibItems>
+        </linkerTool>
         <archiverTool>
         </archiverTool>
+        <loading>
+          <useAlternateLoadableFile>false</useAlternateLoadableFile>
+          <parseOnProdLoad>false</parseOnProdLoad>
+          <alternateLoadableFile></alternateLoadableFile>
+        </loading>
       </compileType>
       <makeCustomizationType>
         <makeCustomizationPreStepEnabled>false</makeCustomizationPreStepEnabled>
@@ -183,17 +195,11 @@
         <property key="preprocessor-macros" value="NDEBUG;USB_SUPPORT_HOST"/>
         <property key="scalar-model" value="default"/>
       </C30>
-      <C30-AS>
-      </C30-AS>
-      <C30-LD>
-      </C30-LD>
       <C30Global>
         <property key="fast-math" value="false"/>
         <property key="legacy-libc" value="false"/>
         <property key="output-file-format" value="coff"/>
       </C30Global>
-      <PICkit3PlatformTool>
-      </PICkit3PlatformTool>
     </conf>
     <conf name="PIC24FJ256DA206" type="3">
       <toolsSet>
@@ -207,8 +213,17 @@
         <platform>3</platform>
       </toolsSet>
       <compileType>
+        <linkerTool>
+          <linkerLibItems>
+          </linkerLibItems>
+        </linkerTool>
         <archiverTool>
         </archiverTool>
+        <loading>
+          <useAlternateLoadableFile>false</useAlternateLoadableFile>
+          <parseOnProdLoad>false</parseOnProdLoad>
+          <alternateLoadableFile></alternateLoadableFile>
+        </loading>
       </compileType>
       <makeCustomizationType>
         <makeCustomizationPreStepEnabled>false</makeCustomizationPreStepEnabled>
@@ -242,17 +257,11 @@
         <property key="preprocessor-macros" value="NDEBUG;USB_SUPPORT_HOST"/>
         <property key="scalar-model" value="default"/>
       </C30>
-      <C30-AS>
-      </C30-AS>
-      <C30-LD>
-      </C30-LD>
       <C30Global>
         <property key="fast-math" value="false"/>
         <property key="legacy-libc" value="false"/>
         <property key="output-file-format" value="coff"/>
       </C30Global>
-      <PICkit3PlatformTool>
-      </PICkit3PlatformTool>
     </conf>
     <conf name="PIC24FJ256GB206" type="3">
       <toolsSet>
@@ -266,8 +275,17 @@
         <platform>3</platform>
       </toolsSet>
       <compileType>
+        <linkerTool>
+          <linkerLibItems>
+          </linkerLibItems>
+        </linkerTool>
         <archiverTool>
         </archiverTool>
+        <loading>
+          <useAlternateLoadableFile>false</useAlternateLoadableFile>
+          <parseOnProdLoad>false</parseOnProdLoad>
+          <alternateLoadableFile></alternateLoadableFile>
+        </loading>
       </compileType>
       <makeCustomizationType>
         <makeCustomizationPreStepEnabled>false</makeCustomizationPreStepEnabled>
@@ -301,17 +319,11 @@
         <property key="preprocessor-macros" value="NDEBUG;USB_SUPPORT_HOST"/>
         <property key="scalar-model" value="default"/>
       </C30>
-      <C30-AS>
-      </C30-AS>
-      <C30-LD>
-      </C30-LD>
       <C30Global>
         <property key="fast-math" value="false"/>
         <property key="legacy-libc" value="false"/>
         <property key="output-file-format" value="coff"/>
       </C30Global>
-      <PICkit3PlatformTool>
-      </PICkit3PlatformTool>
     </conf>
   </confs>
 </configurationDescriptor>
