@@ -108,7 +108,8 @@ static uint8_t    spp_service_buffer[128] __attribute__((aligned(__alignof(servi
 static uint8_t    rfcomm_send_credit = 0;
 static ChannelCallback client_callback;
 static int_or_ptr_t client_callback_arg;
-static char       local_name[] = "PIXEL (00:00)";  // the digits will be replaced by the MSB of the BD-ADDR
+//static char       local_name[] = "PIXEL (00:00)";  // the digits will be replaced by the MSB of the BD-ADDR
+static char       local_name[] = "C.A.T (00:00)";  // the digits will be replaced by the MSB of the BD-ADDR
 static STATE state;
 static void *bt_buf;
 static int bt_buf_size;
@@ -140,7 +141,8 @@ static void PacketHandler(int l2cap_event, void * connection, uint8_t packet_typ
           if (COMMAND_COMPLETE_EVENT(packet, hci_read_bd_addr)) {
             bt_flip_addr(event_addr, &packet[6]);
             log_printf("BD-ADDR: %s", bd_addr_to_str(event_addr));
-            sprintf(local_name, "PIXEL (%02X:%02X)", event_addr[4], event_addr[5]);
+            //sprintf(local_name, "PIXEL (%02X:%02X)", event_addr[4], event_addr[5]);
+            sprintf(local_name, "C.A.T (%02X:%02X)", event_addr[4], event_addr[5]);
             break;
           }
           if (COMMAND_COMPLETE_EVENT(packet, hci_write_local_name)) {
