@@ -117,7 +117,7 @@ class ThumbnailLayout: CollectionViewLayout {
         var width: CGFloat = ( self.itemInsets.left + ( ( CGFloat(self.numberOfCols) * ( self.itemSize.width + self.interItemSpacingX ) ) - self.interItemSpacingX ) + self.itemInsets.right )
         var height: CGFloat = ( self.itemInsets.top + ( CGFloat(self.numberOfRows) * self.itemSize.height ) )
 
-        NSLog("ThumbnailLayout contentSize  width: \(width)  height: \(height)")
+//        NSLog("ThumbnailLayout contentSize  width: \(width)  height: \(height)")
         return CGSize(width: width, height: height)
     }
 

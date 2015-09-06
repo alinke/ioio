@@ -1,3 +1,7 @@
+#
+#
+
+#
 pixl0004.hex
 tools/bootloader.hex
 tools/pixel.hex
@@ -6,12 +10,18 @@ tools/pixl0005.hex
 pixel.ioioapp
 pixeltest.txt
 
+# test builds
+test-base*.ioioapp
+
+
 ## OSX Finder
 .DS_Store
 
 ## emacs backup files
 *~
+.#*
 
 ## Xcode
 build/
 xcuserdata
+xcshareddata

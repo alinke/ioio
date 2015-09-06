@@ -71,7 +71,7 @@ class SettingsLayout: CollectionViewLayout {
         var x: CGFloat = ( self.itemInsets.left )
         var y: CGFloat = ( self.itemInsets.top + ( CGFloat(object.indexPath.row) * ( self.itemSize.height + self.interItemSpacingX ) ) )
         let frame = CGRect(x: x, y: y, width: self.itemSize.width, height: self.itemSize.height)
-        NSLog("setupLayout \(object.indexPath.row)  frame: \(frame)")
+//        NSLog("setupLayout \(object.indexPath.row)  frame: \(frame)")
         object.layoutAttributes.frame = frame
     }
 
@@ -82,7 +82,7 @@ class SettingsLayout: CollectionViewLayout {
         var width: CGFloat = ( self.itemInsets.left + self.itemInsets.right + self.itemSize.width )
         var height: CGFloat = ( self.itemInsets.top + self.itemInsets.bottom + ( CGFloat(numRows) * ( self.itemSize.height + self.interItemSpacingX ) ) )
 
-        NSLog("collectionViewContentSize width: \(width)  height: \(height)")
+//        NSLog("collectionViewContentSize width: \(width)  height: \(height)")
         return CGSize(width: width, height: height)
     }
 
@@ -99,7 +99,7 @@ class SettingsCellView: CollectionDataObjectCellView {
     override init(frame aRect: CGRect) {
         super.init(frame: aRect)
 
-        NSLog("SettingsCellView frame: \(frame)")
+//        NSLog("SettingsCellView frame: \(frame)")
 
         // top separator line
         var separatorFrame = CGRect(x:20.0, y:0.0, width:335.0, height:1.0)
@@ -127,7 +127,7 @@ class SettingsCellView: CollectionDataObjectCellView {
 
 
     override func prepareForReuse() {
-        NSLog("prepareForReuse")
+//        NSLog("prepareForReuse")
     }
 
     override func setupCell(object: CollectionDataObject) {

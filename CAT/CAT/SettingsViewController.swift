@@ -22,21 +22,22 @@ class SettingsViewController: UIViewController {
         // Do any additional setup after loading the view, typically from a nib.
 
         let frame = self.view.bounds
-        NSLog("frame \(frame)")
+//        NSLog("frame \(frame)")
         self.settingsView = SettingsView(frame: frame)
         self.view.addSubview(self.settingsView!)
     }
 
     override func viewWillAppear(animated: Bool) {
-        NSLog("viewWillAppear")
+//        NSLog("viewWillAppear")
 
         let app = App.sharedInstance
         app.startScan(scanHandler: didDiscoverPeripheral)
     }
 
     func didDiscoverPeripheral(peripheral: CBPeripheral, advertisementData: [NSObject : AnyObject]) {
-        NSLog("SettingsViewController  didDiscoverPeripheral \(peripheral)")
+        NSLog("didDiscoverPeripheral \(peripheral)")
 
+/*
         // add item to SettingsDataSource
         if let settingsView = self.settingsView {
             if let dataSource = settingsView.settingsDataSource {
@@ -48,8 +49,9 @@ class SettingsViewController: UIViewController {
                 settingsView.reloadData()
             }
         }        
-
+*/
         if self.autoConnect {
+            NSLog("  autoConnect")
             let app = App.sharedInstance
             app.connect(peripheral, connectHandler: didConnect)
         }
@@ -60,7 +62,7 @@ class SettingsViewController: UIViewController {
     }
     
     override func viewWillDisappear(animated: Bool) {
-        NSLog("viewWillDisappear")
+//        NSLog("viewWillDisappear")
         let app = App.sharedInstance
         app.stopScan()
     }

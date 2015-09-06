@@ -44,8 +44,12 @@ class Protocol: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
     }
     
     func reconnect() {
-        // get peripheral ID for reconnect        
         let defaults = NSUserDefaults.standardUserDefaults()
+
+        // remove for testing
+//        defaults.removeObjectForKey("pixelUUID")
+
+        // get peripheral ID for reconnect        
         if let uuid = defaults.stringForKey("pixelUUID") {
             if let nsuuid = NSUUID(UUIDString: uuid) {
                 let ids = [nsuuid] //NSUUID]()
@@ -89,23 +93,23 @@ class Protocol: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
     func connect(peripheral: CBPeripheral, connectHandler: ((CBPeripheral) -> Void)? = nil) {
         self.connectHandler = connectHandler
 
-        if let name = peripheral.name {
-            // Check the name 
-            if name == "PIXEL" {
-                if dongle == nil {
-                    self.dongle = peripheral
-                    self.dongle!.delegate = self
-                    NSLog("didDiscoverPeripheral \(peripheral)")
+//        if let name = peripheral.name {
+//            // Check the name 
+//            if name == "PIXEL" {
+        if dongle == nil {
+            self.dongle = peripheral
+            self.dongle!.delegate = self
+            NSLog("didDiscoverPeripheral \(peripheral)")
 
-                    // save peripheral ID for reconnect
-                    let id = peripheral.identifier.UUIDString
-                    let defaults = NSUserDefaults.standardUserDefaults()
-                    defaults.setObject(id, forKey: "pixelUUID")
+            // save peripheral ID for reconnect
+            let id = peripheral.identifier.UUIDString
+            let defaults = NSUserDefaults.standardUserDefaults()
+            defaults.setObject(id, forKey: "pixelUUID")
                     
-                    self.centralManager!.connectPeripheral(peripheral, options: nil)
-                }
-            }
+            self.centralManager!.connectPeripheral(peripheral, options: nil)
         }
+//              }
+//          }
     }
 
     

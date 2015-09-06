@@ -19,7 +19,6 @@ class ThumbnailViewController: UIViewController {
     var thumbnailLayout: ThumbnailLayout?
     var thumbnailListView: CollectionView?
 
-    //init() {
 
     func reconnectHandler(peripheral: CBPeripheral) {
         dispatch_async(dispatch_get_main_queue()) {
@@ -44,7 +43,7 @@ class ThumbnailViewController: UIViewController {
 
         let frame = self.view.bounds
 
-        NSLog("frame \(frame)")
+//        NSLog("frame \(frame)")
 
         loadThumbnails()
         //self.showThumbnail(0)
@@ -153,7 +152,6 @@ class ThumbnailViewController: UIViewController {
         for name in names {
             self.loadThumbnail(name)
         }
-        NSLog("done")
     }
 
     func loadThumbnail(name: String) {
