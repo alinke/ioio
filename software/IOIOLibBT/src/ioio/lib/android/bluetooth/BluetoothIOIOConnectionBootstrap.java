@@ -64,7 +64,7 @@ public class BluetoothIOIOConnectionBootstrap implements
 		try {
 			Set<BluetoothDevice> bondedDevices = adapter_.getBondedDevices();
 			for (final BluetoothDevice device : bondedDevices) {
-				if (device.getName().startsWith("PIXEL")) {
+				if (device.getName().startsWith("PIXEL") || device.getName().startsWith("C.A.T")) { //add for C.A.T purse
 					result.add(new IOIOConnectionFactory() {
 						@Override
 						public String getType() {
