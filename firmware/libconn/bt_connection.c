@@ -261,48 +261,89 @@ static void StartHeartbeat(void) {
 }
 
 
+// 
+// ATT Server packet handler
+//
+//   Disconnect / Connect / MTU
+//
+static int ble_connected = 0;
+static int ble_mtu = 0;
+
+static uint16_t ble_conn_handle;
+
+static void att_packet_handler(uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t size) {
+
+  switch (packet_type) {
+  case HCI_EVENT_PACKET:
+    //    LogConn("ATT_packet_handler  type: %02x  channel: %04x  packet[0]: %02x  size: %d", packet_type, channel, packet[0], (int)size);
+
+    switch (packet[0]) {
+      // #define HCI_EVENT_DISCONNECTION_COMPLETE                   0x05
+    case HCI_EVENT_DISCONNECTION_COMPLETE:
+      ble_connected = 0;
+      LogConn("BLE disconect");
+      le_notification_enabled = 0;
+      break;
+
+      // #define HCI_EVENT_LE_META                                  0x3E
+    case HCI_EVENT_LE_META:
+
+      // #define HCI_SUBEVENT_LE_CONNECTION_COMPLETE                0x01
+      // #define HCI_SUBEVENT_LE_ADVERTISING_REPORT                 0x02
+      // #define HCI_SUBEVENT_LE_CONNECTION_UPDATE_COMPLETE         0x03
+      // #define HCI_SUBEVENT_LE_READ_REMOTE_USED_FEATURES_COMPLETE 0x04
+      // #define HCI_SUBEVENT_LE_LONG_TERM_KEY_REQUEST              0x05
+      LogConn("  LE_META   packet[2]: %02x", packet[2]);
+
+      switch (packet[2]) {
+      case HCI_SUBEVENT_LE_CONNECTION_COMPLETE:
+        ble_conn_handle = READ_BT_16(packet, 4);
+        LogConn("BLE connected %04x", ble_conn_handle);
+        ble_connected = 1;
+        break;
+      }
+      break;  
+
+      // #define ATT_MTU_EXCHANGE_COMPLETE                          0xB5
+    case ATT_MTU_EXCHANGE_COMPLETE:
+      ble_mtu = READ_BT_16(packet, 4) - 3;
+      LogConn("BLE att mtu = %d", ble_mtu);
+      break;
+    }
+  }
+}
 
 // ATT Client Read Callback for Dynamic Data
 // - if buffer == NULL, don't copy data, just return size of value
 // - if buffer != NULL, copy data and return number bytes copied
 // @param offset defines start of attribute value
-static uint16_t att_read_callback(uint16_t con_handle, uint16_t att_handle, uint16_t offset, uint8_t * buffer, uint16_t buffer_size){
-  //LedSetFlag(0, 18, GREEN);
-  //  LogConn("att_read_callback");
+static uint16_t att_read_callback(uint16_t con_handle, uint16_t att_handle, uint16_t offset, uint8_t * buffer, uint16_t buffer_size) {
   /*
-    if (att_handle == ATT_CHARACTERISTIC_0000FF11_0000_1000_8000_00805F9B34FB_01_VALUE_HANDLE){
-        if (buffer){
-            memcpy(buffer, &counter_string[offset], counter_string_len - offset);
-        }
-        return counter_string_len - offset;
+  // handle read value
+  if (att_handle == ATT_CHARACTERISTIC_0000FF11_0000_1000_8000_00805F9B34FB_01_VALUE_HANDLE) {
+    //LogConn("att_read   offset: %u  size: %u", (unsigned int)offset, (unsigned int)buffer_size );
+    if ( buffer ) {
+      //memcpy(buffer, &counter_string[offset], counter_string_len - offset);
     }
+
+    // return number of bytes
+    return counter_string_len - offset;
+  }
   */
-    return 0;
+  return 0;
 }
 
 // write requests
 static int att_write_callback(uint16_t con_handle, uint16_t att_handle, uint16_t transaction_mode, uint16_t offset, uint8_t *buffer, uint16_t buffer_size){
-  //LedSetFlag(0, 19, GREEN);
 
-
+  // handle write value
   if ( att_handle == ATT_CHARACTERISTIC_0000FF11_0000_1000_8000_00805F9B34FB_01_VALUE_HANDLE ) {
     //LogConn("att_write  mode: %u  offset: %u  size: %u", (unsigned int)transaction_mode, (unsigned int)offset, (unsigned int)buffer_size );
-    //    LogConn("att_write  mode: %u  offset: %u  size: %u", (unsigned int)transaction_mode, (unsigned int)offset, (unsigned int)buffer_size );
 
     if ( buffer_size > 0 ) {
-      //if ( packet_received(offset, buffer, buffer_size) ) {
-        // Send the packet data to the App protocol handler
-      //      LogConn("  forward packet to protocol");
-
+      // Send the packet data to the App protocol handler
       client_callback(&buffer[2], ( buffer_size - 2 ), client_callback_arg);
     }
-
-  /*
-    // printf("WRITE Callback, handle %04x, mode %u, offset %u, data: ", handle, transaction_mode, offset);
-    // printf_hexdump(buffer, buffer_size);
-    if (att_handle != ATT_CHARACTERISTIC_0000FF11_0000_1000_8000_00805F9B34FB_01_CLIENT_CONFIGURATION_HANDLE) return 0;
-    le_notification_enabled = READ_BT_16(buffer, 0) == GATT_CLIENT_CHARACTERISTICS_CONFIGURATION_NOTIFICATION;
-  */
   }
 
   // handle notification enable / disable
@@ -312,6 +353,7 @@ static int att_write_callback(uint16_t con_handle, uint16_t att_handle, uint16_t
 
     le_notification_enabled = READ_BT_16(buffer, 0) == GATT_CLIENT_CHARACTERISTICS_CONFIGURATION_NOTIFICATION;
   }
+
   return 0;
 }
 
@@ -379,6 +421,8 @@ static void BTAttached() {
 
   // setup ATT server
   att_server_init(profile_data, att_read_callback, att_write_callback);    
+  att_server_register_packet_handler(att_packet_handler);
+
 
   LogConn("  POST att init");
   LogConn("");
@@ -466,6 +510,10 @@ static void BTSend(int h, const void *data, int size) {
 static int BTCanSend(int h) {
   assert(h == 0);
   // return rfcomm_can_send(rfcomm_channel_id);
+
+  if ( ble_connected )
+    return 1;
+
   return rfcomm_can_send_packet_now(rfcomm_channel_id);
 }
 

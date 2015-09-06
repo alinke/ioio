@@ -164,11 +164,13 @@ int main() {
     switch (state) {
       case STATE_INIT:
         handle = INVALID_CHANNEL_HANDLE;
+        LogMain("INIT  handle %04x", handle);
         main_set_state(STATE_OPEN_CHANNEL);
         break;
 
       case STATE_OPEN_CHANNEL:
         if ((handle = OpenAvailableChannel()) != INVALID_CHANNEL_HANDLE) {
+          LogMain("OPEN_CHANNEL  handle %04x", handle);
           log_printf("Connected");
           main_set_state(STATE_WAIT_CHANNEL_OPEN);
         }
@@ -176,6 +178,7 @@ int main() {
 
       case STATE_WAIT_CHANNEL_OPEN:
        if (ConnectionCanSend(handle)) {
+         LogMain("CHANNEL OPEN  handle %04x", handle);
           log_printf("Channel open");
           AppProtocolInit(handle);
           main_set_state(STATE_CONNECTED);
@@ -187,6 +190,7 @@ int main() {
         break;
 
       case STATE_ERROR:
+        LogMain("ERROR  handle %04x", handle);
         ConnectionCloseChannel(handle);
         SoftReset();
         main_set_state(STATE_INIT);

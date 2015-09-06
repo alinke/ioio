@@ -142,18 +142,29 @@ public class WriteWithResponseTransport: Transport {
     // Singleton
     public static let sharedInstance = WriteWithResponseTransport()
 
+    var connectCompletionHandler: ((CBPeripheral) -> Void)?
+
     override func connect(peripheral: CBPeripheral?, characteristic: CBCharacteristic?, completionHandler: ((CBPeripheral) -> Void)? = nil) {
         super.connect(peripheral, characteristic: characteristic)
 
-        // call handler
-        if let handler = completionHandler {
-            handler(peripheral!)
-        }
+        // enable notifications
+        self.peripheral!.setNotifyValue(true, forCharacteristic: self.characteristic!)
+        self.connectCompletionHandler = completionHandler
     }
 
     override func disconnect() {
         super.disconnect()
     }
+
+    override func handleUpdateNotificationState(characteristic: CBCharacteristic, error: NSError?) {
+        NSLog("Transport CONNECTED  peripheral: \(self.peripheral)  characteristic: \(self.characteristic)")
+
+        // call handler
+        if let handler = self.connectCompletionHandler {
+            handler(self.peripheral!)
+        }
+    }
+
 
     let packetQueueSemaphore: dispatch_semaphore_t = dispatch_semaphore_create(0)
 
@@ -192,6 +203,7 @@ public class WriteWithResponseTransport: Transport {
     }
 
     override func receivePacket(data: NSData) {
+        NSLog("--> receivePacket len: \(data.length)  data: \(data)")
     }
     
 }
