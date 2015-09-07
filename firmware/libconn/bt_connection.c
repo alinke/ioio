@@ -74,7 +74,7 @@ const uint8_t adv_data[] = {
     // Flags: General Discoverable
     0x02, 0x01, 0x02, 
     // Service
-    0x11, 0x06, 0xFB, 0x34, 0x9B, 0x5F, 0x80, 0x00, 0x00, 0x80, 0x00, 0x10, 0x00, 0x00, 0x10, 0xFF, 0x00, 0x00, 
+    0x11, 0x06, 0xF5, 0x1E, 0x6B, 0xD5, 0x2D, 0x04, 0x39, 0x89, 0x2A, 0x42, 0x61, 0x6D, 0xD0, 0xFB, 0x30, 0x11,
     // Name
     0x06, 0x09, 'C', '.', 'A', '.', 'T',
 };
@@ -313,6 +313,17 @@ static void att_packet_handler(uint8_t packet_type, uint16_t channel, uint8_t *p
   }
 }
 
+static uint16_t att_send(uint8_t *buffer, uint16_t buffer_size) {
+  LogConn("Send notification  size: %d", (int)buffer_size);
+
+  if ( le_notification_enabled ) {
+    att_server_notify(ATT_CHARACTERISTIC_1130FBD1_6D61_422A_8939_042DD56B1EF5_01_VALUE_HANDLE, buffer, buffer_size);
+  }
+
+  return buffer_size;
+}
+
+
 // ATT Client Read Callback for Dynamic Data
 // - if buffer == NULL, don't copy data, just return size of value
 // - if buffer != NULL, copy data and return number bytes copied
@@ -320,7 +331,7 @@ static void att_packet_handler(uint8_t packet_type, uint16_t channel, uint8_t *p
 static uint16_t att_read_callback(uint16_t con_handle, uint16_t att_handle, uint16_t offset, uint8_t * buffer, uint16_t buffer_size) {
   /*
   // handle read value
-  if (att_handle == ATT_CHARACTERISTIC_0000FF11_0000_1000_8000_00805F9B34FB_01_VALUE_HANDLE) {
+  if (att_handle == ATT_CHARACTERISTIC_1130FBD1_6D61_422A_8939_042DD56B1EF5_01_VALUE_HANDLE) {
     //LogConn("att_read   offset: %u  size: %u", (unsigned int)offset, (unsigned int)buffer_size );
     if ( buffer ) {
       //memcpy(buffer, &counter_string[offset], counter_string_len - offset);
@@ -337,7 +348,7 @@ static uint16_t att_read_callback(uint16_t con_handle, uint16_t att_handle, uint
 static int att_write_callback(uint16_t con_handle, uint16_t att_handle, uint16_t transaction_mode, uint16_t offset, uint8_t *buffer, uint16_t buffer_size){
 
   // handle write value
-  if ( att_handle == ATT_CHARACTERISTIC_0000FF11_0000_1000_8000_00805F9B34FB_01_VALUE_HANDLE ) {
+  if ( att_handle == ATT_CHARACTERISTIC_1130FBD1_6D61_422A_8939_042DD56B1EF5_01_VALUE_HANDLE ) {
     //LogConn("att_write  mode: %u  offset: %u  size: %u", (unsigned int)transaction_mode, (unsigned int)offset, (unsigned int)buffer_size );
 
     if ( buffer_size > 0 ) {
@@ -347,7 +358,7 @@ static int att_write_callback(uint16_t con_handle, uint16_t att_handle, uint16_t
   }
 
   // handle notification enable / disable
-  if ( att_handle == ATT_CHARACTERISTIC_0000FF11_0000_1000_8000_00805F9B34FB_01_CLIENT_CONFIGURATION_HANDLE ) {
+  if ( att_handle == ATT_CHARACTERISTIC_1130FBD1_6D61_422A_8939_042DD56B1EF5_01_CLIENT_CONFIGURATION_HANDLE ) {
     int le_not = READ_BT_16(buffer, 0) == GATT_CLIENT_CHARACTERISTICS_CONFIGURATION_NOTIFICATION;
     LogConn("  le_notification_enabled  %d", le_not);
 
@@ -502,19 +513,25 @@ static int BTOpen(ChannelCallback cb, int_or_ptr_t open_arg, int_or_ptr_t cb_arg
 }
 
 static void BTSend(int h, const void *data, int size) {
-  assert(!(size >> 16));
-  assert(h == 0);
-  rfcomm_send_internal(rfcomm_channel_id, (uint8_t *) data, size & 0xFFFF);
+    assert(!(size >> 16));
+    assert(h == 0);
+
+    //  if ( le_notification_enabled ) {
+    //    att_send( (uint8_t *)data, (size & 0xFFFF) );
+    //  } else {
+    rfcomm_send_internal(rfcomm_channel_id, (uint8_t *) data, size & 0xFFFF);
+    //  }
 }
 
 static int BTCanSend(int h) {
   assert(h == 0);
   // return rfcomm_can_send(rfcomm_channel_id);
 
-  if ( ble_connected )
+  if ( le_notification_enabled ) {
     return 1;
-
-  return rfcomm_can_send_packet_now(rfcomm_channel_id);
+  } else {
+    return rfcomm_can_send_packet_now(rfcomm_channel_id);
+  }
 }
 
 static void BTClose(int h) {

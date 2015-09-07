@@ -80,8 +80,8 @@ class Protocol: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
         if let manager = self.centralManager {
             self.scanHandler = scanHandler
             
-            let serviceUUIDs = [CBUUID(string: "0000FF10-0000-1000-8000-00805F9B34FB")]
-//            let options = [CBCentralManagerScanOptionSolicitedServiceUUIDsKey: CBUUID(string: "0000FF10-0000-1000-8000-00805F9B34FB")]
+            let serviceUUIDs = [CBUUID(string: "1130FBD0-6D61-422A-8939-042DD56B1EF5")]
+//            let options = [CBCentralManagerScanOptionSolicitedServiceUUIDsKey: CBUUID(string: "1130FBD0-6D61-422A-8939-042DD56B1EF5")]
 
             self.centralManager!.scanForPeripheralsWithServices(serviceUUIDs, options: nil)
         }
