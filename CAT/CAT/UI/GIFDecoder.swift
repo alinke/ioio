@@ -13,6 +13,8 @@ import UIKit
 // Decoder
 //
 class GIFDecoder {
+    var debug = false
+
     var stream: GIFStream
 
     init(data: NSData) {
@@ -167,7 +169,7 @@ class GIFDecoder {
     func resetFrame() {
         self.lastDispose = dispose
         self.lastRect = GIFRect(rect: rect)
-        self.lastImage = image
+        self.lastImage = self.image
         self.lastBgColor = bgColor
         //int dispose = 0
         //boolean transparency = false
@@ -563,17 +565,21 @@ class GIFDecoder {
             return nil
         }
 
+        if self.debug {
+            NSLog("frame \(frameCount)  transparency: \(self.transparency)  transIndex: \(self.transIndex)  save: \(save)  lastBgColor: \(self.lastBgColor)")
+        }
+        
         self.frameCount++
 
         // create new image to receive frame data
 //        image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB_PRE)
 
         var frame: GIFFrame?
-        
+
         let frameBuffer = setPixels() // transfer pixel data to image
+
         if let buffer = frameBuffer {
-            frame = GIFFrame(frame: buffer, width: self.width, height: self.height, delay: delay)
-            return frame
+            frame = GIFFrame(pixels: self.pixelData(), frame: buffer, width: self.width, height: self.height, delay: delay)
         }
 
         if self.transparency {
@@ -620,6 +626,10 @@ class GIFDecoder {
 
             //int[] dest = ((DataBufferInt) image.getRaster().getDataBuffer()).getData()
 
+            if self.debug {
+                NSLog("  setPixels \(self.frameCount)  lastDispose: \(self.lastDispose)")
+            }
+            
             // fill in starting image contents based on last image's dispose code
             if self.lastDispose > 0 {
                 if self.lastDispose == 3 {
@@ -633,6 +643,7 @@ class GIFDecoder {
                 }
                 
                 if let lastImage = self.lastImage {
+                    // copy last frame pixel data
                     if let lastFrameBuffer = lastImage.frameData {
                         let lastPtr = UnsafePointer<UInt8>(lastFrameBuffer.bytes)
                         var prev = UnsafeBufferPointer<UInt8>(start: lastPtr, count: lastFrameBuffer.length)
@@ -695,6 +706,44 @@ class GIFDecoder {
                 }
 
                 line += self.rect.y
+
+/*
+                if self.debug {
+                    NSLog("  line: \(line)  pass: \(pass)  inc: \(inc)  iline: \(iline)  iy: \(self.rect.y)     rect: \(self.rect)")
+
+                    var str = ""
+                    for col in 0 ..< self.width {
+                        let offset = ( ( (line * self.width) + col ) * 4 )
+                        let r = dest[offset]
+                        let g = dest[offset+1]
+                        let b = dest[offset+2]
+                        let a = dest[offset+3]
+                        var rhex = String(r, radix: 16)
+                        if count(rhex) == 1 {
+                            rhex = ( "0" + rhex )
+                        }
+                        var ghex = String(g, radix: 16)
+                        if count(ghex) == 1 {
+                            ghex = ( "0" + ghex )
+                        }
+                        var bhex = String(b, radix: 16)
+                        if count(bhex) == 1 {
+                            bhex = ( "0" + bhex )
+                        }
+                        var ahex = String(a, radix: 16)
+                        if count(ahex) == 1 {
+                            ahex = ( "0" + ahex )
+                        }
+                        str += (" " + rhex + ghex + bhex + ahex )
+                    }
+                    var rs = ( "\(line)" )
+                    if count(rs) == 1 {
+                        rs = ( "0" + rs )
+                    }
+                    NSLog("[\(rs)]  \(str)")
+                }
+*/
+                
                 if line < self.height {
                     var k = line * self.width
                     var dx = k + self.rect.x            // start of line in dest
@@ -705,25 +754,69 @@ class GIFDecoder {
                     var sx = i * self.rect.width        // start of line in source
                     while dx < dlim {
                         // map color and insert in destination
-                        var index = Int( pixels[sx++] & 0xff)
+                        var index = Int( self.pixels[sx++] & 0xff)
                         var color = self.act![index]
-                        // check color != nil
-                        dest[(dx * 4) + 0] = color.red
-                        dest[(dx * 4) + 1] = color.green
-                        dest[(dx * 4) + 2] = color.blue
-                        dest[(dx * 4) + 3] = color.alpha
 
+                        let destColor = GIFColor(red: dest[(dx * 4) + 0], green: dest[(dx * 4) + 1], blue: dest[(dx * 4) + 2], alpha: dest[(dx * 4) + 3])
+
+                        // check color != 0
+                        if color.aRGB() != 0 {
+                            dest[(dx * 4) + 0] = color.red
+                            dest[(dx * 4) + 1] = color.green
+                            dest[(dx * 4) + 2] = color.blue
+                            dest[(dx * 4) + 3] = color.alpha
+                        }
+
+/*
+                        if self.debug {
+                            var hex = String(index, radix: 16)
+                            if count(hex) == 1 {
+                                hex = ( "0" + hex )
+                            }
+                            let dc = GIFColor(red: dest[(dx * 4) + 0], green: dest[(dx * 4) + 1], blue: dest[(dx * 4) + 2], alpha: dest[(dx * 4) + 3])
+                            NSLog("    dx: \(dx)  dlim: \(dlim)  line: \(line)  sx: \(sx)  index: \(hex)  color: \(color)  dest: \(dc)  destColor: \(destColor)")
+                        }
+*/
                         dx++
                     }
                 }
             }
+
+            self.image = GIFFrame(pixels: self.pixelData(), frame: frameBuffer, width: self.width, height: self.height, delay: delay)
 
             return frameBuffer
         }
         return nil
     }
 
-    
+
+    func pixelData() -> NSData? {
+        // copy pixel data
+        if self.debug {
+            NSLog("pixelData  frame: \(self.frameCount)  width: \(self.width)  height: \(self.height)  pixels size: \(count(self.pixels))   rect: \(self.rect)  last: \(self.lastRect)")
+        }
+
+        if let indexBuffer = NSMutableData(length: (self.width * self.height)) {
+            let indexPtr = UnsafeMutablePointer<UInt8>(indexBuffer.mutableBytes)
+            var indexBytes = UnsafeMutableBufferPointer<UInt8>(start: indexPtr, count: indexBuffer.length)
+            // copy pixel index data
+            for row in 0 ..< self.height {
+                for col in 0 ..< self.width {
+                    let offset = ( (row * self.height) + col )
+                    // is the row col inside 
+                    if self.rect.pointInside(col, y: row) {
+                        let i = ( ((row - self.rect.y) * self.rect.width) + (col - self.rect.x) )
+                        indexBytes[offset] = self.pixels[i]
+                    } else {
+                        indexBytes[offset] = 0x00
+                    }
+                }
+            }
+            return indexBuffer
+        }
+        return nil
+    }
+                   
 
     //--------------------------------------------------------------------------------
     //

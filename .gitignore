@@ -1,7 +1,4 @@
 #
-#
-
-#
 pixl0004.hex
 tools/bootloader.hex
 tools/pixel.hex
@@ -25,3 +22,7 @@ test-base*.ioioapp
 build/
 xcuserdata
 xcshareddata
+
+## Development files
+cpp.sh
+*.E

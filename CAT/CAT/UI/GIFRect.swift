@@ -29,6 +29,11 @@ class GIFRect {
         self.width = width
         self.height = height
     }
+
+    func pointInside(x: Int, y: Int) -> Bool {
+        return ( ( (y >= self.y) && (y < (self.y + self.height) ) ) &&
+                 ( (x >= self.x) && (x < (self.x + self.width) ) ) )
+    }
 }
 
 
@@ -39,5 +44,13 @@ class GIFDimension {
     init(width: Int, height: Int) {
         self.width = width
         self.height = height
+    }
+}
+
+
+
+extension GIFRect: Printable {
+    var description: String {
+        return ( "\(self.x),\(self.y) \(self.width)x\(self.height)" )
     }
 }

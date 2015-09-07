@@ -12,10 +12,12 @@ import UIKit
 class GIFFrame {
     var width = 0
     var height = 0
+    var pixelData: NSData?
     var frameData: NSData?
     var delay = 0
     
-    init(frame: NSData, width: Int, height: Int, delay: Int) {
+    init(pixels: NSData?, frame: NSData, width: Int, height: Int, delay: Int) {
+        self.pixelData = pixels
         self.frameData = frame
         self.width = width
         self.height = height
