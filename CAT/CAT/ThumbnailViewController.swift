@@ -160,8 +160,9 @@ class ThumbnailViewController: UIViewController {
             if let data = NSData(contentsOfFile: path, options: NSDataReadingOptions.DataReadingMapped, error: &loadError) {
                 var decoder = GIFDecoder(data: data)
 
-                if let frame = decoder.getFrame(0) {
-                    //NSLog("\(name)  frames: \(decoder.getFrameCount())   width: \(decoder.width)  height: \(decoder.height)")
+                let thumbNum = Thumbnail.thumbnailFrame(name)
+                if let frame = decoder.getFrame(thumbNum) {
+                    //NSLog("width: \(decoder.width)  height: \(decoder.height)  frames: \(decoder.getFrameCount())  thumb: \(thumbNum)   \(name)")
 
                     let thumbnail = Thumbnail(name: name, frame: frame)
                     thumbnails.append(thumbnail)

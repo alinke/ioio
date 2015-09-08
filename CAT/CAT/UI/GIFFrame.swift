@@ -78,14 +78,21 @@ class GIFFrame {
             let ptr = UnsafeMutablePointer<UInt16>(frame.bytes)
             var bytes = UnsafeMutableBufferPointer<UInt16>(start: ptr, count: (frame.length / 2))
 
-            if let frameBuffer = NSMutableData(length: (((self.width * self.height) / 2) * 3)) {
+            if let frameBuffer = NSMutableData(length: 768) {
                 let framePtr = UnsafeMutablePointer<UInt8>(frameBuffer.mutableBytes)
                 var frameBytes = UnsafeMutableBufferPointer<UInt8>(start: framePtr, count: frameBuffer.length)
                 
-                for row in 0 ..< (self.height / 2) {
-                    for col in 0 ..< self.width {
-                        let pixel1 = bytes[(row * self.width) + col]
-                        let pixel2 = bytes[((row + 8 ) * self.width) + col]
+                for row in 0 ..< 8 {
+                    for col in 0 ..< 32 {
+                        var pixel1 = UInt16(0)
+                        var pixel2 = UInt16(0)
+
+                        if ( (row < self.height) && (col < self.width) ) {
+                            pixel1 = bytes[(row * self.width) + col]
+                        }
+                        if ( ((row + 8 ) < self.height) && (col < self.width) ) {
+                            pixel2 = bytes[((row + 8 ) * self.width) + col]
+                        }
                         
                         let offset = ( (row * self.width) + col )
 

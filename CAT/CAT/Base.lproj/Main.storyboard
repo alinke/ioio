@@ -20,7 +20,7 @@
             </objects>
             <point key="canvasLocation" x="152" y="-301"/>
         </scene>
-        <!--C.A.T.-->
+        <!--C.A.T-->
         <scene sceneID="tne-QT-ifu">
             <objects>
                 <viewController storyboardIdentifier="ThumbnailViewController" id="BYZ-38-t0r" customClass="ThumbnailViewController" customModule="CAT" customModuleProvider="target" sceneMemberID="viewController">
@@ -33,7 +33,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
-                    <navigationItem key="navigationItem" title="C.A.T." id="kRi-Dc-hCQ">
+                    <navigationItem key="navigationItem" title="C.A.T" id="kRi-Dc-hCQ">
                         <barButtonItem key="leftBarButtonItem" title="Disconnected" id="7VV-6H-0TS"/>
                         <barButtonItem key="rightBarButtonItem" title="Settings" id="Zv8-IO-654">
                             <connections>

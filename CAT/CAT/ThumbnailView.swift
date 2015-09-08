@@ -21,6 +21,76 @@ class Thumbnail {
     func image() -> UIImage? {
         return frame.image()
     }
+
+
+    static let thumbIndex = [
+               "0apaulrgreenmonster16":             0,
+               "0apaulrkanji16":                    0,
+               "0apaulrkanji216":                   0,
+               "0fire16":                           0,
+               "0glitter16":                        0,
+               "0hermippe16_bw":                    0,
+               "0matrix16":                         0,
+               "0pacghosts16":                     12,
+               "0petit_kitty16":                    0,
+               "0rain16":                           0,
+               "1adata16":                          0,
+               "Angled_100_Perc":                  10,
+               "Angled_Color-Change_100_Perc_2":    0,
+               "Circles_100_Perc_2":                0,
+               "Dueces_Darker_100_Perc":           10,
+               "Fleek_100_Perc_2":                 10,
+               "Lattice_Color_Change_100_Perc":     0,
+               "Trill_Animation_100_perc":          0,
+               "arrowfinal16":                      0,
+               "bike16":                            0,
+               "boat16":                            0,
+               "bubbles16":                         0,
+               "colortiles16":                      0,
+               "firehalf16":                        0,
+               "firewhole16":                       0,
+               "fliptile16":                        0,
+               "float16":                           0,
+               "flow16":                            0,
+               "fountain16":                        0,
+               "gousa":                             0,
+               "lines16":                           0,
+               "mbutterflies_black16":              0,
+               "pauldots16":                        0,
+               "paulglasses16":                     0,
+               "paulrainbow16":                     0,
+               "paulrcircles16":                    0,
+               "paulrfallingdrops16":               0,
+               "paulrgreenmonser16":                0,
+               "paulrnintendo16":                   0,
+               "paulrpackages_left16":              0,
+               "paulrpackages_right16":             0,
+               "paulrpurpleguy":                    0,
+               "paulrteeth16":                      0,
+               "paulryellowcat16":                  0,
+               "paulryellowguy":                    0,
+               "paultriangle16":                    0,
+               "postman_dog16":                     0,
+               "quest16":                           0,
+               "rshifter16":                        0,
+               "rspray16":                          0,
+               "rstarburst16":                      0,
+               "sboxerpink16":                      0,
+               "shark16":                          10,
+               "sjumppink16":                       0,
+               "squid16":                           0,
+               "triopy16":                          0,
+               "usnowy16":                          0,
+               "waterflow16":                       0,
+               "worm16":                            0,
+           ]
+
+    static func thumbnailFrame(name: String) -> Int {
+        if let index = thumbIndex[name] {
+            return index
+        }
+        return 0
+    }
 }
 
 
@@ -115,7 +185,7 @@ class ThumbnailLayout: CollectionViewLayout {
         var numRows: Int = self.collectionDataSource!.numberOfRows(inSection: 0)
 
         var width: CGFloat = ( self.itemInsets.left + ( ( CGFloat(self.numberOfCols) * ( self.itemSize.width + self.interItemSpacingX ) ) - self.interItemSpacingX ) + self.itemInsets.right )
-        var height: CGFloat = ( self.itemInsets.top + ( CGFloat(self.numberOfRows) * self.itemSize.height ) )
+        var height: CGFloat = ( self.itemInsets.top + ( CGFloat(self.numberOfRows) * ( self.itemSize.height + self.interItemSpacingY ) ) + self.itemInsets.bottom )
 
 //        NSLog("ThumbnailLayout contentSize  width: \(width)  height: \(height)")
         return CGSize(width: width, height: height)

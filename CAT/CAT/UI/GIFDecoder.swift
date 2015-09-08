@@ -201,6 +201,7 @@ class GIFDecoder {
                 if count == n {
                     return blockIndex
                 }
+                count++
             }
         }
         return nil
