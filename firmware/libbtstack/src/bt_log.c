@@ -1009,7 +1009,54 @@ void LogHCIPacket(const char *tag, uint8_t *packet, int size) {
   uint16_t ogf = ( ( opcode & 0xfc00 ) >> 10 );
   uint16_t ocf = ( opcode & 0x03ff );
 
-  LogHCI("LogHCIPacket  0x%04x  %2x : %2x   %d  %02x %02x %02x", opcode, ogf, ocf, size, packet[0], packet[1], packet[2] );
+  char *local_name = NULL;
+  size_t len = 0;
+
+  int psize = 0;
+  uint8_t *pdata = NULL;
+
+  switch ( opcode ) {
+
+    // HCI_Write_Local_Name
+  case 0x0c13:
+    local_name = (char *)&packet[3];
+    len = strlen(local_name);
+    LogHCI("LogHCIPacket  0x%04x  %2x : %2x   %d  %02x %02x %02x   len: %d  name: '%s'", opcode, ogf, ocf, size, packet[0], packet[1], packet[2], len, local_name );
+    break;
+    
+
+    // HCI_LE_Set_Scan_Parameters
+  case 0x200b:
+    psize = (int)packet[2];
+    pdata = &packet[3];
+    LogHCI("LogHCIPacket  0x%04x  %2x : %2x   %d  %02x %02x %02x", opcode, ogf, ocf, size, packet[0], packet[1], packet[2] );
+    LogBytes( pdata, psize );
+    break;
+
+
+    // HCI_LE_Set_Advertising_Parameters
+  case 0x2006:
+    psize = (int)packet[2];
+    pdata = &packet[3];
+    LogHCI("LogHCIPacket  0x%04x  %2x : %2x   %d  %02x %02x %02x", opcode, ogf, ocf, size, packet[0], packet[1], packet[2] );
+    LogBytes( pdata, psize );
+    break;
+
+    // HCI_LE_Set_Advertising_Data
+  case 0x2008:
+    psize = (int)packet[2];
+    pdata = &packet[3];
+    LogHCI("LogHCIPacket  0x%04x  %2x : %2x   %d  %02x %02x %02x", opcode, ogf, ocf, size, packet[0], packet[1], packet[2] );
+    LogBytes( pdata, psize );
+    break;
+
+
+  default:
+    LogHCI("LogHCIPacket  0x%04x  %2x : %2x   %d  %02x %02x %02x", opcode, ogf, ocf, size, packet[0], packet[1], packet[2] );
+  }
+
+
+  //  LogHCI("LogHCIPacket  0x%04x  %2x : %2x   %d  %02x %02x %02x", opcode, ogf, ocf, size, packet[0], packet[1], packet[2] );
 
   //  LogHCI("<- Send Packet       0x%04x  %s : %s    size(%d)   %02x %02x %02x", opcode, ogfName(opcode), ocfName(opcode), size, packet[0], packet[1], packet[2] );
 

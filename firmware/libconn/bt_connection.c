@@ -81,7 +81,11 @@ const uint8_t adv_data[] = {
 /* LISTING_END */
 uint8_t adv_data_len = sizeof(adv_data);
 
-
+//  1c 
+//  02 01 02     
+//  11 06 f5 1e 6b d5 2d 04 39 89 2a 42 61 6d d0 fb 30 11 
+//  06 09 43 2e 41 2e 54 
+//  0a 00 02
 
 
 #include "log.h"
@@ -114,6 +118,13 @@ static STATE state;
 static void *bt_buf;
 static int bt_buf_size;
 
+static uint8_t hexChar(uint8_t n) {
+  if ( n < 10 )
+    return ( n + '0' );
+  else
+    return ( n + 'A' );
+}
+
 static void PacketHandler(int l2cap_event, void * connection, uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t size) {
   /*
   if ( l2cap_event ) {
@@ -143,6 +154,14 @@ static void PacketHandler(int l2cap_event, void * connection, uint8_t packet_typ
             log_printf("BD-ADDR: %s", bd_addr_to_str(event_addr));
             //sprintf(local_name, "PIXEL (%02X:%02X)", event_addr[4], event_addr[5]);
             sprintf(local_name, "C.A.T (%02X:%02X)", event_addr[4], event_addr[5]);
+
+            // modify LE database
+            LogConn( "Update LE database   %02x %02x     %s", event_addr[4], event_addr[5], bd_addr_to_str(event_addr) );
+            profile_data[38] = hexChar( ( event_addr[4] & 0xf0 ) >> 4 );
+            profile_data[39] = hexChar( event_addr[4] & 0x0f );
+            profile_data[41] = hexChar( ( event_addr[5] & 0xf0 ) >> 4 );
+            profile_data[42] = hexChar( event_addr[5] & 0x0f );
+
             break;
           }
           if (COMMAND_COMPLETE_EVENT(packet, hci_write_local_name)) {
