@@ -157,10 +157,18 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 		case ADAFRUIT_32x128:
 			convertAdafruit32x128(rgb565, frame_);
 			break;
+			
 		case ADAFRUIT_64x16:
 			convertAdafruit64x16(rgb565, frame_);
 			break;
-		
+			
+		case ADAFRUIT_128x16:
+			convertAdafruit128x16(rgb565, frame_);
+			break;
+			
+		case ADAFRUIT_256x16:
+			convertAdafruit256x16(rgb565, frame_);
+			break;
 
 		default:
 			throw new IllegalStateException("This format is not supported");
@@ -499,6 +507,14 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 		convertAdafruit(rgb565, 32, 16, dest);  //for a 64x16 matrix
 	}
 	
+	private static void convertAdafruit128x16(short[] rgb565, byte[] dest) {
+		convertAdafruit(rgb565, 64, 16, dest);  //for a 128x16 matrix
+	}
+	
+	private static void convertAdafruit256x16(short[] rgb565, byte[] dest) {
+		convertAdafruit(rgb565, 128, 16, dest);  //for a 256x16 matrix
+	}
+	
 	private static void convertAdafruit32x32_ColorSwap(short[] rgb565, byte[] dest) {
 		convertAdafruitColorSwap(rgb565, 32, dest);
 	}
@@ -626,12 +642,14 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 		case ADAFRUIT_64x64:
 		case ADAFRUIT_128x32:
 		case ADAFRUIT_32x128:
+		case ADAFRUIT_128x16:
 			return 4; 
 
 		case SEEEDSTUDIO_4_MIRRORED: 
 		case SEEEDSTUDIO_64x64:
 		case SEEEDSTUDIO_128x32:
 		case SEEEDSTUDIO_32x128:
+		case ADAFRUIT_256x16:
 			return 8; 	
 		
 
@@ -654,6 +672,8 @@ class RgbLedMatrixImpl extends AbstractResource implements RgbLedMatrix {
 		case SEEEDSTUDIO_128x32:
 		case SEEEDSTUDIO_32x128:
 		case ADAFRUIT_64x16:
+		case ADAFRUIT_128x16:
+		case ADAFRUIT_256x16:
 		
 			return 8; 	
 			
