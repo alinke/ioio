@@ -49,6 +49,9 @@
 #include <string.h>
 #include "debug.h"
 
+#include "bt_log.h"
+
+
 void bt_store_16(uint8_t *buffer, uint16_t pos, uint16_t value){
     buffer[pos++] = value;
     buffer[pos++] = value >> 8;
@@ -119,6 +122,8 @@ void printf_hexdump(const void *data, int size){
 
 void hexdump(const void *data, int size){
 #ifdef ENABLE_LOG_INFO
+  LogPrintf("[hci] - hexdump  size: %d  data: 0x%04x", size, (uint16_t)data);
+
     char buffer[6*16+1];
     int i, j;
 

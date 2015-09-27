@@ -27,7 +27,11 @@
  * or implied.
  */
 
+
 #include "uart.h"
+
+
+#ifdef ENABLE_UART
 
 #include <assert.h>
 #include "atomic.h"
@@ -40,6 +44,9 @@
 #include "protocol.h"
 #include "sync.h"
 
+#include "log.h"
+
+
 #define RX_BUF_SIZE 256
 #define TX_BUF_SIZE 256
 
@@ -48,7 +55,7 @@
 
 typedef struct {
   volatile int num_tx_since_last_report;
-  BYTE_QUEUE rx_queue;
+  BYTE_QUEUE rx_queue;  // 10 bytes
   BYTE_QUEUE tx_queue;
   BYTE rx_buffer[RX_BUF_SIZE];
   BYTE tx_buffer[TX_BUF_SIZE];
@@ -56,8 +63,11 @@ typedef struct {
 
 static UART_STATE uarts[NUM_UART_MODULES];
 
+
+
 #define _UARTREG_REF_COMMA(num, dummy) (volatile UART*) &U##num##MODE,
 
+// 8 bytes  4 pointers
 volatile UART* uart_reg[NUM_UART_MODULES] = {
   REPEAT_1B(_UARTREG_REF_COMMA, NUM_UART_MODULES, 0)
 };
@@ -89,6 +99,8 @@ static void UARTConfigInternal(int uart_num, int rate, int speed4x, int two_stop
                two_stop_bits, parity);
   }
   SAVE_UART_FOR_LOG(uart_num);
+  SAVE_UART_FOR_STDIO_LOG(uart_num);
+
   AssignUxRXIE(uart_num, 0);  // disable RX int.
   AssignUxTXIE(uart_num, 0);  // disable TX int.
   regs->uxmode = 0x0000;  // disable UART.
@@ -224,3 +236,5 @@ void UARTTransmit(int uart_num, const void* data, int size) {
   DEFINE_INTERRUPT_HANDLERS(4)
 #endif
 
+
+#endif // ENABLE_UART

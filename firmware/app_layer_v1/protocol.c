@@ -144,7 +144,7 @@ typedef enum {
 DEFINE_STATIC_BYTE_QUEUE(tx_queue, 4096);
 static int bytes_out;
 static int max_packet;
-static STATE state;
+static STATE state = STATE_CLOSED;
 
 typedef enum {
   WAIT_TYPE,
@@ -187,7 +187,22 @@ static inline int IncomingVarArgSize(const INCOMING_MESSAGE* msg) {
   }
 }
 
+static CHANNEL_HANDLE current_handle = 0;
+
+void AppProtocolDisconnect() {
+  LogProtocol("AppProtocolDisconnect  handle: 0x%04x", current_handle);
+  if ( current_handle != 0 ) {
+    //ConnectionCloseChannel(current_handle);
+    ByteQueueClear(&tx_queue);
+    state = STATE_CLOSING;
+  }
+  return;
+}
+
+
 void AppProtocolInit(CHANNEL_HANDLE h) {
+  current_handle = h;
+
   _prog_addressT p;
   bytes_out = 0;
   rx_buffer_cursor = 0;
@@ -212,13 +227,17 @@ void AppProtocolInit(CHANNEL_HANDLE h) {
 }
 
 void AppProtocolSendMessage(const OUTGOING_MESSAGE* msg) {
+  LogProtocol("SendMessage");
   if (state != STATE_OPEN) return;
+  
   PRIORITY(1) {
     ByteQueuePushBuffer(&tx_queue, (const BYTE*) msg, OutgoingMessageLength(msg));
   }
 }
 
 void AppProtocolSendMessageWithVarArg(const OUTGOING_MESSAGE* msg, const void* data, int size) {
+  LogProtocol("SendMessageWithVarArg");
+
   if (state != STATE_OPEN) return;
   PRIORITY(1) {
     ByteQueuePushBuffer(&tx_queue, (const BYTE*) msg, OutgoingMessageLength(msg));
@@ -229,6 +248,7 @@ void AppProtocolSendMessageWithVarArg(const OUTGOING_MESSAGE* msg, const void* d
 void AppProtocolSendMessageWithVarArgSplit(const OUTGOING_MESSAGE* msg,
                                            const void* data1, int size1,
                                            const void* data2, int size2) {
+  LogProtocol("SendMessageWithVarArgSplit");
   if (state != STATE_OPEN) return;
   PRIORITY(1) {
     ByteQueuePushBuffer(&tx_queue, (const BYTE*) msg, OutgoingMessageLength(msg));
@@ -237,14 +257,18 @@ void AppProtocolSendMessageWithVarArgSplit(const OUTGOING_MESSAGE* msg,
   }
 }
 
-void AppProtocolTasks(CHANNEL_HANDLE h) {
-  if (state == STATE_CLOSED) return;
+BOOL AppProtocolTasks(CHANNEL_HANDLE h) {
+  if (state == STATE_CLOSED)
+    return FALSE;
+
   if (state == STATE_CLOSING && ByteQueueSize(&tx_queue) == 0) {
     log_printf("Finished flushing, closing the channel.");
+    LogProtocol("AppProtocolTasks  close channel");
     ConnectionCloseChannel(h);
     state = STATE_CLOSED;
-    return;
+    return FALSE;
   }
+
   UARTTasks();
   SPITasks();
   I2CTasks();
@@ -262,13 +286,17 @@ void AppProtocolTasks(CHANNEL_HANDLE h) {
       ConnectionSend(h, data, bytes_out);
     }
   }
+  return TRUE;
 }
+
 
 static void Echo() {
   AppProtocolSendMessage((const OUTGOING_MESSAGE*) &rx_msg);
 }
 
 static BOOL MessageDone() {
+  LogProtocol("MessageDone");
+
   // TODO: check pin capabilities
   switch (rx_msg.type) {
     case HARD_RESET:

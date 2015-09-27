@@ -78,3 +78,4 @@ int hsp_hs_send_result(char * indication);
 #endif
 
 #endif
+

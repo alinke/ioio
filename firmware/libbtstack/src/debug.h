@@ -73,7 +73,7 @@ static inline void __log_unused(const char *format, ...) {
 #ifdef HAVE_HCI_DUMP
 #define log_debug(format, ...)  HCI_DUMP_LOG(LOG_LEVEL_DEBUG, format,  ## __VA_ARGS__)
 #else
-#define log_debug(format, ...)  PRINTF(format "\n",  ## __VA_ARGS__)
+#define log_debug(format, ...)  PRINTF("    [debug] " format "\n",  ## __VA_ARGS__)
 #endif
 #else
 #define log_debug(...) __log_unused(__VA_ARGS__)
@@ -83,7 +83,7 @@ static inline void __log_unused(const char *format, ...) {
 #ifdef HAVE_HCI_DUMP
 #define log_info(format, ...)  HCI_DUMP_LOG(LOG_LEVEL_INFO, format,  ## __VA_ARGS__)
 #else
-#define log_info(format, ...)  PRINTF(format "\n",  ## __VA_ARGS__)
+#define log_info(format, ...)  PRINTF("    [info] " format "\n",  ## __VA_ARGS__)
 #endif
 #else
 #define log_info(...) __log_unused(__VA_ARGS__)
@@ -93,7 +93,7 @@ static inline void __log_unused(const char *format, ...) {
 #ifdef HAVE_HCI_DUMP
 #define log_error(format, ...)  HCI_DUMP_LOG(LOG_LEVEL_ERROR, format,  ## __VA_ARGS__)
 #else
-#define log_error(format, ...)  PRINTF(format "\n",  ## __VA_ARGS__)
+#define log_error(format, ...)  PRINTF("    [error] " format "\n",  ## __VA_ARGS__)
 #endif
 #else
 #define log_error(...) __log_unused(__VA_ARGS__)

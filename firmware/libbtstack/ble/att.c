@@ -741,8 +741,10 @@ static uint16_t handle_read_by_group_type_request2(att_connection_t * att_connec
                                             uint16_t start_handle, uint16_t end_handle,
                                             uint16_t attribute_type_len, uint8_t * attribute_type){
     
-    log_info("ATT_READ_BY_GROUP_TYPE_REQUEST: from %04X to %04X, buffer size %u, type: ", start_handle, end_handle, response_buffer_size);
+    log_info("ATT_READ_BY_GROUP_TYPE_REQUEST: from %04X to %04X, buffer size %u, attr_len: %u  type: 0x%04x",
+             start_handle, end_handle, (unsigned int)response_buffer_size, (unsigned int)attribute_type_len, (unsigned int)attribute_type);
     hexdump(attribute_type, attribute_type_len);
+
     uint8_t request_type = ATT_READ_BY_GROUP_TYPE_REQUEST;
     
     if (start_handle > end_handle || start_handle == 0){
@@ -836,7 +838,10 @@ uint16_t handle_read_by_group_type_request(att_connection_t * att_connection, ui
     } else {
         attribute_type_len = 16;
     }
-    return handle_read_by_group_type_request2(att_connection, response_buffer, response_buffer_size, READ_BT_16(request_buffer, 1), READ_BT_16(request_buffer, 3), attribute_type_len, &request_buffer[5]);
+
+    return handle_read_by_group_type_request2(att_connection, response_buffer, response_buffer_size,
+                                              READ_BT_16(request_buffer, 1), READ_BT_16(request_buffer, 3),
+                                              attribute_type_len, &request_buffer[5]);
 }
 
 //

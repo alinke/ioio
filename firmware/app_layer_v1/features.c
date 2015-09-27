@@ -45,9 +45,9 @@
 #include "pp_util.h"
 #include "incap.h"
 
-
 #include "pixel.h"
 
+#include "log.h"
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -84,6 +84,7 @@ static void PinsInit() {
 void SetPinDigitalOut(int pin, int value, int open_drain) {
   log_printf("SetPinDigitalOut(%d, %d, %d)", pin, value, open_drain);
   SAVE_PIN_FOR_LOG(pin);
+  SAVE_PIN_FOR_STDIO_LOG(pin);
   // Protect from the user trying to use push-pull, later pulling low using the
   // bootloader pin.
   if (pin == 0) open_drain = 1;
@@ -100,6 +101,7 @@ void SetPinDigitalOut(int pin, int value, int open_drain) {
 void SetPinDigitalIn(int pin, int pull) {
   log_printf("SetPinDigitalIn(%d, %d)", pin, pull);
   SAVE_PIN_FOR_LOG(pin);
+  SAVE_PIN_FOR_STDIO_LOG(pin);
   PinSetAnsel(pin, 0);
   PinSetRpor(pin, 0);
   PinSetCnen(pin, 0);
@@ -124,12 +126,14 @@ void SetPinDigitalIn(int pin, int pull) {
 void SetPinPwm(int pin, int pwm_num, int enable) {
   log_printf("SetPinPwm(%d, %d)", pin, pwm_num);
   SAVE_PIN_FOR_LOG(pin);
+  SAVE_PIN_FOR_STDIO_LOG(pin);
   PinSetRpor(pin, enable ? (pwm_num == 8 ? 35 : 18 + pwm_num) : 0);
 }
 
 void SetPinUart(int pin, int uart_num, int dir, int enable) {
   log_printf("SetPinUart(%d, %d, %d, %d)", pin, uart_num, dir, enable);
   SAVE_PIN_FOR_LOG(pin);
+  SAVE_PIN_FOR_STDIO_LOG(pin);
   SAVE_UART_FOR_LOG(uart_num);
   if (dir) {
     // TX
@@ -174,6 +178,7 @@ void SetPinInCap(int pin, int incap_num, int enable) {
 void SetPinAnalogIn(int pin) {
   log_printf("SetPinAnalogIn(%d)", pin);
   SAVE_PIN_FOR_LOG(pin);
+  SAVE_PIN_FOR_STDIO_LOG(pin);
   PinSetRpor(pin, 0);
   PinSetCnen(pin, 0);
   PinSetCnpu(pin, 0);
@@ -185,6 +190,7 @@ void SetPinAnalogIn(int pin) {
 void SetPinSpi(int pin, int spi_num, int mode, int enable) {
   log_printf("SetPinSpi(%d, %d, %d, %d)", pin, spi_num, mode, enable);
   SAVE_PIN_FOR_LOG(pin);
+  SAVE_PIN_FOR_STDIO_LOG(pin);
   switch (mode) {
     case 0:  // data out
       {

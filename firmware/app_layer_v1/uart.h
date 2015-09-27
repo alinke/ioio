@@ -30,11 +30,37 @@
 #ifndef __UART_H__
 #define __UART_H__
 
+// The uart module uses 2144 bytes of memory
+//
+// Without ENABLE_UART
+//   heap                        0x6f8c                               0x600  (1536)
+//   stack                       0x758c                               0xa74  (2676)
+//   Maximum dynamic memory (bytes):         0x1074  (4212)
+//
+// With ENABLE_UART
+//   heap                        0x77ee                               0x600  (1536)
+//   stack                       0x7dee                               0x212  (532)
+//   Maximum dynamic memory (bytes):          0x812  (2068)
+//
+
+//#define ENABLE_UART
+
+#ifndef ENABLE_UART
+
+#define UARTInit()
+#define UARTConfig(...)
+#define UARTTransmit(...)
+#define UARTTasks()
+
+#else // ENABLE_UART
+
 void UARTInit();
 void UARTConfig(int uart_num, int rate, int speed4x, int two_stop_bits,
                 int parity);
 void UARTTransmit(int uart_num, const void* data, int size);
 void UARTTasks();
+
+#endif // ENABLE_UART
 
 
 #endif  // __UART_H__

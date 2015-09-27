@@ -577,5 +577,3 @@ static void handle_query_rfcomm_event(sdp_query_event_t * event, void * context)
     }
 }
 
-
-

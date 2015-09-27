@@ -1,3 +1,4 @@
+/*
 #include <stdio.h>
 
 #include "btstack-config.h"
@@ -87,7 +88,7 @@
 #define HCI_READ_BUFFER_SIZE                 0x05
 #define HCI_READ_BD_ADDR                     0x09
 #define HCI_READ_DATA_BLOCK_SIZE             0x0a
-
+*/
 
 
 //--------------------
@@ -95,6 +96,7 @@
 // Helpers
 //
 
+/*
 const char *stackStateName(HCI_STATE state) {
   switch ( state ) {
   case HCI_STATE_OFF:
@@ -113,30 +115,6 @@ const char *stackStateName(HCI_STATE state) {
 
   return "<unknown>";
 }
-
-
-/*
-static char p_buf[250];
-char *get_packet_string(uint8_t *packet, uint16_t size)
-{
-  int i = 0;
-  int pos = 0;
-  int len = 0;
-  char *buf = p_buf;
-
-  int n = size;
-  if ( n > 8 )
-    n = 8;
-
-  for ( i = 0; i < n; i++ ) {
-    len = sprintf( buf, "%02x ", packet[i] );
-    pos += len;
-    buf = &p_buf[pos];
-  }
-
-  return p_buf;
-}
-*/
 
 
 //
@@ -213,44 +191,44 @@ char *hciEventName(uint8_t code) {
     return "HCI_EVENT_DISCONNECTION_COMPLETE";
   case HCI_EVENT_AUTHENTICATION_COMPLETE_EVENT:
     return "HCI_EVENT_AUTHENTICATION_COMPLETE_EVENT";
-    /*
-  case HCI_EVENT_REMOTE_NAME_REQUEST_COMPLETE:
-    return "HCI_EVENT_REMOTE_NAME_REQUEST_COMPLETE";
-  case HCI_EVENT_ENCRYPTION_CHANGE:
-    return "HCI_EVENT_ENCRYPTION_CHANGE";
-  case HCI_EVENT_CHANGE_CONNECTION_LINK_KEY_COMPLETE:
-    return "HCI_EVENT_CHANGE_CONNECTION_LINK_KEY_COMPLETE";
-  case HCI_EVENT_MASTER_LINK_KEY_COMPLETE:
-    return "HCI_EVENT_MASTER_LINK_KEY_COMPLETE";
-    */
+
+//  case HCI_EVENT_REMOTE_NAME_REQUEST_COMPLETE:
+//    return "HCI_EVENT_REMOTE_NAME_REQUEST_COMPLETE";
+//  case HCI_EVENT_ENCRYPTION_CHANGE:
+//    return "HCI_EVENT_ENCRYPTION_CHANGE";
+//  case HCI_EVENT_CHANGE_CONNECTION_LINK_KEY_COMPLETE:
+//    return "HCI_EVENT_CHANGE_CONNECTION_LINK_KEY_COMPLETE";
+//  case HCI_EVENT_MASTER_LINK_KEY_COMPLETE:
+//    return "HCI_EVENT_MASTER_LINK_KEY_COMPLETE";
+
   case HCI_EVENT_READ_REMOTE_SUPPORTED_FEATURES_COMPLETE:
     return "HCI_EVENT_READ_REMOTE_SUPPORTED_FEATURES_COMPLETE";
-    /*
-  case HCI_EVENT_READ_REMOTE_VERSION_INFORMATION_COMPLETE:
-    return "HCI_EVENT_READ_REMOTE_VERSION_INFORMATION_COMPLETE";
-  case HCI_EVENT_QOS_SETUP_COMPLETE:
-    return "HCI_EVENT_QOS_SETUP_COMPLETE";
-  case HCI_EVENT_COMMAND_COMPLETE:
-    return "HCI_EVENT_COMMAND_COMPLETE";
-    */
+
+//  case HCI_EVENT_READ_REMOTE_VERSION_INFORMATION_COMPLETE:
+//    return "HCI_EVENT_READ_REMOTE_VERSION_INFORMATION_COMPLETE";
+//  case HCI_EVENT_QOS_SETUP_COMPLETE:
+//    return "HCI_EVENT_QOS_SETUP_COMPLETE";
+//  case HCI_EVENT_COMMAND_COMPLETE:
+//    return "HCI_EVENT_COMMAND_COMPLETE";
+
   case HCI_EVENT_COMMAND_STATUS:
     return "HCI_EVENT_COMMAND_STATUS";
-    /*
-  case HCI_EVENT_HARDWARE_ERROR:
-    return "HCI_EVENT_HARDWARE_ERROR";
-  case HCI_EVENT_FLUSH_OCCURED:
-    return "HCI_EVENT_FLUSH_OCCURED";
-  case HCI_EVENT_ROLE_CHANGE:
-    return "HCI_EVENT_ROLE_CHANGE";
-    */
+
+//  case HCI_EVENT_HARDWARE_ERROR:
+//    return "HCI_EVENT_HARDWARE_ERROR";
+//  case HCI_EVENT_FLUSH_OCCURED:
+//    return "HCI_EVENT_FLUSH_OCCURED";
+//  case HCI_EVENT_ROLE_CHANGE:
+//    return "HCI_EVENT_ROLE_CHANGE";
+
   case HCI_EVENT_NUMBER_OF_COMPLETED_PACKETS:
     return "HCI_EVENT_NUMBER_OF_COMPLETED_PACKETS";
-    /*
-  case HCI_EVENT_MODE_CHANGE_EVENT:
-    return "HCI_EVENT_MODE_CHANGE_EVENT";
-  case HCI_EVENT_RETURN_LINK_KEYS:
-    return "HCI_EVENT_RETURN_LINK_KEYS";
-    */
+
+//  case HCI_EVENT_MODE_CHANGE_EVENT:
+//    return "HCI_EVENT_MODE_CHANGE_EVENT";
+//  case HCI_EVENT_RETURN_LINK_KEYS:
+//    return "HCI_EVENT_RETURN_LINK_KEYS";
+
   case HCI_EVENT_PIN_CODE_REQUEST:
     return "HCI_EVENT_PIN_CODE_REQUEST";
   case HCI_EVENT_LINK_KEY_REQUEST:
@@ -261,222 +239,223 @@ char *hciEventName(uint8_t code) {
     return "HCI_EVENT_DATA_BUFFER_OVERFLOW";
   case HCI_EVENT_MAX_SLOTS_CHANGED:
     return "HCI_EVENT_MAX_SLOTS_CHANGED";
-    /*
-  case HCI_EVENT_READ_CLOCK_OFFSET_COMPLETE:
-    return "HCI_EVENT_READ_CLOCK_OFFSET_COMPLETE";
-  case HCI_EVENT_PACKET_TYPE_CHANGED:
-    return "HCI_EVENT_PACKET_TYPE_CHANGED";
-  case HCI_EVENT_INQUIRY_RESULT_WITH_RSSI:
-    return "HCI_EVENT_INQUIRY_RESULT_WITH_RSSI";
-    //  case HCI_EVENT_SYNCHRONOUS_CONNECTION_COMPLETE:
-    //    return "HCI_EVENT_SYNCHRONOUS_CONNECTION_COMPLETE";
-  case HCI_EVENT_EXTENDED_INQUIRY_RESPONSE:
-    return "HCI_EVENT_EXTENDED_INQUIRY_RESPONSE";
-  case HCI_EVENT_IO_CAPABILITY_REQUEST:
-    return "HCI_EVENT_IO_CAPABILITY_REQUEST";
-  case HCI_EVENT_IO_CAPABILITY_RESPONSE:
-    return "HCI_EVENT_IO_CAPABILITY_RESPONSE";
-  case HCI_EVENT_USER_CONFIRMATION_REQUEST:
-    return "HCI_EVENT_USER_CONFIRMATION_REQUEST";
-  case HCI_EVENT_USER_PASSKEY_REQUEST:
-    return "HCI_EVENT_USER_PASSKEY_REQUEST";
-  case HCI_EVENT_REMOTE_OOB_DATA_REQUEST:
-    return "HCI_EVENT_REMOTE_OOB_DATA_REQUEST";
-  case HCI_EVENT_SIMPLE_PAIRING_COMPLETE:
-    return "HCI_EVENT_SIMPLE_PAIRING_COMPLETE";
-    */
+
+//  case HCI_EVENT_READ_CLOCK_OFFSET_COMPLETE:
+//    return "HCI_EVENT_READ_CLOCK_OFFSET_COMPLETE";
+//  case HCI_EVENT_PACKET_TYPE_CHANGED:
+//    return "HCI_EVENT_PACKET_TYPE_CHANGED";
+//  case HCI_EVENT_INQUIRY_RESULT_WITH_RSSI:
+//    return "HCI_EVENT_INQUIRY_RESULT_WITH_RSSI";
+//    //  case HCI_EVENT_SYNCHRONOUS_CONNECTION_COMPLETE:
+//    //    return "HCI_EVENT_SYNCHRONOUS_CONNECTION_COMPLETE";
+//  case HCI_EVENT_EXTENDED_INQUIRY_RESPONSE:
+//    return "HCI_EVENT_EXTENDED_INQUIRY_RESPONSE";
+//  case HCI_EVENT_IO_CAPABILITY_REQUEST:
+//    return "HCI_EVENT_IO_CAPABILITY_REQUEST";
+//  case HCI_EVENT_IO_CAPABILITY_RESPONSE:
+//    return "HCI_EVENT_IO_CAPABILITY_RESPONSE";
+//  case HCI_EVENT_USER_CONFIRMATION_REQUEST:
+//    return "HCI_EVENT_USER_CONFIRMATION_REQUEST";
+//  case HCI_EVENT_USER_PASSKEY_REQUEST:
+//    return "HCI_EVENT_USER_PASSKEY_REQUEST";
+//  case HCI_EVENT_REMOTE_OOB_DATA_REQUEST:
+//    return "HCI_EVENT_REMOTE_OOB_DATA_REQUEST";
+//  case HCI_EVENT_SIMPLE_PAIRING_COMPLETE:
+//    return "HCI_EVENT_SIMPLE_PAIRING_COMPLETE";
+
   case HCI_EVENT_LE_META:
     return "HCI_EVENT_LE_META";
-    /*
-    //  case HCI_SUBEVENT_LE_CONNECTION_COMPLETE:
-    //    return "HCI_SUBEVENT_LE_CONNECTION_COMPLETE";
-    //  case HCI_SUBEVENT_LE_ADVERTISING_REPORT:
-    //    return "HCI_SUBEVENT_LE_ADVERTISING_REPORT";
-    //  case HCI_SUBEVENT_LE_CONNECTION_UPDATE_COMPLETE:
-    //    return "HCI_SUBEVENT_LE_CONNECTION_UPDATE_COMPLETE";
-    //  case HCI_SUBEVENT_LE_READ_REMOTE_USED_FEATURES_COMPLETE:
-    //    return "HCI_SUBEVENT_LE_READ_REMOTE_USED_FEATURES_COMPLETE";
-    //  case HCI_SUBEVENT_LE_LONG_TERM_KEY_REQUEST:
-    //    return "HCI_SUBEVENT_LE_LONG_TERM_KEY_REQUEST";
-  case BTSTACK_EVENT_STATE:
-    return "BTSTACK_EVENT_STATE";
-  case BTSTACK_EVENT_NR_CONNECTIONS_CHANGED:
-    return "BTSTACK_EVENT_NR_CONNECTIONS_CHANGED";
-  case BTSTACK_EVENT_POWERON_FAILED:
-    return "BTSTACK_EVENT_POWERON_FAILED";
-  case BTSTACK_EVENT_VERSION:
-    return "BTSTACK_EVENT_VERSION";
-  case BTSTACK_EVENT_SYSTEM_BLUETOOTH_ENABLED:
-    return "BTSTACK_EVENT_SYSTEM_BLUETOOTH_ENABLED";
-  case BTSTACK_EVENT_REMOTE_NAME_CACHED:
-    return "BTSTACK_EVENT_REMOTE_NAME_CACHED";
-  case BTSTACK_EVENT_DISCOVERABLE_ENABLED:
-    return "BTSTACK_EVENT_DISCOVERABLE_ENABLED";
-  case DAEMON_EVENT_CONNECTION_OPENED:
-    return "DAEMON_EVENT_CONNECTION_OPENED";
-  case DAEMON_EVENT_CONNECTION_CLOSED:
-    return "DAEMON_EVENT_CONNECTION_CLOSED";
-  case DAEMON_NR_CONNECTIONS_CHANGED:
-    return "DAEMON_NR_CONNECTIONS_CHANGED";
-  case DAEMON_EVENT_NEW_RFCOMM_CREDITS:
-    return "DAEMON_EVENT_NEW_RFCOMM_CREDITS";
-  case DAEMON_EVENT_HCI_PACKET_SENT:
-    return "DAEMON_EVENT_HCI_PACKET_SENT";
-  case L2CAP_EVENT_CHANNEL_OPENED:
-    return "L2CAP_EVENT_CHANNEL_OPENED";
-  case L2CAP_EVENT_CHANNEL_CLOSED:
-    return "L2CAP_EVENT_CHANNEL_CLOSED";
-  case L2CAP_EVENT_INCOMING_CONNECTION:
-    return "L2CAP_EVENT_INCOMING_CONNECTION";
-  case L2CAP_EVENT_TIMEOUT_CHECK:
-    return "L2CAP_EVENT_TIMEOUT_CHECK";
-  case L2CAP_EVENT_CREDITS:
-    return "L2CAP_EVENT_CREDITS";
-  case L2CAP_EVENT_SERVICE_REGISTERED:
-    return "L2CAP_EVENT_SERVICE_REGISTERED";
-    //  case L2CAP_EVENT_CONNECTION_PARAMETER_UPDATE_REQUEST:
-    //    return "L2CAP_EVENT_CONNECTION_PARAMETER_UPDATE_REQUEST";
-    //  case L2CAP_EVENT_CONNECTION_PARAMETER_UPDATE_RESPONSE:
-    //    return "L2CAP_EVENT_CONNECTION_PARAMETER_UPDATE_RESPONSE";
-  case RFCOMM_EVENT_OPEN_CHANNEL_COMPLETE:
-    return "RFCOMM_EVENT_OPEN_CHANNEL_COMPLETE";
-  case RFCOMM_EVENT_CHANNEL_CLOSED:
-    return "RFCOMM_EVENT_CHANNEL_CLOSED";
-  case RFCOMM_EVENT_INCOMING_CONNECTION:
-    return "RFCOMM_EVENT_INCOMING_CONNECTION";
-  case RFCOMM_EVENT_REMOTE_LINE_STATUS:
-    return "RFCOMM_EVENT_REMOTE_LINE_STATUS";
-  case RFCOMM_EVENT_CREDITS:
-    return "RFCOMM_EVENT_CREDITS";
-  case RFCOMM_EVENT_SERVICE_REGISTERED:
-    return "RFCOMM_EVENT_SERVICE_REGISTERED";
-  case RFCOMM_EVENT_PERSISTENT_CHANNEL:
-    return "RFCOMM_EVENT_PERSISTENT_CHANNEL";
-    //  case RFCOMM_EVENT_REMOTE_MODEM_STATUS:
-    //    return "RFCOMM_EVENT_REMOTE_MODEM_STATUS";
-    //  case RFCOMM_EVENT_PORT_CONFIGURATION:
-    //    return "RFCOMM_EVENT_PORT_CONFIGURATION";
-  case SDP_SERVICE_REGISTERED:
-    return "SDP_SERVICE_REGISTERED";
-  case SDP_QUERY_COMPLETE:
-    return "SDP_QUERY_COMPLETE";
-  case SDP_QUERY_RFCOMM_SERVICE:
-    return "SDP_QUERY_RFCOMM_SERVICE";
-  case SDP_QUERY_ATTRIBUTE_VALUE:
-    return "SDP_QUERY_ATTRIBUTE_VALUE";
-  case SDP_QUERY_SERVICE_RECORD_HANDLE:
-    return "SDP_QUERY_SERVICE_RECORD_HANDLE";
-    //  case GATT_QUERY_COMPLETE:
-    //    return "GATT_QUERY_COMPLETE";
-  case GATT_SERVICE_QUERY_RESULT:
-    return "GATT_SERVICE_QUERY_RESULT";
-  case GATT_CHARACTERISTIC_QUERY_RESULT:
-    return "GATT_CHARACTERISTIC_QUERY_RESULT";
-    //  case GATT_INCLUDED_SERVICE_QUERY_RESULT:
-    //    return "GATT_INCLUDED_SERVICE_QUERY_RESULT";
-    //  case GATT_ALL_CHARACTERISTIC_DESCRIPTORS_QUERY_RESULT:
-    //    return "GATT_ALL_CHARACTERISTIC_DESCRIPTORS_QUERY_RESULT";
-    //  case GATT_CHARACTERISTIC_VALUE_QUERY_RESULT:
-    //    return "GATT_CHARACTERISTIC_VALUE_QUERY_RESULT";
-    //  case GATT_LONG_CHARACTERISTIC_VALUE_QUERY_RESULT:
-    //    return "GATT_LONG_CHARACTERISTIC_VALUE_QUERY_RESULT";
-    //  case GATT_NOTIFICATION:
-    //    return "GATT_NOTIFICATION";
-    //  case GATT_INDICATION:
-    //    return "GATT_INDICATION";
-    //  case GATT_CHARACTERISTIC_DESCRIPTOR_QUERY_RESULT:
-    //    return "GATT_CHARACTERISTIC_DESCRIPTOR_QUERY_RESULT";
-    //  case GATT_LONG_CHARACTERISTIC_DESCRIPTOR_QUERY_RESULT:
-    //    return "GATT_LONG_CHARACTERISTIC_DESCRIPTOR_QUERY_RESULT";
-    //  case GATT_MTU:
-    //    return "GATT_MTU";
-    //  case ATT_MTU_EXCHANGE_COMPLETE:
-    //    return "ATT_MTU_EXCHANGE_COMPLETE";
-    //  case ATT_HANDLE_VALUE_INDICATION_COMPLETE:
-    //    return "ATT_HANDLE_VALUE_INDICATION_COMPLETE";
-    //  case BNEP_EVENT_SERVICE_REGISTERED:
-    //    return "BNEP_EVENT_SERVICE_REGISTERED";
-    //  case BNEP_EVENT_OPEN_CHANNEL_COMPLETE:
-    //    return "BNEP_EVENT_OPEN_CHANNEL_COMPLETE";
-    //  case BNEP_EVENT_INCOMING_CONNECTION:
-    //    return "BNEP_EVENT_INCOMING_CONNECTION";
-    //  case BNEP_EVENT_CHANNEL_CLOSED:
-    //    return "BNEP_EVENT_CHANNEL_CLOSED";
-    //  case BNEP_EVENT_CHANNEL_TIMEOUT:
-    //    return "BNEP_EVENT_CHANNEL_TIMEOUT";
-    //  case BNEP_EVENT_READY_TO_SEND:
-    //    return "BNEP_EVENT_READY_TO_SEND";
-  case SM_JUST_WORKS_REQUEST:
-    return "SM_JUST_WORKS_REQUEST";
-  case SM_JUST_WORKS_CANCEL:
-    return "SM_JUST_WORKS_CANCEL";
-  case SM_PASSKEY_DISPLAY_NUMBER:
-    return "SM_PASSKEY_DISPLAY_NUMBER";
-  case SM_PASSKEY_DISPLAY_CANCEL:
-    return "SM_PASSKEY_DISPLAY_CANCEL";
-  case SM_PASSKEY_INPUT_NUMBER:
-    return "SM_PASSKEY_INPUT_NUMBER";
-  case SM_PASSKEY_INPUT_CANCEL:
-    return "SM_PASSKEY_INPUT_CANCEL";
-    //  case SM_IDENTITY_RESOLVING_STARTED:
-    //    return "SM_IDENTITY_RESOLVING_STARTED";
-    //  case SM_IDENTITY_RESOLVING_FAILED:
-    //    return "SM_IDENTITY_RESOLVING_FAILED";
-    //  case SM_IDENTITY_RESOLVING_SUCCEEDED:
-    //    return "SM_IDENTITY_RESOLVING_SUCCEEDED";
-    //  case SM_AUTHORIZATION_REQUEST:
-    //    return "SM_AUTHORIZATION_REQUEST";
-    //  case SM_AUTHORIZATION_RESULT:
-    //    return "SM_AUTHORIZATION_RESULT";
-    //  case GAP_SECURITY_LEVEL:
-    //    return "GAP_SECURITY_LEVEL";
-    //  case GAP_DEDICATED_BONDING_COMPLETED:
-    //    return "GAP_DEDICATED_BONDING_COMPLETED";
-    //  case GAP_LE_ADVERTISING_REPORT:
-    //    return "GAP_LE_ADVERTISING_REPORT";
-    //  case HCI_EVENT_HSP_META:
-    //    return "HCI_EVENT_HSP_META";
 
-//  case HSP_SUBEVENT_AUDIO_CONNECTION_COMPLETE:
-//    return "HSP_SUBEVENT_AUDIO_CONNECTION_COMPLETE";
-//  case HSP_SUBEVENT_AUDIO_DISCONNECTION_COMPLETE:
-//    return "HSP_SUBEVENT_AUDIO_DISCONNECTION_COMPLETE";
-//  case HSP_SUBEVENT_MICROPHONE_GAIN_CHANGED:
-//    return "HSP_SUBEVENT_MICROPHONE_GAIN_CHANGED";
-//  case HSP_SUBEVENT_SPEAKER_GAIN_CHANGED:
-//    return "HSP_SUBEVENT_SPEAKER_GAIN_CHANGED";
-//  case HSP_SUBEVENT_HS_COMMAND:
-//    return "HSP_SUBEVENT_HS_COMMAND";
-//  case HSP_SUBEVENT_AG_INDICATION:
-//    return "HSP_SUBEVENT_AG_INDICATION";
-//  case HSP_SUBEVENT_ERROR:
-//    return "HSP_SUBEVENT_ERROR";
-//  case HSP_SUBEVENT_RING:
-//    return "HSP_SUBEVENT_RING";
+//    //  case HCI_SUBEVENT_LE_CONNECTION_COMPLETE:
+//    //    return "HCI_SUBEVENT_LE_CONNECTION_COMPLETE";
+//    //  case HCI_SUBEVENT_LE_ADVERTISING_REPORT:
+//    //    return "HCI_SUBEVENT_LE_ADVERTISING_REPORT";
+//    //  case HCI_SUBEVENT_LE_CONNECTION_UPDATE_COMPLETE:
+//    //    return "HCI_SUBEVENT_LE_CONNECTION_UPDATE_COMPLETE";
+//    //  case HCI_SUBEVENT_LE_READ_REMOTE_USED_FEATURES_COMPLETE:
+//    //    return "HCI_SUBEVENT_LE_READ_REMOTE_USED_FEATURES_COMPLETE";
+//    //  case HCI_SUBEVENT_LE_LONG_TERM_KEY_REQUEST:
+//    //    return "HCI_SUBEVENT_LE_LONG_TERM_KEY_REQUEST";
+//  case BTSTACK_EVENT_STATE:
+//    return "BTSTACK_EVENT_STATE";
+//  case BTSTACK_EVENT_NR_CONNECTIONS_CHANGED:
+//    return "BTSTACK_EVENT_NR_CONNECTIONS_CHANGED";
+//  case BTSTACK_EVENT_POWERON_FAILED:
+//    return "BTSTACK_EVENT_POWERON_FAILED";
+//  case BTSTACK_EVENT_VERSION:
+//    return "BTSTACK_EVENT_VERSION";
+//  case BTSTACK_EVENT_SYSTEM_BLUETOOTH_ENABLED:
+//    return "BTSTACK_EVENT_SYSTEM_BLUETOOTH_ENABLED";
+//  case BTSTACK_EVENT_REMOTE_NAME_CACHED:
+//    return "BTSTACK_EVENT_REMOTE_NAME_CACHED";
+//  case BTSTACK_EVENT_DISCOVERABLE_ENABLED:
+//    return "BTSTACK_EVENT_DISCOVERABLE_ENABLED";
+//  case DAEMON_EVENT_CONNECTION_OPENED:
+//    return "DAEMON_EVENT_CONNECTION_OPENED";
+//  case DAEMON_EVENT_CONNECTION_CLOSED:
+//    return "DAEMON_EVENT_CONNECTION_CLOSED";
+//  case DAEMON_NR_CONNECTIONS_CHANGED:
+//    return "DAEMON_NR_CONNECTIONS_CHANGED";
+//  case DAEMON_EVENT_NEW_RFCOMM_CREDITS:
+//    return "DAEMON_EVENT_NEW_RFCOMM_CREDITS";
+//  case DAEMON_EVENT_HCI_PACKET_SENT:
+//    return "DAEMON_EVENT_HCI_PACKET_SENT";
+//  case L2CAP_EVENT_CHANNEL_OPENED:
+//    return "L2CAP_EVENT_CHANNEL_OPENED";
+//  case L2CAP_EVENT_CHANNEL_CLOSED:
+//    return "L2CAP_EVENT_CHANNEL_CLOSED";
+//  case L2CAP_EVENT_INCOMING_CONNECTION:
+//    return "L2CAP_EVENT_INCOMING_CONNECTION";
+//  case L2CAP_EVENT_TIMEOUT_CHECK:
+//    return "L2CAP_EVENT_TIMEOUT_CHECK";
+//  case L2CAP_EVENT_CREDITS:
+//    return "L2CAP_EVENT_CREDITS";
+//  case L2CAP_EVENT_SERVICE_REGISTERED:
+//    return "L2CAP_EVENT_SERVICE_REGISTERED";
+//    //  case L2CAP_EVENT_CONNECTION_PARAMETER_UPDATE_REQUEST:
+//    //    return "L2CAP_EVENT_CONNECTION_PARAMETER_UPDATE_REQUEST";
+//    //  case L2CAP_EVENT_CONNECTION_PARAMETER_UPDATE_RESPONSE:
+//    //    return "L2CAP_EVENT_CONNECTION_PARAMETER_UPDATE_RESPONSE";
+//  case RFCOMM_EVENT_OPEN_CHANNEL_COMPLETE:
+//    return "RFCOMM_EVENT_OPEN_CHANNEL_COMPLETE";
+//  case RFCOMM_EVENT_CHANNEL_CLOSED:
+//    return "RFCOMM_EVENT_CHANNEL_CLOSED";
+//  case RFCOMM_EVENT_INCOMING_CONNECTION:
+//    return "RFCOMM_EVENT_INCOMING_CONNECTION";
+//  case RFCOMM_EVENT_REMOTE_LINE_STATUS:
+//    return "RFCOMM_EVENT_REMOTE_LINE_STATUS";
+//  case RFCOMM_EVENT_CREDITS:
+//    return "RFCOMM_EVENT_CREDITS";
+//  case RFCOMM_EVENT_SERVICE_REGISTERED:
+//    return "RFCOMM_EVENT_SERVICE_REGISTERED";
+//  case RFCOMM_EVENT_PERSISTENT_CHANNEL:
+//    return "RFCOMM_EVENT_PERSISTENT_CHANNEL";
+//    //  case RFCOMM_EVENT_REMOTE_MODEM_STATUS:
+//    //    return "RFCOMM_EVENT_REMOTE_MODEM_STATUS";
+//    //  case RFCOMM_EVENT_PORT_CONFIGURATION:
+//    //    return "RFCOMM_EVENT_PORT_CONFIGURATION";
+//  case SDP_SERVICE_REGISTERED:
+//    return "SDP_SERVICE_REGISTERED";
+//  case SDP_QUERY_COMPLETE:
+//    return "SDP_QUERY_COMPLETE";
+//  case SDP_QUERY_RFCOMM_SERVICE:
+//    return "SDP_QUERY_RFCOMM_SERVICE";
+//  case SDP_QUERY_ATTRIBUTE_VALUE:
+//    return "SDP_QUERY_ATTRIBUTE_VALUE";
+//  case SDP_QUERY_SERVICE_RECORD_HANDLE:
+//    return "SDP_QUERY_SERVICE_RECORD_HANDLE";
+//    //  case GATT_QUERY_COMPLETE:
+//    //    return "GATT_QUERY_COMPLETE";
+//  case GATT_SERVICE_QUERY_RESULT:
+//    return "GATT_SERVICE_QUERY_RESULT";
+//  case GATT_CHARACTERISTIC_QUERY_RESULT:
+//    return "GATT_CHARACTERISTIC_QUERY_RESULT";
+//    //  case GATT_INCLUDED_SERVICE_QUERY_RESULT:
+//    //    return "GATT_INCLUDED_SERVICE_QUERY_RESULT";
+//    //  case GATT_ALL_CHARACTERISTIC_DESCRIPTORS_QUERY_RESULT:
+//    //    return "GATT_ALL_CHARACTERISTIC_DESCRIPTORS_QUERY_RESULT";
+//    //  case GATT_CHARACTERISTIC_VALUE_QUERY_RESULT:
+//    //    return "GATT_CHARACTERISTIC_VALUE_QUERY_RESULT";
+//    //  case GATT_LONG_CHARACTERISTIC_VALUE_QUERY_RESULT:
+//    //    return "GATT_LONG_CHARACTERISTIC_VALUE_QUERY_RESULT";
+//    //  case GATT_NOTIFICATION:
+//    //    return "GATT_NOTIFICATION";
+//    //  case GATT_INDICATION:
+//    //    return "GATT_INDICATION";
+//    //  case GATT_CHARACTERISTIC_DESCRIPTOR_QUERY_RESULT:
+//    //    return "GATT_CHARACTERISTIC_DESCRIPTOR_QUERY_RESULT";
+//    //  case GATT_LONG_CHARACTERISTIC_DESCRIPTOR_QUERY_RESULT:
+//    //    return "GATT_LONG_CHARACTERISTIC_DESCRIPTOR_QUERY_RESULT";
+//    //  case GATT_MTU:
+//    //    return "GATT_MTU";
+//    //  case ATT_MTU_EXCHANGE_COMPLETE:
+//    //    return "ATT_MTU_EXCHANGE_COMPLETE";
+//    //  case ATT_HANDLE_VALUE_INDICATION_COMPLETE:
+//    //    return "ATT_HANDLE_VALUE_INDICATION_COMPLETE";
+//    //  case BNEP_EVENT_SERVICE_REGISTERED:
+//    //    return "BNEP_EVENT_SERVICE_REGISTERED";
+//    //  case BNEP_EVENT_OPEN_CHANNEL_COMPLETE:
+//    //    return "BNEP_EVENT_OPEN_CHANNEL_COMPLETE";
+//    //  case BNEP_EVENT_INCOMING_CONNECTION:
+//    //    return "BNEP_EVENT_INCOMING_CONNECTION";
+//    //  case BNEP_EVENT_CHANNEL_CLOSED:
+//    //    return "BNEP_EVENT_CHANNEL_CLOSED";
+//    //  case BNEP_EVENT_CHANNEL_TIMEOUT:
+//    //    return "BNEP_EVENT_CHANNEL_TIMEOUT";
+//    //  case BNEP_EVENT_READY_TO_SEND:
+//    //    return "BNEP_EVENT_READY_TO_SEND";
+//  case SM_JUST_WORKS_REQUEST:
+//    return "SM_JUST_WORKS_REQUEST";
+//  case SM_JUST_WORKS_CANCEL:
+//    return "SM_JUST_WORKS_CANCEL";
+//  case SM_PASSKEY_DISPLAY_NUMBER:
+//    return "SM_PASSKEY_DISPLAY_NUMBER";
+//  case SM_PASSKEY_DISPLAY_CANCEL:
+//    return "SM_PASSKEY_DISPLAY_CANCEL";
+//  case SM_PASSKEY_INPUT_NUMBER:
+//    return "SM_PASSKEY_INPUT_NUMBER";
+//  case SM_PASSKEY_INPUT_CANCEL:
+//    return "SM_PASSKEY_INPUT_CANCEL";
+//    //  case SM_IDENTITY_RESOLVING_STARTED:
+//    //    return "SM_IDENTITY_RESOLVING_STARTED";
+//    //  case SM_IDENTITY_RESOLVING_FAILED:
+//    //    return "SM_IDENTITY_RESOLVING_FAILED";
+//    //  case SM_IDENTITY_RESOLVING_SUCCEEDED:
+//    //    return "SM_IDENTITY_RESOLVING_SUCCEEDED";
+//    //  case SM_AUTHORIZATION_REQUEST:
+//    //    return "SM_AUTHORIZATION_REQUEST";
+//    //  case SM_AUTHORIZATION_RESULT:
+//    //    return "SM_AUTHORIZATION_RESULT";
+//    //  case GAP_SECURITY_LEVEL:
+//    //    return "GAP_SECURITY_LEVEL";
+//    //  case GAP_DEDICATED_BONDING_COMPLETED:
+//    //    return "GAP_DEDICATED_BONDING_COMPLETED";
+//    //  case GAP_LE_ADVERTISING_REPORT:
+//    //    return "GAP_LE_ADVERTISING_REPORT";
+//    //  case HCI_EVENT_HSP_META:
+//    //    return "HCI_EVENT_HSP_META";
+//
+////  case HSP_SUBEVENT_AUDIO_CONNECTION_COMPLETE:
+////    return "HSP_SUBEVENT_AUDIO_CONNECTION_COMPLETE";
+////  case HSP_SUBEVENT_AUDIO_DISCONNECTION_COMPLETE:
+////    return "HSP_SUBEVENT_AUDIO_DISCONNECTION_COMPLETE";
+////  case HSP_SUBEVENT_MICROPHONE_GAIN_CHANGED:
+////    return "HSP_SUBEVENT_MICROPHONE_GAIN_CHANGED";
+////  case HSP_SUBEVENT_SPEAKER_GAIN_CHANGED:
+////    return "HSP_SUBEVENT_SPEAKER_GAIN_CHANGED";
+////  case HSP_SUBEVENT_HS_COMMAND:
+////    return "HSP_SUBEVENT_HS_COMMAND";
+////  case HSP_SUBEVENT_AG_INDICATION:
+////    return "HSP_SUBEVENT_AG_INDICATION";
+////  case HSP_SUBEVENT_ERROR:
+////    return "HSP_SUBEVENT_ERROR";
+////  case HSP_SUBEVENT_RING:
+////    return "HSP_SUBEVENT_RING";
+//
+//    //  case HCI_EVENT_HFP_META:
+//    //    return "HCI_EVENT_HFP_META";
+//
+////  case HFP_SUBEVENT_AUDIO_CONNECTION_COMPLETE:
+////    return "HFP_SUBEVENT_AUDIO_CONNECTION_COMPLETE";
+////  case HFP_SUBEVENT_SUPPORTED_FEATURES_EXCHANGE:
+////    return "HFP_SUBEVENT_SUPPORTED_FEATURES_EXCHANGE";
+//
+//    //  case ANCS_CLIENT_CONNECTED:
+//    //    return "ANCS_CLIENT_CONNECTED";
+//    ///  case ANCS_CLIENT_NOTIFICATION:
+//    //    return "ANCS_CLIENT_NOTIFICATION";
+//    //  case ANCS_CLIENT_DISCONNECTED:
+//    //    return "ANCS_CLIENT_DISCONNECTED";
+//  case HCI_EVENT_VENDOR_SPECIFIC:
+//    return "HCI_EVENT_VENDOR_SPECIFIC";
 
-    //  case HCI_EVENT_HFP_META:
-    //    return "HCI_EVENT_HFP_META";
-
-//  case HFP_SUBEVENT_AUDIO_CONNECTION_COMPLETE:
-//    return "HFP_SUBEVENT_AUDIO_CONNECTION_COMPLETE";
-//  case HFP_SUBEVENT_SUPPORTED_FEATURES_EXCHANGE:
-//    return "HFP_SUBEVENT_SUPPORTED_FEATURES_EXCHANGE";
-
-    //  case ANCS_CLIENT_CONNECTED:
-    //    return "ANCS_CLIENT_CONNECTED";
-    ///  case ANCS_CLIENT_NOTIFICATION:
-    //    return "ANCS_CLIENT_NOTIFICATION";
-    //  case ANCS_CLIENT_DISCONNECTED:
-    //    return "ANCS_CLIENT_DISCONNECTED";
-  case HCI_EVENT_VENDOR_SPECIFIC:
-    return "HCI_EVENT_VENDOR_SPECIFIC";
-    */
   }
 
   sprintf(_hciEventBuf, "0x%02x", code);
   return _hciEventBuf;
 }
 
+*/
 
 /*
 static char _substateBuf[20];
@@ -487,8 +466,7 @@ const char *substateName(uint8_t state) {
 }
 */
 
-
-  /*
+/*
 const char *substateName(hci_substate_t state) {
 
   switch ( state ) {
@@ -588,13 +566,13 @@ const char *substateName(hci_substate_t state) {
   sprintf(_substateBuf, "[Substate 0x%02x]", state);
   return _substateBuf;
 }
-  */
+*/
 
 //
 // OCF
 //
 
-
+/*
 static char _ocfBuf[8];
 
 const char *ocfName(uint16_t opcode) {
@@ -889,13 +867,9 @@ const char *ocfName(uint16_t opcode) {
   sprintf(_ocfBuf, "0x%04x", ocf);
   return _ocfBuf;
 }
+*/
 
-
-
-
-
-
-
+/*
 
 // 0 0 0 0  0 0    1 1  0 1 1 1  0 1 0 1
 
@@ -904,103 +878,94 @@ const char *ocfName(uint16_t opcode) {
 void LogTransportPacket(const char *tag, const char *usbStatus, const char *bluetoothEvent, uint8_t *packet, int size) {
   LogTransport("TransportPacket");
 
-  /*
-  uint16_t opcode = ( ( packet[1] << 8 ) | packet[0] );
-  uint8_t ogf = ( ( opcode & 0xfc00 ) >> 10 );
-  uint16_t ocf = ( opcode & 0x03ff );
-
-  LogTransport("%s %s %s  opcode(0x%04x) ogf(0x%02x) ocf(0x%04x)  size(%d)   %02x %02x %02x", tag, usbStatus, bluetoothEvent, opcode, ogf, ocf, size, packet[0], packet[1], packet[2] );
-  */
+//  uint16_t opcode = ( ( packet[1] << 8 ) | packet[0] );
+//  uint8_t ogf = ( ( opcode & 0xfc00 ) >> 10 );
+//  uint16_t ocf = ( opcode & 0x03ff );
+//
+//  LogTransport("%s %s %s  opcode(0x%04x) ogf(0x%02x) ocf(0x%04x)  size(%d)   %02x %02x %02x", tag, usbStatus, bluetoothEvent, opcode, ogf, ocf, size, packet[0], packet[1], packet[2] );
 
   // LogTransport("%s %s  0x%04x ogf(%s) ocf(0x%04x)  size(%d)   %02x %02x %02x", tag, bluetoothEvent, opcode, ogfName(ogf), ocf, size, packet[0], packet[1], packet[2] );
   //  LogTransport("%s  0x%04x ogf(%s) ocf(0x%04x)  size(%d)   %02x %02x %02x", bluetoothEvent, opcode, ogfName(ogf), ocf, size, packet[0], packet[1], packet[2] );
 
-  /*
-  //  LogTransport("LogPacket  opcode(0x%04x)  ogf(0x%02x)  ocf(0x%04x)", opcode, ogf, ocf );
-
-  char *local_name = NULL;
-  int len = 0;
-  switch ( ogf ) {
-
-  case 0:
-    //LogHCI("%s  OGF = 0  size(%d)  %s", tag, size, get_packet_string(packet, size) );
-    break;
-
-  case OGF_CONTROLLER_BASEBAND:
-    switch ( ocf ) {
-
-    case HCI_WRITE_LOCAL_NAME:
-      local_name = (char *)&packet[3];
-      len = strlen(local_name);
-      LogTransport("%s %s - %s  size(%d) len(%d)  '%s'", tag, ogfName(ogf), ocfName(ogf, ocf), size, len, local_name );
-      break;
-
-    default:
-      LogTransport("%s  0x%04x  %s : %s  size(%d) %s", tag, opcode, ogfName(ogf), ocfName(ogf, ocf), size, get_packet_string(packet, size) );
-      break;
-    }
-    break;
-
-
-  default:
-    LogTransport("%s  0x%04x  ogf(%s) ocf(%s)  size(%d) %s", tag, opcode, ogfName(ogf), ocfName(ogf, ocf), size, get_packet_string(packet, size) );
-  }
-  */
+//  //  LogTransport("LogPacket  opcode(0x%04x)  ogf(0x%02x)  ocf(0x%04x)", opcode, ogf, ocf );
+//
+//  char *local_name = NULL;
+//  int len = 0;
+//  switch ( ogf ) {
+//
+//  case 0:
+//    //LogHCI("%s  OGF = 0  size(%d)  %s", tag, size, get_packet_string(packet, size) );
+//    break;
+//
+//  case OGF_CONTROLLER_BASEBAND:
+//    switch ( ocf ) {
+//
+//    case HCI_WRITE_LOCAL_NAME:
+//      local_name = (char *)&packet[3];
+//      len = strlen(local_name);
+//      LogTransport("%s %s - %s  size(%d) len(%d)  '%s'", tag, ogfName(ogf), ocfName(ogf, ocf), size, len, local_name );
+//      break;
+//
+//    default:
+//      LogTransport("%s  0x%04x  %s : %s  size(%d) %s", tag, opcode, ogfName(ogf), ocfName(ogf, ocf), size, get_packet_string(packet, size) );
+//      break;
+//    }
+//    break;
+//
+//
+//  default:
+//    LogTransport("%s  0x%04x  ogf(%s) ocf(%s)  size(%d) %s", tag, opcode, ogfName(ogf), ocfName(ogf, ocf), size, get_packet_string(packet, size) );
+//  }
 }
 
 
 void LogConnPacket(const char *tag, uint8_t *packet, int size) {
   LogConn("%s  size: %d  %02x %02x", tag, size, packet[0], packet[1] );
-  /*
-  if ( size > 1 ) {
-    uint8_t code = packet[0];
-    if ( code != 0x6c )
-      LogConn("%s  size: %d  %02x %02x", tag, size, packet[0], packet[1] );
-  } else
-    LogConn("%s  size: %d", tag, size);
-  */
 
-  /*
-  uint16_t opcode = ( ( packet[1] << 8 ) | packet[0] );
-  uint8_t ogf = ( ( opcode & 0xfc00 ) >> 10 );
-  uint16_t ocf = ( opcode & 0x03ff );
+//  if ( size > 1 ) {
+//    uint8_t code = packet[0];
+//    if ( code != 0x6c )
+//      LogConn("%s  size: %d  %02x %02x", tag, size, packet[0], packet[1] );
+//  } else
+//    LogConn("%s  size: %d", tag, size);
 
-  LogConn("%s  opcode(0x%04x) ogf(0x%02x) ocf(0x%04x)  size(%d)   %02x %02x %02x", tag, opcode, ogf, ocf, size, packet[0], packet[1], packet[2] );
-  */
+//  uint16_t opcode = ( ( packet[1] << 8 ) | packet[0] );
+//  uint8_t ogf = ( ( opcode & 0xfc00 ) >> 10 );
+//  uint16_t ocf = ( opcode & 0x03ff );
+//
+//  LogConn("%s  opcode(0x%04x) ogf(0x%02x) ocf(0x%04x)  size(%d)   %02x %02x %02x", tag, opcode, ogf, ocf, size, packet[0], packet[1], packet[2] );
 
-  /*
-  LogConn("LogConnPacket  %02x%02x  OGF(%d)  %02x %02x %02x", ogf, packet[1], packet[0], packet[0], packet[1], packet[2] );
-
-  //  LogConn("LogPacket  opcode(0x%04x)  ogf(0x%02x)  ocf(0x%04x)", opcode, ogf, ocf );
-
-  char *local_name = NULL;
-  int len = 0;
-  switch ( ogf ) {
-
-  case 0:
-    //LogHCI("%s  OGF = 0  size(%d)  %s", tag, size, get_packet_string(packet, size) );
-    break;
-
-  case OGF_CONTROLLER_BASEBAND:
-    switch ( ocf ) {
-
-    case HCI_WRITE_LOCAL_NAME:
-      local_name = (char *)&packet[3];
-      len = strlen(local_name);
-      LogConn("%s %s - %s  size(%d) len(%d)  '%s'", tag, ogfName(ogf), ocfName(ogf, ocf), size, len, local_name );
-      break;
-
-    default:
-      LogConn("%s  0x%04x  %s : %s  size(%d) %s", tag, opcode, ogfName(ogf), ocfName(ogf, ocf), size, get_packet_string(packet, size) );
-      break;
-    }
-    break;
-
-
-  default:
-    LogConn("%s  0x%04x  ogf(%s) ocf(%s)  size(%d) %s", tag, opcode, ogfName(ogf), ocfName(ogf, ocf), size, get_packet_string(packet, size) );
-  }
-  */
+//  LogConn("LogConnPacket  %02x%02x  OGF(%d)  %02x %02x %02x", ogf, packet[1], packet[0], packet[0], packet[1], packet[2] );
+//
+//  //  LogConn("LogPacket  opcode(0x%04x)  ogf(0x%02x)  ocf(0x%04x)", opcode, ogf, ocf );
+//
+//  char *local_name = NULL;
+//  int len = 0;
+//  switch ( ogf ) {
+//
+//  case 0:
+//    //LogHCI("%s  OGF = 0  size(%d)  %s", tag, size, get_packet_string(packet, size) );
+//    break;
+//
+//  case OGF_CONTROLLER_BASEBAND:
+//    switch ( ocf ) {
+//
+//    case HCI_WRITE_LOCAL_NAME:
+//      local_name = (char *)&packet[3];
+//      len = strlen(local_name);
+//      LogConn("%s %s - %s  size(%d) len(%d)  '%s'", tag, ogfName(ogf), ocfName(ogf, ocf), size, len, local_name );
+//      break;
+//
+//    default:
+//      LogConn("%s  0x%04x  %s : %s  size(%d) %s", tag, opcode, ogfName(ogf), ocfName(ogf, ocf), size, get_packet_string(packet, size) );
+//      break;
+//    }
+//    break;
+//
+//
+//  default:
+//    LogConn("%s  0x%04x  ogf(%s) ocf(%s)  size(%d) %s", tag, opcode, ogfName(ogf), ocfName(ogf, ocf), size, get_packet_string(packet, size) );
+//  }
 }
 
 
@@ -1069,59 +1034,54 @@ void LogHCIPacket(const char *tag, uint8_t *packet, int size) {
 
   //  LogHCI("HCIPacket");
 
-  /*
-  uint16_t opcode = ( ( packet[1] << 8 ) | packet[0] );
-  uint8_t ogf = ( ( opcode & 0xfc00 ) >> 10 );
-  uint16_t ocf = ( opcode & 0x03ff );
+//  uint16_t opcode = ( ( packet[1] << 8 ) | packet[0] );
+//  uint8_t ogf = ( ( opcode & 0xfc00 ) >> 10 );
+//  uint16_t ocf = ( opcode & 0x03ff );
+//
+//  LogHCI("%s  opcode(0x%04x) ogf(0x%02x) ocf(0x%04x)  size(%d)   %02x %02x %02x", tag, opcode, ogf, ocf, size, packet[0], packet[1], packet[2] );
 
-  LogHCI("%s  opcode(0x%04x) ogf(0x%02x) ocf(0x%04x)  size(%d)   %02x %02x %02x", tag, opcode, ogf, ocf, size, packet[0], packet[1], packet[2] );
-  */
-
-  /*
-  //LogHCI("LogPacket  opcode(0x%04x)  ogf(0x%02x)  ocf(0x%04x)", opcode, ogf, ocf );
-
-  char *local_name = NULL;
-  int len = 0;
-  switch ( ogf ) {
-
-  case 0:
-    LogHCI("%s  OGF = 0  size(%d)  %s", tag, size, get_packet_string(packet, size) );
-    break;
-
-  case OGF_CONTROLLER_BASEBAND:
-    switch ( ocf ) {
-
-    case HCI_WRITE_LOCAL_NAME:
-      local_name = (char *)&packet[3];
-      len = strlen(local_name);
-      LogHCI("%s %s - %s  size(%d) len(%d)  '%s'", tag, ogfName(ogf), ocfName(ogf, ocf), size, len, local_name );
-      break;
-
-    default:
-      LogHCI("%s  0x%04x  %s : %s  size(%d) %s", tag, opcode, ogfName(ogf), ocfName(ogf, ocf), size, get_packet_string(packet, size) );
-      break;
-    }
-    break;
-
-
-  default:
-    LogHCI("%s  0x%04x  ogf(%s) ocf(%s)  size(%d) %s", tag, opcode, ogfName(ogf), ocfName(ogf, ocf), size, get_packet_string(packet, size) );
-  }
-  */
+//  //LogHCI("LogPacket  opcode(0x%04x)  ogf(0x%02x)  ocf(0x%04x)", opcode, ogf, ocf );
+//
+//  char *local_name = NULL;
+//  int len = 0;
+//  switch ( ogf ) {
+//
+//  case 0:
+//    LogHCI("%s  OGF = 0  size(%d)  %s", tag, size, get_packet_string(packet, size) );
+//    break;
+//
+//  case OGF_CONTROLLER_BASEBAND:
+//    switch ( ocf ) {
+//
+//    case HCI_WRITE_LOCAL_NAME:
+//      local_name = (char *)&packet[3];
+//      len = strlen(local_name);
+//      LogHCI("%s %s - %s  size(%d) len(%d)  '%s'", tag, ogfName(ogf), ocfName(ogf, ocf), size, len, local_name );
+//      break;
+//
+//    default:
+//      LogHCI("%s  0x%04x  %s : %s  size(%d) %s", tag, opcode, ogfName(ogf), ocfName(ogf, ocf), size, get_packet_string(packet, size) );
+//      break;
+//    }
+//    break;
+//
+//
+//  default:
+//    LogHCI("%s  0x%04x  ogf(%s) ocf(%s)  size(%d) %s", tag, opcode, ogfName(ogf), ocfName(ogf, ocf), size, get_packet_string(packet, size) );
+//  }
 }
 
 
-/*
-char _cmdBuf[250];
+//char _cmdBuf[250];
+//
+//const char *cmdName(uint16_t opcode) {
+//  uint8_t ogf = ( ( opcode & 0xfc00 ) >> 10 );
+//  uint16_t ocf = ( opcode & 0x03ff );
+//
+//  sprintf(_cmdBuf, "%s : %s", ogfName(ogf), ocfName(ogf, ocf) );
+//  return _cmdBuf;
+//}
 
-const char *cmdName(uint16_t opcode) {
-  uint8_t ogf = ( ( opcode & 0xfc00 ) >> 10 );
-  uint16_t ocf = ( opcode & 0x03ff );
-
-  sprintf(_cmdBuf, "%s : %s", ogfName(ogf), ocfName(ogf, ocf) );
-  return _cmdBuf;
-}
-*/
 
 // HCI Event
 
@@ -1163,4 +1123,4 @@ void LogEvent(const char *tag, uint8_t *packet, int size) {
 
 }
 
-
+*/

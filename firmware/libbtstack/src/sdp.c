@@ -54,7 +54,7 @@
 
 #include "bt_log.h"
 
-static int log_sdp_init = 1;
+//static int log_sdp_init = 1;
 
 
 // max reserved ServiceRecordHandle

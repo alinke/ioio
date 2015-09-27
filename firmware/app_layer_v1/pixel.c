@@ -114,7 +114,7 @@ unsigned PixelHasTimerInterrupt(void) {
   return timer_tick;
 }
 void PixelClearTimerInterrupt(void) {
-  LogHALTick2();
+  //  LogHALTick2();
 
   //_T1IF = 0;
   timer_tick = 0;

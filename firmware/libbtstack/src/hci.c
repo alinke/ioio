@@ -81,9 +81,9 @@
 #import "bt_log.h"
 
 static int log_event_handler = 1;
-static int log_send_cmd_packet = 1;
+//static int log_send_cmd_packet = 1;
 
-static int log_hci_send_cmd = 1;
+//static int log_hci_send_cmd = 1;
 static int log_hci_power_control = 0; // 0
 static int log_hci_run = 0; // 0
 static int log_hci_initializing_run = 0; // 0
@@ -108,9 +108,9 @@ static hci_stack_t * hci_stack = NULL;
 static uint8_t disable_l2cap_timeouts = 0;
 
 
-const char *hciStackStateName() {
-  return stackStateName(hci_stack->state);
-}
+//const char *hciStackStateName() {
+//  return stackStateName(hci_stack->state);
+//}
 
 
 /**
@@ -1061,8 +1061,10 @@ static void hci_initializing_run(void) {
             }
             break;
         case HCI_INIT_WRITE_SCAN_ENABLE:
+          LogPrintf("[hci] - SEND write_scan_enable   connectable: 0x%02x  discoverable: 0x%02x", (hci_stack->connectable << 1), hci_stack->discoverable);
             hci_send_cmd(&hci_write_scan_enable, (hci_stack->connectable << 1) | hci_stack->discoverable); // page scan
             hci_stack->substate = HCI_INIT_W4_WRITE_SCAN_ENABLE;
+          LogPrintf("[hci] - SEND write_scan_enable   DONE");
             break;
 #ifdef HAVE_BLE
         // LE INIT

@@ -55,6 +55,7 @@ static int log_usb_send_cmd_packet = 1;
 static int log_usb_send_acl_packet = 0;
 static int log_bluetooth_callback = 1;
 */
+/*
 static int log_usb_open = 1;
 static int log_usb_close = 0;
 static int log_usb_can_send_packet = 0;
@@ -62,8 +63,9 @@ static int log_usb_send_packet = 0;
 static int log_usb_send_cmd_packet = 0;
 static int log_usb_send_acl_packet = 0;
 static int log_bluetooth_callback = 0;
+*/
 
-
+/*
 #include <stdio.h>
 
 
@@ -99,8 +101,8 @@ const char* usbBluetoothEventName(uint16_t event) {
 
   return "BLUETOOTH_EVENT-unknown";
 }
-
-
+*/
+/*
 static char _usbEventBuf[32];
 
 //char* usbEventName(USB_EVENT event) {
@@ -167,6 +169,7 @@ const char* usbEventName(uint16_t event) {
   sprintf(_usbEventBuf, "[USB_EVENT 0x%04x]", event);
   return _usbEventBuf;
 }
+*/
 
 /*
 char* usbEventName(USB_EVENT event) {
@@ -266,29 +269,29 @@ static hci_transport_t hci_transport_mchpusb;
 static void (*packet_handler)(uint8_t packet_type, uint8_t *packet, uint16_t size) = NULL;
 
 static int usb_open(void *transport_config) {
-  if ( log_usb_open )
-    LogTransport("usb_open()");
+  //  if ( log_usb_open )
+  //    LogTransport("usb_open()");
   return 0;
 }
 
 static int usb_close() {
-  if ( log_usb_close )
-    LogTransport("usb_close()");
+  //  if ( log_usb_close )
+  //    LogTransport("usb_close()");
   return 0;
 }
 
 
 static int usb_send_cmd_packet(uint8_t *packet, int size) {
-  if ( log_usb_send_cmd_packet )
-    LogTransport("usb_send_cmd_packet   size(%d)", size);
+  //  if ( log_usb_send_cmd_packet )
+  //    LogTransport("usb_send_cmd_packet   size(%d)", size);
     //LogPacket("usb_send_cmd_packet", packet, size);
 
   return USB_SUCCESS == USBHostBluetoothWriteControl(packet, size) ? 0 : -1;
 }
 
 static int usb_send_acl_packet(uint8_t *packet, int size) {
-  if ( log_usb_send_acl_packet )
-    LogTransport("usb_send_acl_packet   size(%d)", size);
+  //  if ( log_usb_send_acl_packet )
+  //    LogTransport("usb_send_acl_packet   size(%d)", size);
   return USB_SUCCESS == USBHostBluetoothWriteBulk(packet, size) ? 0 : -1;
 }
 
@@ -299,28 +302,28 @@ static int usb_send_packet(uint8_t packet_type, uint8_t * packet, int size) {
 
   switch (packet_type) {
     case HCI_COMMAND_DATA_PACKET:
-      if ( log_usb_send_packet )
-        LogHCIPacket("usb_send_packet COMMAND ", packet, size);
+      //      if ( log_usb_send_packet )
+      //        LogHCIPacket("usb_send_packet COMMAND ", packet, size);
       res = usb_send_cmd_packet(packet, size);
       break;
 
     case HCI_ACL_DATA_PACKET:
-      if ( log_usb_send_packet )
-        LogHCIPacket("usb_send_packet ACL ", packet, size);
+      //      if ( log_usb_send_packet )
+      //        LogHCIPacket("usb_send_packet ACL ", packet, size);
       res = usb_send_acl_packet(packet, size);
       break;
     default:
       return -1;
   }
 
-  //  if ( log_usb_send_packet || ( res != 0 ) )
-  //    LogTransport("usb_send_packet  -> %d", res );
+  //  //  if ( log_usb_send_packet || ( res != 0 ) )
+  //  //    LogTransport("usb_send_packet  -> %d", res );
   return res;
 }
 
 static int usb_can_send_packet(uint8_t packet_type) {
-  if ( log_usb_can_send_packet )
-    LogTransport("usb_can_send_packet( 0x%02x )", packet_type );
+  //  if ( log_usb_can_send_packet )
+  //    LogTransport("usb_can_send_packet( 0x%02x )", packet_type );
 
   int res;
   switch (packet_type) {
@@ -367,18 +370,18 @@ hci_transport_t * hci_transport_mchpusb_instance(void *buf, int size) {
 
 
 BOOL USBHostBluetoothCallback(BLUETOOTH_EVENT event, USB_EVENT status, void *data, DWORD size) {
-  int size2 = (int)size;
-  uint16_t bt_event = (uint16_t)event;
-  uint16_t usb_status = (uint16_t)status;
+  //  int size2 = (int)size;
+  //  uint16_t bt_event = (uint16_t)event;
+  //  uint16_t usb_status = (uint16_t)status;
 
-  uint8_t *packet = (uint8_t *)data;
+  //  uint8_t *packet = (uint8_t *)data;
   
   //  if ( event == BLUETOOTH_EVENT_WRITE_CONTROL_DONE ) {
 
-  if ( log_bluetooth_callback ) {
-    LogLine("");
-    LogTransportPacket("USBHostBluetoothCallback", usbEventName(usb_status), usbBluetoothEventName(bt_event), packet, size2);
-  }
+  //  if ( log_bluetooth_callback ) {
+  //    LogLine("");
+  //    LogTransportPacket("USBHostBluetoothCallback", usbEventName(usb_status), usbBluetoothEventName(bt_event), packet, size2);
+  //  }
 
 
   //
