@@ -100,7 +100,11 @@ class App {
 
     func isConnected() -> Bool {
         if let device = self.currentDevice {
-            return device.isConnected()
+            var res = device.isConnected()
+            NSLog("App  isConnected: \(res)")
+            return res
+        } else {
+            NSLog("App  isConnected   currentDevice = nil")
         }
         return false
     }

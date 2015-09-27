@@ -74,6 +74,8 @@ class ThumbnailViewController: UIViewController {
         
     override func viewWillAppear(animated: Bool) {
         let app = App.sharedInstance
+
+
         if app.isConnected() {
             dispatch_async(dispatch_get_main_queue()) {
                 self.leftBarButton!.title = "Connected"

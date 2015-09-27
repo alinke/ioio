@@ -55,11 +55,6 @@
 // things we need to put in the numbering: board version, matrix panel type, pixel model (super pixel, normal, iBling), low power firmware, kiosk firmware
 //note also see bt_connection.c in libconn, line 168 to chnge to pinless bluetooth for demo mode
 
-
-// Handle disconnect of underlying transport
-void AppProtocolDisconnect();
-
-
 // Initialize this module.
 // This function completely resets the module's state and can be called even
 // after the module has been initialized in order to reset it.
@@ -70,7 +65,7 @@ void AppProtocolInit(CHANNEL_HANDLE h);
 // Call this function peridically for providing context to this module.
 // h is a channel handle, which will be used for sending outgoing protocol
 // messages.
-BOOL AppProtocolTasks(CHANNEL_HANDLE h);
+void AppProtocolTasks(CHANNEL_HANDLE h);
 
 // Process incoming protocol data.
 // data may not be NULL.

@@ -31,6 +31,15 @@
 #define __INCAP_H__
 
 
+//#define ENABLE_INCAP
+
+#ifndef ENABLE_INCAP
+
+#define InCapInit()
+#define InCapConfig(...)
+
+#else // ENABLE_INCAP
+
 void InCapInit();
 
 // mode:
@@ -47,6 +56,8 @@ void InCapInit();
 //   2: 250KHz
 //   3: 62.5KHz
 void InCapConfig(int incap_num, int double_prec, int mode, int clock);
+
+#endif  // ENABLE_INCAP
 
 
 #endif  // __INCAP_H__

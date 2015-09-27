@@ -175,7 +175,17 @@ class DeviceManager: NSObject, CBCentralManagerDelegate {
         if let manager = self.centralManager {
             if manager.state == CBCentralManagerState.PoweredOn {
                 if let peripheral = device.peripheral {
-                    device.connect(connectHandler: connectHandler)
+                    // setup device connect handler
+                    device.connect() {
+                        (device: Device) -> Void in
+                        if let handler = connectHandler {
+                           handler(device: device)
+                        }
+                        // call the global reconnect handler
+                        if let handler = self.reconnectHandler {
+                            handler(device: device)
+                        }
+                    }
                     manager.connectPeripheral(peripheral, options: self.connectOptions)
                 }
             }
@@ -210,10 +220,7 @@ class DeviceManager: NSObject, CBCentralManagerDelegate {
     func centralManager(central: CBCentralManager!,
                         didConnectPeripheral peripheral: CBPeripheral!) {
         if let device = findDevice(peripheral.identifier) {
-            if let handler = self.reconnectHandler {
-                handler(device: device)
-            }
-
+            // start device setup
             device.didConnect()
         } else {
             // Should never get here.
@@ -324,11 +331,17 @@ class DeviceManager: NSObject, CBCentralManagerDelegate {
             if let peripheral = obj as? CBPeripheral {
                 var device = getDevice(peripheral)
 
-                NSLog("  reconnect: \(device.name)")
                 // connect to device
-                self.connect(device)
+                self.connect(device, connectHandler: didReconnectDevice)
             }
         }
+    }
+
+    func didReconnectDevice(device: Device) {
+        NSLog("  reconnect: \(device.name)")
+
+        let app = App.sharedInstance
+        app.didConnect(device)
     }
 
     // MARK: - Reconnect - CBCentralManagerDelegate
@@ -393,7 +406,7 @@ class DeviceManager: NSObject, CBCentralManagerDelegate {
 
     func poweredOn() {
         NSLog("  PoweredOn")
-        //self.reconnect()
+        self.reconnect()
 
         // reconnect to known peripherals
         // if self.autoReconnect {

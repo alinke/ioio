@@ -40,6 +40,15 @@
 #define __ADC_H__
 
 
+//#define ENABLE_ADC
+
+#ifndef ENABLE_ADC
+
+#define ADCInit()
+#define ADCSetScan(...)
+
+#else // ENABLE_ADC
+
 // Initialize this module.
 // Can be used any time to reset the module's state.
 // Will stop sampling on all pins.
@@ -49,5 +58,8 @@ void ADCInit();
 // Call will be ignored if pin does not support analog input, or is already set
 // for sampling.
 void ADCSetScan(int pin, int enable);
+
+#endif  // ENABLE_ADC
+
 
 #endif  // __ADC_H__

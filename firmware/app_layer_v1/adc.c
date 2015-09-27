@@ -29,6 +29,10 @@
 
 #include "adc.h"
 
+
+#ifdef ENABLE_ADC
+
+
 #include <assert.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -276,3 +280,6 @@ void __attribute__((__interrupt__, auto_psv)) _ADC1Interrupt() {
   ScanDoneInterruptTrigger();
   _AD1IF = 0;  // clear
 }
+
+
+#endif // ENABLE_ADC

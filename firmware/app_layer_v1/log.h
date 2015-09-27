@@ -23,9 +23,9 @@ typedef unsigned char uint8_t;
 //
 void LogUARTInit(void);
 
-void LogBytes( uint8_t *data, int size );
-void LogHALTick(void);
-void LogHALTick2(void);
+//void LogBytes( uint8_t *data, int size );
+//void LogHALTick(void);
+//void LogHALTick2(void);
 
 
 
@@ -42,28 +42,30 @@ void LogFlush(void);
 // Module logging
 //
 
-//#define LogMain(f, ...)
+#define ENABLE_LOG
+
+#ifndef ENABLE_LOG
+
+#define LogMain(f, ...)
+#define LogConn(f, ...)
+#define LogProtocol(f, ...)
+#define LogFeature(f, ...)
+#define LogPixel(f, ...)
+#define LogRgb(f, ...)
+#define LogUSB(f, ...)
+
+#else // ENABLE_LOG
+
 #define LogMain(f, ...) printf("[main] - [%s:%d] " f "\n", __FILE__, __LINE__, ##__VA_ARGS__)
-
-//#define LogConn(f, ...)
 #define LogConn(f, ...) printf("[conn] - [%s:%d] " f "\n", __FILE__, __LINE__, ##__VA_ARGS__)
-
-//#define LogProtocol(f, ...)
 #define LogProtocol(f, ...) printf("[protocol] - [%s:%d] " f "\n", __FILE__, __LINE__, ##__VA_ARGS__)
 
+#define LogFeature(f, ...) printf("[feature] - [%s:%d] " f "\n", __FILE__, __LINE__, ##__VA_ARGS__)
+#define LogPixel(f, ...) printf("[pixel] - [%s:%d] " f "\n", __FILE__, __LINE__, ##__VA_ARGS__)
+#define LogRgb(f, ...) printf("[rgb] - [%s:%d] " f "\n", __FILE__, __LINE__, ##__VA_ARGS__)
+#define LogUSB(f, ...) printf("[usb] - [%s:%d] " f "\n", __FILE__, __LINE__, ##__VA_ARGS__)
 
-//void LogMain( const char * format, ...);
-//void LogConn( const char * format, ...);
-//void LogProtocol( const char * format, ...);
-
-void LogPixel( const char * format, ...);
-void LogRgb( const char * format, ...);
-
-void LogFeature( const char * format, ...);
-
-void LogUSB( const char * format, ...);
-
-
+#endif // ENABLE_LOG
 
 
 

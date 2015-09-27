@@ -176,6 +176,12 @@ static uint8_t hexChar(uint8_t n) {
 }
 
 static void PacketHandler(int l2cap_event, void * connection, uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t size) {
+  if ( l2cap_event ) {
+    printf("L2CAP   %d  ", size);
+  } else {
+    printf("RFCOMM  %d  ", size);
+  }
+
   /*
   if ( l2cap_event ) {
     //LogConnPacket("L2CAP PacketHandler", packet, (int)size);
@@ -187,28 +193,72 @@ static void PacketHandler(int l2cap_event, void * connection, uint8_t packet_typ
     printf("channel: %04x  size: %d  type: %02x  packet: %02x %02x\n", channel, (int)size, packet_type, packet[0], packet[1]);
   }
   */
-
-  bd_addr_t event_addr;
   uint8_t rfcomm_channel_nr;
   uint16_t mtu;
 
+
+  uint8_t event_code;
+  uint8_t event_size;
+
+  uint8_t event_status;
+  uint16_t event_handle;
+  bd_addr_t event_addr;
+  uint8_t event_link_type;
+  uint8_t event_encryption_enabled;
+
   switch (packet_type) {
+
   case HCI_EVENT_PACKET:
-    switch (packet[0]) {
+    event_code = packet[0];
+    event_size = packet[1];
+
+    switch ( event_code ) {
+
+    case HCI_EVENT_INQUIRY_COMPLETE:                                // 0x01
+      LogConn("PacketHandler - HCI connection complete  status: %d", (int)packet[2]);
+      break;
+
+    case HCI_EVENT_CONNECTION_COMPLETE:                             // 0x03
+      // status(1)  connection_handle(2)  bd_addr(6)  link_type(1)  encryption_enabled(1)
+      event_status = packet[2];                  // status: 1 octet
+      event_handle = READ_BT_16(packet, 3);      // connection_handle: 2 octets
+      bt_flip_addr(event_addr, &packet[5]);
+      event_link_type = packet[12];
+      event_encryption_enabled = packet[13];
+
+      LogConn("PacketHandler - HCI connection complete  status: %d  handle: %u  addr: %s  link_type: %d  encryption_enabled: %d",
+              event_status, event_handle, bd_addr_to_str(event_addr), event_link_type, event_encryption_enabled );
+      break;
+    case HCI_EVENT_CONNECTION_REQUEST:                              // 0x04
+      LogConn("PacketHandler - HCI connection rquest");
+      break;
+    case HCI_EVENT_DISCONNECTION_COMPLETE:                          // 0x05
+      LogConn("PacketHandler - HCI disconnection complete");
+      break;
+
+
     case BTSTACK_EVENT_STATE:
       // bt stack activated, get started - set local name
       if (packet[2] == HCI_STATE_WORKING) {
-        LogConn("HCI Working  write_local_name: %s", local_name);
+        LogConn("PacketHandler - HCI Working  write_local_name: %s", local_name);
         hci_send_cmd(&hci_write_local_name, local_name);
       }
       break;
 
     case HCI_EVENT_COMMAND_COMPLETE:
+      // num_HCI_command_packets   1 octet
+      // command_opcode            2 octets
+
+      // return_parameters         depends on command_opcode
+
+      //   command_opcode          2 octets
+      //   param_num               1 octet
+      //   parameters              param_num octets
+
       if (COMMAND_COMPLETE_EVENT(packet, hci_read_bd_addr)) {
         bt_flip_addr(event_addr, &packet[6]);
-        log_printf("BD-ADDR: %s", bd_addr_to_str(event_addr));
-
-        // LogConn("BD-ADDR: %s", bd_addr_to_str(event_addr));
+        //log_printf("BD-ADDR: %s", bd_addr_to_str(event_addr));
+        LogConn("PacketHandler - BD-ADDR: %s", bd_addr_to_str(event_addr));
 
         //sprintf(local_name, "PIXEL (%02X:%02X)", event_addr[4], event_addr[5]);
         sprintf(local_name, "C.A.T (%02X:%02X)", event_addr[4], event_addr[5]);
@@ -223,25 +273,44 @@ static void PacketHandler(int l2cap_event, void * connection, uint8_t packet_typ
         break;
       }
       if (COMMAND_COMPLETE_EVENT(packet, hci_write_local_name)) {
-        LogConn("Command Complete WRITE_LOCAL_NAME");
+        LogConn("PacketHandler - Command Complete WRITE_LOCAL_NAME");
 
         hci_discoverable_control(1);
         break;
       }
       break;
 
+    case HCI_EVENT_NUMBER_OF_COMPLETED_PACKETS:
+      break;
+
     case HCI_EVENT_LINK_KEY_REQUEST:
       // deny link key request
-      log_printf("Link key request - deny");
+      //log_printf("Link key request - deny");
+      LogConn("PacketHandler - Link key request - deny");
       bt_flip_addr(event_addr, &packet[2]);
       hci_send_cmd(&hci_link_key_request_negative_reply, &event_addr);
       break;
 
     case HCI_EVENT_PIN_CODE_REQUEST:
       // inform about pin code request
-      log_printf("Pin code request - using '0000'");
+      //log_printf("Pin code request - using '0000'");
+      LogConn("PacketHandler - Pin code request - using '0000'");
       bt_flip_addr(event_addr, &packet[2]);
       hci_send_cmd(&hci_pin_code_request_reply, &event_addr, 4, "0000");
+      break;
+
+      //
+      // L2CAP
+      //
+    case L2CAP_EVENT_SERVICE_REGISTERED:                            // 0x75
+      LogConn("PacketHandler - L2CAP service registered");
+      break;
+
+      //
+      // RFCOMM
+      //
+    case RFCOMM_EVENT_SERVICE_REGISTERED:                           // 0x85
+      LogConn("PacketHandler - RFCOMM service registered");
       break;
 
     case RFCOMM_EVENT_INCOMING_CONNECTION:
@@ -250,31 +319,45 @@ static void PacketHandler(int l2cap_event, void * connection, uint8_t packet_typ
       //set_rfcomm_channel_nr( packet[8] );
       rfcomm_channel_nr = packet[8];
       set_rfcomm_channel_id( READ_BT_16(packet, 9) );
-      log_printf("RFCOMM channel %u requested for %s", rfcomm_channel_nr, bd_addr_to_str(event_addr));
-      //LogConn("RFCOMM channel_nr: 0x%02x  channel_id: 0x%04x  requested for %s", rfcomm_channel_nr, rfcomm_channel_id, bd_addr_to_str(event_addr));
+      //log_printf("RFCOMM channel %u requested for %s", rfcomm_channel_nr, bd_addr_to_str(event_addr));
+      LogConn("PacketHandler - RFCOMM id: %u  channel %u requested for %s", rfcomm_channel_id, rfcomm_channel_nr, bd_addr_to_str(event_addr));
       rfcomm_accept_connection_internal(rfcomm_channel_id);
       break;
 
     case RFCOMM_EVENT_OPEN_CHANNEL_COMPLETE:
       // data: event(8), len(8), status (8), address (48), server channel(8), rfcomm_cid(16), max frame size(16)
       if (packet[2]) {
-        log_printf("RFCOMM channel open failed, status %u", packet[2]);
+        //log_printf("RFCOMM channel open failed, status %u", packet[2]);
+        LogConn("PacketHandler - RFCOMM channel open failed, status %u", packet[2]);
       } else {
         set_rfcomm_channel_id( READ_BT_16(packet, 12) );
         rfcomm_send_credit = 1;
         mtu = READ_BT_16(packet, 14);
-        log_printf("RFCOMM channel open succeeded. New RFCOMM Channel ID %u, max frame size %u", rfcomm_channel_id, mtu);
+        //log_printf("RFCOMM channel open succeeded. New RFCOMM Channel ID %u, max frame size %u", rfcomm_channel_id, mtu);
+        LogConn("PacketHandler - RFCOMM channel open succeeded. New RFCOMM Channel ID %u, max frame size %u", rfcomm_channel_id, mtu);
       }
       break;
 
     case RFCOMM_EVENT_CHANNEL_CLOSED:
-      log_printf("RFCOMM channel closed.");
+      //log_printf("RFCOMM channel closed.");
+      LogConn("PacketHandler - RFCOMM channel close");
+
+      // notify the main.c AppCallback that the connection has closed
       client_callback(NULL, 0, client_callback_arg);
       client_callback = DummyCallback;
       set_rfcomm_channel_id( 0 );
       break;
 
+
+      //
+      // DAEMON
+      //
+    case DAEMON_EVENT_HCI_PACKET_SENT:                              // 0x6C
+      break;
+
+
     default:
+      LogConn("PacketHandler - PacketHandler  event: %02X", packet[0]);
       break;
     }
     break;
@@ -300,7 +383,7 @@ static void RFCOMM_PacketHandler(void * connection, uint8_t packet_type, uint16_
 
 
 static void BTInit(void *buf, int size) {
-  LogConn("BTInit  size: %d\n", size);
+  LogConn("BTInit  size: %d", size);
 
   set_state(STATE_DETACHED);
   bt_buf = buf;
@@ -355,58 +438,387 @@ static uint16_t ble_conn_handle;
 
 static void ble_connect(uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t size) {
   ble_conn_handle = READ_BT_16(packet, 4);
-  LogConn("BLE connected %04x", ble_conn_handle);
+  LogConn("BLE connected %u", ble_conn_handle);
   ble_connected = 1;
 }
 
-void AppProtocolDisconnect();
 
 static void ble_disconnect(uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t size) {
-  LogConn("BLE disconect");
-  ble_connected = 0;
-  ble_notification_enabled = 0;
+  if ( ble_connected ) {
+    LogConn("BLE disconect");
+    ble_connected = 0;
+    ble_notification_enabled = 0;
 
-  // Tell the channel the device has disconnected
-  AppProtocolDisconnect();
+    // notify the main.c AppCallback that the connection has closed
+    client_callback(NULL, 0, client_callback_arg);
+    client_callback = DummyCallback;
+  }
 }
 
 
+// Events
+#define HCI_EVENT_PAGE_SCAN_REPETITION_MODE_CHANGE         0x22
+#define HCI_EVENT_FLOW_SPECIFICATION_COMPLETE              0x22
+#define HCI_EVENT_SUPERVISION_TIMEOUT_CHANGED              0x38
+
+/*
+const char *event_names[256] = {
+  NULL,                                                    // 0x00
+  "HCI_EVENT_INQUIRY_COMPLETE",                            // 0x01
+  "HCI_EVENT_INQUIRY_RESULT",                              // 0x02
+  "HCI_EVENT_CONNECTION_COMPLETE",                         // 0x03
+  "HCI_EVENT_CONNECTION_REQUEST",                          // 0x04
+  "HCI_EVENT_DISCONNECTION_COMPLETE",                      // 0x05
+  "HCI_EVENT_AUTHENTICATION_COMPLETE_EVENT",               // 0x06
+  "HCI_EVENT_REMOTE_NAME_REQUEST_COMPLETE",                // 0x07
+  "HCI_EVENT_ENCRYPTION_CHANGE",                           // 0x08
+  "HCI_EVENT_CHANGE_CONNECTION_LINK_KEY_COMPLETE",         // 0x09
+  "HCI_EVENT_MASTER_LINK_KEY_COMPLETE",                    // 0x0A
+  "HCI_EVENT_READ_REMOTE_SUPPORTED_FEATURES_COMPLETE",     // 0x0B
+  "HCI_EVENT_READ_REMOTE_VERSION_INFORMATION_COMPLETE",    // 0x0C
+  "HCI_EVENT_QOS_SETUP_COMPLETE",                          // 0x0D
+  "HCI_EVENT_COMMAND_COMPLETE",                            // 0x0E
+  "HCI_EVENT_COMMAND_STATUS",                              // 0x0F
+  "HCI_EVENT_HARDWARE_ERROR",                              // 0x10
+  "HCI_EVENT_FLUSH_OCCURED",                               // 0x11
+  "HCI_EVENT_ROLE_CHANGE",                                 // 0x12
+  "HCI_EVENT_NUMBER_OF_COMPLETED_PACKETS",                 // 0x13
+  "HCI_EVENT_MODE_CHANGE_EVENT",                           // 0x14
+  "HCI_EVENT_RETURN_LINK_KEYS",                            // 0x15
+  "HCI_EVENT_PIN_CODE_REQUEST",                            // 0x16
+  "HCI_EVENT_LINK_KEY_REQUEST",                            // 0x17
+  "HCI_EVENT_LINK_KEY_NOTIFICATION",                       // 0x18
+  NULL,                                                    // 0x19
+  "HCI_EVENT_DATA_BUFFER_OVERFLOW",                        // 0x1A
+  "HCI_EVENT_MAX_SLOTS_CHANGED",                           // 0x1B
+  "HCI_EVENT_READ_CLOCK_OFFSET_COMPLETE",                  // 0x1C
+  "HCI_EVENT_PACKET_TYPE_CHANGED",                         // 0x1D
+  NULL,                                                    // 0x1E  QoS Violation
+  NULL,                                                    // 0x1F
+  "HCI_EVENT_PAGE_SCAN_REPETITION_MODE_CHANGE",            // 0x20
+  "HCI_EVENT_FLOW_SPECIFICATION_COMPLETE",                 // 0x21
+  "HCI_EVENT_INQUIRY_RESULT_WITH_RSSI",                    // 0x22
+  NULL,  // 0x23  "HCI_EVENT_INQUIRY_READ_REMOTE_EXTENDED_FEATURES_COMPLETE",
+  NULL,  // 0x24
+  NULL,  // 0x25
+  NULL,  // 0x26
+  NULL,  // 0x27
+  NULL,  // 0x28
+  NULL,  // 0x29
+  NULL,  // 0x2A
+  NULL,  // 0x2B
+  "HCI_EVENT_SYNCHRONOUS_CONNECTION_COMPLETE",
+  NULL,  // 0x2D
+  NULL,  // 0x2E
+  "HCI_EVENT_EXTENDED_INQUIRY_RESPONSE",
+  NULL,  // 0x30
+  "HCI_EVENT_IO_CAPABILITY_REQUEST",
+  "HCI_EVENT_IO_CAPABILITY_RESPONSE",
+  "HCI_EVENT_USER_CONFIRMATION_REQUEST",
+  "HCI_EVENT_USER_PASSKEY_REQUEST",
+  "HCI_EVENT_REMOTE_OOB_DATA_REQUEST",
+  "HCI_EVENT_SIMPLE_PAIRING_COMPLETE",
+  NULL,  // 0x37
+  "HCI_EVENT_SUPERVISION_TIMEOUT_CHANGED",
+  NULL,  // 0x39
+  NULL,  // 0x3A
+  NULL,  // 0x3B
+  NULL,  // 0x3C
+  NULL,  // 0x3D
+  "HCI_EVENT_LE_META",
+  NULL,  // 0x3F
+  NULL,  // 0x40
+  NULL,  // 0x41
+  NULL,  // 0x42
+  NULL,  // 0x43
+  NULL,  // 0x44
+  NULL,  // 0x45
+  NULL,  // 0x46
+  NULL,  // 0x47
+  NULL,  // 0x48
+  NULL,  // 0x49
+  NULL,  // 0x4A
+  NULL,  // 0x4B
+  NULL,  // 0x4C
+  NULL,  // 0x4D
+  NULL,  // 0x4E
+  NULL,  // 0x4F
+  NULL,  // 0x50
+  NULL,  // 0x51
+  NULL,  // 0x52
+  NULL,  // 0x53
+  NULL,  // 0x54
+  NULL,  // 0x55
+  NULL,  // 0x56
+  NULL,  // 0x57
+  NULL,  // 0x58
+  NULL,  // 0x59
+  NULL,  // 0x5A
+  NULL,  // 0x5B
+  NULL,  // 0x5C
+  NULL,  // 0x5D
+  NULL,  // 0x5E
+  NULL,  // 0x5F
+  "BTSTACK_EVENT_STATE",
+  "BTSTACK_EVENT_NR_CONNECTIONS_CHANGED",
+  "BTSTACK_EVENT_POWERON_FAILED",
+  "BTSTACK_EVENT_VERSION",
+  "BTSTACK_EVENT_SYSTEM_BLUETOOTH_ENABLED",
+  "BTSTACK_EVENT_REMOTE_NAME_CACHED",
+  "BTSTACK_EVENT_DISCOVERABLE_ENABLED",
+  NULL,  // 0x67
+  "DAEMON_EVENT_CONNECTION_OPENED",
+  "DAEMON_EVENT_CONNECTION_CLOSED",
+  "DAEMON_NR_CONNECTIONS_CHANGED",
+  "DAEMON_EVENT_NEW_RFCOMM_CREDITS",
+  "DAEMON_EVENT_HCI_PACKET_SENT",
+  NULL,  // 0x6D
+  NULL,  // 0x6E
+  NULL,  // 0x6F
+  "L2CAP_EVENT_CHANNEL_OPENED",
+  "L2CAP_EVENT_CHANNEL_CLOSED",
+  "L2CAP_EVENT_INCOMING_CONNECTION",
+  "L2CAP_EVENT_TIMEOUT_CHECK",
+  "L2CAP_EVENT_CREDITS",
+  "L2CAP_EVENT_SERVICE_REGISTERED",
+  "L2CAP_EVENT_CONNECTION_PARAMETER_UPDATE_REQUEST",
+  "L2CAP_EVENT_CONNECTION_PARAMETER_UPDATE_RESPONSE",
+  NULL,  // 0x78
+  NULL,  // 0x79
+  NULL,  // 0x7A
+  NULL,  // 0x7B
+  NULL,  // 0x7C
+  NULL,  // 0x7D
+  NULL,  // 0x7E
+  NULL,  // 0x7F
+  "RFCOMM_EVENT_OPEN_CHANNEL_COMPLETE",
+  "RFCOMM_EVENT_CHANNEL_CLOSED",
+  "RFCOMM_EVENT_INCOMING_CONNECTION",
+  "RFCOMM_EVENT_REMOTE_LINE_STATUS",
+  "RFCOMM_EVENT_CREDITS",
+  "RFCOMM_EVENT_SERVICE_REGISTERED",
+  "RFCOMM_EVENT_PERSISTENT_CHANNEL",
+  "RFCOMM_EVENT_REMOTE_MODEM_STATUS",
+  "RFCOMM_EVENT_PORT_CONFIGURATION",
+  NULL,  // 0x89
+  NULL,  // 0x8A
+  NULL,  // 0x8B
+  NULL,  // 0x8C
+  NULL,  // 0x8D
+  NULL,  // 0x8E
+  NULL,  // 0x8F
+  "SDP_SERVICE_REGISTERED",
+  "SDP_QUERY_COMPLETE",
+  "SDP_QUERY_RFCOMM_SERVICE",
+  "SDP_QUERY_ATTRIBUTE_VALUE",
+  "SDP_QUERY_SERVICE_RECORD_HANDLE",
+  NULL,  // 0x95
+  NULL,  // 0x96
+  NULL,  // 0x97
+  NULL,  // 0x98
+  NULL,  // 0x99
+  NULL,  // 0x9A
+  NULL,  // 0x9B
+  NULL,  // 0x9C
+  NULL,  // 0x9D
+  NULL,  // 0x9E
+  NULL,  // 0x9F
+  "GATT_QUERY_COMPLETE",
+  "GATT_SERVICE_QUERY_RESULT",
+  "GATT_CHARACTERISTIC_QUERY_RESULT",
+  "GATT_INCLUDED_SERVICE_QUERY_RESULT",
+  "GATT_ALL_CHARACTERISTIC_DESCRIPTORS_QUERY_RESULT",
+  "GATT_CHARACTERISTIC_VALUE_QUERY_RESULT",
+  "GATT_LONG_CHARACTERISTIC_VALUE_QUERY_RESULT",
+  "GATT_NOTIFICATION",
+  "GATT_INDICATION",
+  "GATT_CHARACTERISTIC_DESCRIPTOR_QUERY_RESULT",
+  "GATT_LONG_CHARACTERISTIC_DESCRIPTOR_QUERY_RESULT",
+  "GATT_MTU",
+  NULL,  // 0xAC
+  NULL,  // 0xAD
+  NULL,  // 0xAE
+  NULL,  // 0xAF
+  NULL,  // 0xB0
+  NULL,  // 0xB1
+  NULL,  // 0xB2
+  NULL,  // 0xB3
+  NULL,  // 0xB4
+  "ATT_MTU_EXCHANGE_COMPLETE",
+  "ATT_HANDLE_VALUE_INDICATION_COMPLETE",
+  NULL,  // 0xB7
+  NULL,  // 0xB8
+  NULL,  // 0xB9
+  NULL,  // 0xBA
+  NULL,  // 0xBB
+  NULL,  // 0xBC
+  NULL,  // 0xBD
+  NULL,  // 0xBE
+  NULL,  // 0xBF
+  "BNEP_EVENT_SERVICE_REGISTERED",
+  "BNEP_EVENT_OPEN_CHANNEL_COMPLETE",
+  "BNEP_EVENT_INCOMING_CONNECTION",
+  "BNEP_EVENT_CHANNEL_CLOSED",
+  "BNEP_EVENT_CHANNEL_TIMEOUT",
+  "BNEP_EVENT_READY_TO_SEND",
+  NULL,  // 0xC6
+  NULL,  // 0xC7
+  NULL,  // 0xC8
+  NULL,  // 0xC9
+  NULL,  // 0xCA
+  NULL,  // 0xCB
+  NULL,  // 0xCC
+  NULL,  // 0xCD
+  NULL,  // 0xCE
+  NULL,  // 0xCF
+  "SM_JUST_WORKS_REQUEST",
+  "SM_JUST_WORKS_CANCEL",
+  "SM_PASSKEY_DISPLAY_NUMBER",
+  "SM_PASSKEY_DISPLAY_CANCEL",
+  "SM_PASSKEY_INPUT_NUMBER",
+  "SM_PASSKEY_INPUT_CANCEL",
+  "SM_IDENTITY_RESOLVING_STARTED",
+  "SM_IDENTITY_RESOLVING_FAILED",
+  "SM_IDENTITY_RESOLVING_SUCCEEDED",
+  "SM_AUTHORIZATION_REQUEST",
+  "SM_AUTHORIZATION_RESULT",
+  NULL,  // 0xDB
+  NULL,  // 0xDC
+  NULL,  // 0xDD
+  NULL,  // 0xDE
+  NULL,  // 0xDF
+  "GAP_SECURITY_LEVEL",
+  "GAP_DEDICATED_BONDING_COMPLETED",
+  "GAP_LE_ADVERTISING_REPORT",
+  NULL,  // 0xE3
+  NULL,  // 0xE4
+  NULL,  // 0xE5
+  NULL,  // 0xE6
+  NULL,  // 0xE7
+  "HCI_EVENT_HSP_META",
+  "HCI_EVENT_HFP_META",
+  NULL,  // 0xEA
+  NULL,  // 0xEB
+  NULL,  // 0xEC
+  NULL,  // 0xED
+  NULL,  // 0xEE
+  NULL,  // 0xEF
+  "ANCS_CLIENT_CONNECTED",
+  "ANCS_CLIENT_NOTIFICATION",
+  "ANCS_CLIENT_DISCONNECTED",
+  NULL,  // 0xF3
+  NULL,  // 0xF4
+  NULL,  // 0xF5
+  NULL,  // 0xF6
+  NULL,  // 0xF7
+  NULL,  // 0xF8
+  NULL,  // 0xF9
+  NULL,  // 0xFA
+  NULL,  // 0xFB
+  NULL,  // 0xFC
+  NULL,  // 0xFD
+  NULL,  // 0xFE
+  "HCI_EVENT_VENDOR_SPECIFIC",
+};
+*/
+
 static void att_packet_handler(uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t size) {
+  uint8_t event_code = 0;
+  uint8_t event_size = 0;
+  //  const char *name = NULL;
+  uint8_t le_code;
 
   switch (packet_type) {
+
   case HCI_EVENT_PACKET:
-    //    LogConn("ATT_packet_handler  type: %02x  channel: %04x  packet[0]: %02x  size: %d", packet_type, channel, packet[0], (int)size);
+    event_code = packet[0];
+    event_size = packet[1];
+    //    name = event_names[event_code];
 
     switch (packet[0]) {
-      // #define HCI_EVENT_DISCONNECTION_COMPLETE                   0x05
-    case HCI_EVENT_DISCONNECTION_COMPLETE:
+
+    case HCI_EVENT_CONNECTION_COMPLETE:                             // 0x03
+      LogConn("att_packet_handler  channel: %u  size: %d  HCI_EVENT_CONNECTION_COMPLETE", channel, size);
+      break;
+
+    case HCI_EVENT_CONNECTION_REQUEST:                              // 0x04
+      LogConn("att_packet_handler  channel: %u  size: %d  HCI_EVENT_CONNECTION_REQUEST", channel, size);
+      break;
+
+    case HCI_EVENT_DISCONNECTION_COMPLETE:                          // 0x05
+      LogConn("att_packet_handler  channel: %u  size: %d  HCI_EVENT_DISCONNECTION_COMPLETE", channel, size);
       // BLE disconenct
       ble_disconnect(packet_type, channel, packet, size);
       break;
 
-      // #define HCI_EVENT_LE_META                                  0x3E
-    case HCI_EVENT_LE_META:
-      // #define HCI_SUBEVENT_LE_CONNECTION_COMPLETE                0x01
-      // #define HCI_SUBEVENT_LE_ADVERTISING_REPORT                 0x02
-      // #define HCI_SUBEVENT_LE_CONNECTION_UPDATE_COMPLETE         0x03
-      // #define HCI_SUBEVENT_LE_READ_REMOTE_USED_FEATURES_COMPLETE 0x04
-      // #define HCI_SUBEVENT_LE_LONG_TERM_KEY_REQUEST              0x05
-      LogConn("  LE_META   packet[2]: %02x", packet[2]);
+    case HCI_EVENT_COMMAND_COMPLETE:                                // 0x0E
+      //      LogConn("att_packet_handler  channel: %u  size: %d  HCI_EVENT_COMMAND_COMPLETE  %02x %02x", channel, size, packet[1], packet[2]);
+      break;
 
-      switch (packet[2]) {
+    case HCI_EVENT_NUMBER_OF_COMPLETED_PACKETS:
+      break;
+
+      // LE Meta
+    case HCI_EVENT_LE_META:                                         // 0x3E
+      le_code = packet[2];
+
+      switch ( le_code ) {
       case HCI_SUBEVENT_LE_CONNECTION_COMPLETE:
+        LogConn("att_packet_handler  channel: %u  size: %d  BLE connect", channel, size);
         // BLE conenct
         ble_connect(packet_type, channel, packet, size);
+        break;
+
+        //      case HCI_SUBEVENT_LE_CONNECTION_COMPLETE:                     // 0x01
+        //      case HCI_SUBEVENT_LE_ADVERTISING_REPORT:                      // 0x02
+        //      case HCI_SUBEVENT_LE_CONNECTION_UPDATE_COMPLETE:              // 0x03
+        //      case HCI_SUBEVENT_LE_READ_REMOTE_USED_FEATURES_COMPLETE:      // 0x04
+        //      case HCI_SUBEVENT_LE_LONG_TERM_KEY_REQUEST:                   // 0x05
+        //        break;
+
+      default:
+        LogConn("att_packet_handler  channel: %u  size: %d  HCI_EVENT_LE_META  le_code: %d", channel, size, (int)le_code);
         break;
       }
       break;  
 
-      // #define ATT_MTU_EXCHANGE_COMPLETE                          0xB5
-    case ATT_MTU_EXCHANGE_COMPLETE:
+      // ATT
+    case ATT_MTU_EXCHANGE_COMPLETE:                                 // 0xB5
       ble_mtu = READ_BT_16(packet, 4) - 3;
-      LogConn("BLE att mtu = %d", ble_mtu);
+      LogConn("att_packet_handler  channel: %u  size: %d  ATT_MTU_EXCHANGE_COMPLETE  mtu: %d", channel, size, ble_mtu);
+      break;
+
+
+
+    case BTSTACK_EVENT_STATE:                                       // 0x60
+      LogConn("att_packet_handler  channel: %u  size: %d  BTSTACK_EVENT_STATE  state: %d", channel, size, (int)packet[2]);
+      break;  
+    case BTSTACK_EVENT_NR_CONNECTIONS_CHANGED:                      // 0x61
+      LogConn("att_packet_handler  channel: %u  size: %d  HCI_EVENT_NR_CONNECTIONS_CHANGED  number: %d", channel, size, (int)packet[2]);
+      break;
+    case BTSTACK_EVENT_DISCOVERABLE_ENABLED:                        // 0x66
+      LogConn("att_packet_handler  channel: %u  size: %d  BTSTACK_EVENT_DISCOVERABLE_ENABLED  enabled: %d", channel, size, (int)packet[2]);
+      break;  
+
+    case DAEMON_EVENT_HCI_PACKET_SENT:                              // 0x6C
+      //      LogConn("att_packet_handler  channel: %u  size: %d  DAEMON_EVENT_HCI_PACKET_SENT  %02x", channel, size, packet[1]);
+      break;  
+
+
+
+      // 
+    default:
+      //      if ( name != NULL )
+      //        LogConn("att_packet_handler  channel: %u  size: %d  %s", channel, size, name);
+      //      else
+      LogConn("att_packet_handler  channel: %u  size: %d  event: %02X", channel, size, event_code);
       break;
     }
+    break;
+
+    // other packet types
+  default:
+    LogConn("att_packet_handler  channel: %u  packet_type: %d  size: %d", channel, (int)packet_type, size);    
   }
 }
 
@@ -455,7 +867,7 @@ static int att_write_callback(uint16_t con_handle, uint16_t att_handle, uint16_t
     //LogConn("att_write  mode: %u  offset: %u  size: %u", (unsigned int)transaction_mode, (unsigned int)offset, (unsigned int)buffer_size );
 
     if ( buffer_size > 0 ) {
-      LogConn("Send to AppProtocolHandleIncoming   size: %d", (int)buffer_size);
+      //LogConn("Send to AppProtocolHandleIncoming   size: %d", (int)buffer_size);
 
       // Send the packet data to the App protocol handler
       client_callback(&buffer[2], ( buffer_size - 2 ), client_callback_arg);
@@ -464,8 +876,7 @@ static int att_write_callback(uint16_t con_handle, uint16_t att_handle, uint16_t
 
   // handle notification enable / disable
   if ( att_handle == ATT_CHARACTERISTIC_1130FBD1_6D61_422A_8939_042DD56B1EF5_01_CLIENT_CONFIGURATION_HANDLE ) {
-    int le_not = READ_BT_16(buffer, 0) == GATT_CLIENT_CHARACTERISTICS_CONFIGURATION_NOTIFICATION;
-    LogConn("  ble_notification_enabled  %d", le_not);
+    LogConn("  ble_notification_enabled  %d", ( READ_BT_16(buffer, 0) == GATT_CLIENT_CHARACTERISTICS_CONFIGURATION_NOTIFICATION ) );
 
     ble_notification_enabled = READ_BT_16(buffer, 0) == GATT_CLIENT_CHARACTERISTICS_CONFIGURATION_NOTIFICATION;
   }
@@ -594,7 +1005,7 @@ static void BTTasks() {
         hci_transport_mchpusb_tasks();
 
         if (rfcomm_channel_id && rfcomm_send_credit) {
-          LogConn("BTTasks  grant credits");
+          //LogConn("BTTasks  grant credits");
           rfcomm_grant_credits(rfcomm_channel_id, 1);
           rfcomm_send_credit = 0;
         }
@@ -656,6 +1067,8 @@ static void BTSend(int h, const void *data, int size) {
   }
 }
 
+static int last_rfcomm_can_send = 0;
+
 static int BTCanSend(int h) {
   //  LogConn("BTCanSend  handle: 0x%04x", h);
 
@@ -668,8 +1081,11 @@ static int BTCanSend(int h) {
     }
   } else {
     if ( rfcomm_channel_id != 0 ) {
-      LogConn("BTCanSend  RFCOMM handle: 0x%04x", h);
-      return rfcomm_can_send_packet_now(rfcomm_channel_id);
+      int res = rfcomm_can_send_packet_now(rfcomm_channel_id);
+      if ( res != last_rfcomm_can_send )
+        LogConn("BTCanSend  changed  from: %d  to: %d   RFCOMM handle: 0x%04x", last_rfcomm_can_send, res, h);
+      last_rfcomm_can_send = res;
+      return res;
     }
   }
   return 0;

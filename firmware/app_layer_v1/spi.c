@@ -29,6 +29,10 @@
 
 #include "spi.h"
 
+
+#ifdef ENABLE_SPI
+
+
 #include <assert.h>
 #include "atomic.h"
 #include "byte_queue.h"
@@ -324,3 +328,6 @@ void SPITransmit(int spi_num, int dest, const void* data, int data_size,
 #if NUM_SPI_MODULES >= 3
   DEFINE_INTERRUPT_HANDLERS(3)
 #endif
+
+
+#endif // ENABLE_SPI

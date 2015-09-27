@@ -31,6 +31,18 @@
 #define __I2C_H__
 
 
+//#define ENABLE_I2C
+
+#ifndef ENABLE_I2C
+
+#define I2CInit()
+#define I2CTasks()
+// rate is 0:off 1:100KHz, 2:400KHz, 3:1MHz
+#define I2CConfigMaster(...)
+#define I2CWriteRead(...)
+
+#else // ENABLE_I2C
+
 void I2CInit();
 void I2CTasks();
 // rate is 0:off 1:100KHz, 2:400KHz, 3:1MHz
@@ -38,6 +50,7 @@ void I2CConfigMaster(int i2c_num, int rate, int smbus_levels);
 void I2CWriteRead(int i2c_num, unsigned int addr, const void* data,
                   int write_bytes, int read_bytes);
 
+#endif  // ENABLE_I2C
 
 
 #endif  // __I2C_H__

@@ -130,7 +130,7 @@ void LogUARTWrite(int len0, int len1)
 }
 
 
-
+/*
 void LogBytes( uint8_t *data, int size ) {
   if ( enable_uart_logging ) {
     int len = LogWriteModule( "main" );
@@ -146,7 +146,7 @@ void LogBytes( uint8_t *data, int size ) {
     UARTTransmit(1, p_log_buf, len2);
   }
 }
-
+*/
 
 /*
 void LogMain( const char * format, ...)
@@ -162,6 +162,7 @@ void LogMain( const char * format, ...)
 }
 */
 
+/*
 void LogFeature( const char * format, ...)
 {
   if ( enable_uart_logging ) {
@@ -195,6 +196,7 @@ void LogRgb( const char * format, ...)
     LogUARTWrite( len0, len1 );
   }
 }
+*/
 
 /*
 void LogProtocol( const char * format, ...)
@@ -222,6 +224,8 @@ void LogConn( const char * format, ...)
   }
 }
 */
+
+/*
 void LogUSB( const char * format, ...)
 {
   if ( enable_uart_logging ) {
@@ -233,7 +237,7 @@ void LogUSB( const char * format, ...)
     LogUARTWrite( len0, len1 );
   }
 }
-
+*/
 
 /*
 void LogLine( const char * format, ...)

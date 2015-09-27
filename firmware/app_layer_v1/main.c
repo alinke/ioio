@@ -536,10 +536,7 @@ int main() {
 
       case STATE_CONNECTED:
         // LogMain("AppProtocolTasks  0x%04x", handle);
-        if ( AppProtocolTasks(handle) == FALSE ) {
-          LogMain("AppProtocolTasks  returned FALSE");
-          mainSetState(STATE_INIT);
-        }
+        AppProtocolTasks(handle);
         break;
 
       case STATE_ERROR:

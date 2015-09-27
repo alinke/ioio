@@ -187,22 +187,8 @@ static inline int IncomingVarArgSize(const INCOMING_MESSAGE* msg) {
   }
 }
 
-static CHANNEL_HANDLE current_handle = 0;
-
-void AppProtocolDisconnect() {
-  LogProtocol("AppProtocolDisconnect  handle: 0x%04x", current_handle);
-  if ( current_handle != 0 ) {
-    //ConnectionCloseChannel(current_handle);
-    ByteQueueClear(&tx_queue);
-    state = STATE_CLOSING;
-  }
-  return;
-}
-
 
 void AppProtocolInit(CHANNEL_HANDLE h) {
-  current_handle = h;
-
   _prog_addressT p;
   bytes_out = 0;
   rx_buffer_cursor = 0;
@@ -227,7 +213,7 @@ void AppProtocolInit(CHANNEL_HANDLE h) {
 }
 
 void AppProtocolSendMessage(const OUTGOING_MESSAGE* msg) {
-  LogProtocol("SendMessage");
+  LogProtocol("SendMessage  %02x", msg->type);
   if (state != STATE_OPEN) return;
   
   PRIORITY(1) {
@@ -257,16 +243,14 @@ void AppProtocolSendMessageWithVarArgSplit(const OUTGOING_MESSAGE* msg,
   }
 }
 
-BOOL AppProtocolTasks(CHANNEL_HANDLE h) {
-  if (state == STATE_CLOSED)
-    return FALSE;
-
+void AppProtocolTasks(CHANNEL_HANDLE h) {
+  if (state == STATE_CLOSED) return;
   if (state == STATE_CLOSING && ByteQueueSize(&tx_queue) == 0) {
     log_printf("Finished flushing, closing the channel.");
     LogProtocol("AppProtocolTasks  close channel");
     ConnectionCloseChannel(h);
     state = STATE_CLOSED;
-    return FALSE;
+    return;
   }
 
   UARTTasks();
@@ -286,7 +270,6 @@ BOOL AppProtocolTasks(CHANNEL_HANDLE h) {
       ConnectionSend(h, data, bytes_out);
     }
   }
-  return TRUE;
 }
 
 
@@ -295,7 +278,7 @@ static void Echo() {
 }
 
 static BOOL MessageDone() {
-  LogProtocol("MessageDone");
+  LogProtocol("RecvMessage  %02x", rx_msg.type);
 
   // TODO: check pin capabilities
   switch (rx_msg.type) {

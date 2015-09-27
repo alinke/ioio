@@ -29,6 +29,10 @@
 
 #include "i2c.h"
 
+
+#ifdef ENABLE_I2C
+
+
 #include <assert.h>
 #include "atomic.h"
 #include "Compiler.h"
@@ -344,3 +348,7 @@ done:
 #if NUM_I2C_MODULES >= 3
   DEFINE_INTERRUPT_HANDLERS(3)
 #endif
+
+
+#endif // ENABLE_I2C
+

@@ -50,6 +50,10 @@
 
 #include "incap.h"
 
+
+#ifdef ENABLE_INCAP
+
+
 #include <assert.h>
 
 #include "Compiler.h"
@@ -319,3 +323,8 @@ void __attribute__((__interrupt__, auto_psv)) _IC##num##Interrupt() { \
 }
 
 REPEAT_1B(DEFINE_INTERRUPT, NUM_INCAP_MODULES)
+
+
+#endif // ENABLE_INCAP
+
+
