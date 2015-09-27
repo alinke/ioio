@@ -20,12 +20,19 @@ class ThumbnailViewController: UIViewController {
     var thumbnailListView: CollectionView?
 
 
-    func reconnectHandler(peripheral: CBPeripheral) {
+    func reconnectHandler(device: Device) {
         dispatch_async(dispatch_get_main_queue()) {
             self.leftBarButton!.title = "Connected"
         }
     }
+
+    func disconnectHandler(device: Device) {
+        dispatch_async(dispatch_get_main_queue()) {
+            self.leftBarButton!.title = "Disconnected"
+        }
+    }
     
+
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
@@ -39,7 +46,7 @@ class ThumbnailViewController: UIViewController {
         // create the app to create the Protocol object to start bluetooth
         let app = App.sharedInstance
         // this should try to automatically connect to paired peripherals
-        app.startProtocol(reconnectHandler: reconnectHandler)
+        app.startProtocol(reconnectHandler: reconnectHandler, disconnectHandler: disconnectHandler)
 
         let frame = self.view.bounds
 
@@ -71,10 +78,12 @@ class ThumbnailViewController: UIViewController {
             dispatch_async(dispatch_get_main_queue()) {
                 self.leftBarButton!.title = "Connected"
             }
+        } else {
+            dispatch_async(dispatch_get_main_queue()) {
+                self.leftBarButton!.title = "Disconnected"
+            }
         }
     }
-
-
     
 
     

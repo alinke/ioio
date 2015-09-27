@@ -17,63 +17,137 @@ class App {
     init() {
     }
     
+
     var api: Protocol?
 
-    func startProtocol(reconnectHandler: ((CBPeripheral) -> Void)? = nil) {
-        self.api = Protocol(reconnectHandler: reconnectHandler)
+
+    var deviceManager: DeviceManager?
+    var currentDevice: Device?
+    
+    func startProtocol(reconnectHandler: Device.ConnectHandler? = nil, disconnectHandler: Device.DisconnectHandler? = nil) {
+        self.deviceManager = DeviceManager.sharedInstance
+        self.deviceManager!.startCentral(reconnectHandler: reconnectHandler, disconnectHandler: disconnectHandler)
     }
 
+    //
+    // Device discovery
+    //
+    func startScan(discoverHandler: DeviceManager.DiscoverCompletionHandler? = nil) -> Bool {
+        if let manager = self.deviceManager {
+            manager.startScan(discoverHandler: discoverHandler)
+            return true
+        } else {
+            // handle case where manager == nil
+            return false
+        }
+    }
+    func stopScan() {
+        if let manager = self.deviceManager {
+            manager.stopScan()
+        }
+        // handle case where manager == nil
+    }
+
+    //
+    // Connect
+    //
+    func connect(device: Device, connectHandler: Device.ConnectHandler? = nil) {
+        if let manager = self.deviceManager {
+            manager.connect(device) {
+                (device: Device) -> Void in
+
+                self.currentDevice = device
+                manager.setReconnectUUID(device)
+                
+                if let handler = connectHandler {
+                    handler(device: device)
+                }
+            }
+        }
+        // handle case where manager == nil
+    }
+
+    func didConnect(device: Device) {
+        self.api = Protocol(device: device)
+    }
+
+    
+    func disconnect(device: Device, disconnectHandler: Device.DisconnectHandler? = nil) {
+        if let manager = self.deviceManager {
+            manager.disconnect(device) {
+                (device: Device) -> Void in
+
+                self.currentDevice = nil
+                manager.clearReconnectUUIDs()
+
+                if let handler = disconnectHandler {
+                    handler(device: device)
+                }
+            }
+            manager.disconnect(device, disconnectHandler: disconnectHandler)
+        }
+        // handle case where manager == nil
+    }
+
+/*
+    // completionHandler ?
+    func disconnectDevices(selectedDevice: Device, completionHandler: (() -> Void)? = nil) {
+        if let manager = self.deviceManager {
+            manager.disconnectDevices(selectedDevice, completionHandler: completionHandler)
+        }
+    }
+*/    
+
     func isConnected() -> Bool {
-        if let api = self.api {
-            return api.isConnected()
+        if let device = self.currentDevice {
+            return device.isConnected()
         }
         return false
     }
     
-    func startScan(scanHandler: ((CBPeripheral, [NSObject : AnyObject]) -> Void)? = nil) {
-        self.api!.startScan(scanHandler: scanHandler)
-    }
-    func stopScan() {
-        self.api!.stopScan()
-    }
-    func connect(peripheral: CBPeripheral, connectHandler: ((CBPeripheral) -> Void)? = nil) {
-        self.api!.connect(peripheral, connectHandler: connectHandler)
-    }
-        
+
+    
+    //--------------------------------------------------------------------------------
+    //
+    // Device API methods
+    //
     
     func upload(thumbnail: Thumbnail, frameHandler: ((Int, Int) -> Void)? = nil, completionHandler: (() -> Void)? = nil) {
-        if let path: String = NSBundle.mainBundle().pathForResource(thumbnail.name, ofType: "gif") {
-            var loadError: NSError?
-            if let data = NSData(contentsOfFile: path, options: NSDataReadingOptions.DataReadingMapped, error: &loadError) {
-                var decoder = GIFDecoder(data: data)
-                //decoder.debug = true
-                decoder.read()
-
-                var numFrames = decoder.getFrameCount()
-                var images = [NSData]()
-                for i in 0 ..< numFrames {
-                    if let frame = decoder.getFrame(i) {
-                        if let image = frame.pixelFrame() {
-                            images.append(image)
-                        }
-                    }
-                }
-                
-                self.api!.matrixWriteFile(10.0, shifterLen32: 0x01, rows: 8) {
+        if let api = self.api {
+        
+            if let path: String = NSBundle.mainBundle().pathForResource(thumbnail.name, ofType: "gif") {
+                var loadError: NSError?
+                if let data = NSData(contentsOfFile: path, options: NSDataReadingOptions.DataReadingMapped, error: &loadError) {
+                    var decoder = GIFDecoder(data: data)
+                    //decoder.debug = true
+                    decoder.read()
+                    
+                    var numFrames = decoder.getFrameCount()
+                    var images = [NSData]()
                     for i in 0 ..< numFrames {
-                        let frame = images[i]
-                        self.api!.matrixFrame(frame) {
-                            () -> Void in
-                            if let handler = frameHandler {
-                                handler(i, numFrames)
+                        if let frame = decoder.getFrame(i) {
+                            if let image = frame.pixelFrame() {
+                                images.append(image)
                             }
                         }
                     }
-
-                    self.api!.matrixEnable(0x00, rows: 8) {
-                        () -> Void in
-                        if let handler = completionHandler {
-                            handler()
+                    
+                    self.api!.matrixWriteFile(10.0, shifterLen32: 0x01, rows: 8) {
+                        for i in 0 ..< numFrames {
+                            let frame = images[i]
+                            api.matrixFrame(frame) {
+                                () -> Void in
+                                if let handler = frameHandler {
+                                    handler(i, numFrames)
+                                }
+                            }
+                        }
+                        
+                        api.matrixEnable(0x00, rows: 8) {
+                            () -> Void in
+                            if let handler = completionHandler {
+                                handler()
+                            }
                         }
                     }
                 }
@@ -82,21 +156,21 @@ class App {
     }
 
     func sendWriteFile() {
-        self.api!.matrixWriteFile(10.0, shifterLen32: 0x01, rows: 8) {
-            () -> Void in
-        }
+//        self.api!.matrixWriteFile(10.0, shifterLen32: 0x01, rows: 8) {
+//            () -> Void in
+//        }
     }
 
     func sendPlay() {
-        self.api!.matrixEnable(0x00, rows: 8) {
-            () -> Void in
-        }
+//        self.api!.matrixEnable(0x00, rows: 8) {
+//            () -> Void in
+//        }
     }
 
     func sendInteractive() {
-        self.api!.matrixEnable(0x01, rows: 8) {
-            () -> Void in
-        }
+//        self.api!.matrixEnable(0x01, rows: 8) {
+//            () -> Void in
+//        }
     }
 
 

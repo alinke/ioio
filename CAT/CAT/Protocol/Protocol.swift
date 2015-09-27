@@ -1,6 +1,6 @@
 //
 //  Protocol.swift
-//  LEDPurse
+//  CAT
 //
 //  Created by Kevin Lovette on 7/18/15.
 //  Copyright (c) 2015 Kevin Lovette. All rights reserved.
@@ -11,230 +11,18 @@ import CoreBluetooth
 
 
 
-class Protocol: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
+class Protocol {
 
-    var centralManager: CBCentralManager?
-    var centralQueue: dispatch_queue_t = dispatch_queue_create("com.ioio.centralQueue", DISPATCH_QUEUE_SERIAL)
-
-    var autoReconnect = true
-    var reconnectHandler: ((CBPeripheral) -> Void)?
-    
-    init(reconnectHandler: ((CBPeripheral) -> Void)? = nil) {
-        super.init()
-        self.reconnectHandler = reconnectHandler
-        self.centralManager = CBCentralManager(delegate: self, queue: self.centralQueue)
-
-        //self.transport = Transport.sharedInstance
-        //self.transport.connect(self.dongle, characteristic: self.dongleCharacteristic)
-    }
-
-    var dongle: CBPeripheral?
-    var dongleService: CBService?
-    var dongleCharacteristic: CBCharacteristic?
-
-    var scanHandler: ((CBPeripheral, [NSObject : AnyObject]) -> Void)?
-    var connectHandler: ((CBPeripheral) -> Void)?
+    var device: Device?
 
 
-    func isConnected() -> Bool {
-        if ( (self.dongle != nil) && (self.dongleService != nil) && (self.dongleCharacteristic != nil) ) {
-            return true
-        }
-        return false
-    }
-    
-    func reconnect() {
-        let defaults = NSUserDefaults.standardUserDefaults()
-
-        // remove for testing
-//        defaults.removeObjectForKey("pixelUUID")
-
-        // get peripheral ID for reconnect        
-        if let uuid = defaults.stringForKey("pixelUUID") {
-            if let nsuuid = NSUUID(UUIDString: uuid) {
-                let ids = [nsuuid] //NSUUID]()
-
-                NSLog("TRY reconnect to \(uuid)")
-                let peripherals = self.centralManager!.retrievePeripheralsWithIdentifiers(ids)
-
-                for obj in peripherals {
-                    if let peripheral = obj as? CBPeripheral {
-                        NSLog("  \(peripheral)")
-                        // connect
-                        self.connect(peripheral, connectHandler: didReconnect)
-                    }
-                }
-            }
-        }
-    }
-
-    func didReconnect(peripheral: CBPeripheral) {
-        NSLog("  CONNECTED TO \(peripheral)")
-        if let handler = self.reconnectHandler {
-            handler(peripheral)
-        }
+    init(device: Device) {
+        self.device = device
+        // register with the device
+         self.device!.registerProtocol(self)
     }
 
     
-    func startScan(scanHandler: ((CBPeripheral, [NSObject : AnyObject]) -> Void)? = nil) {
-        if let manager = self.centralManager {
-            self.scanHandler = scanHandler
-            
-            let serviceUUIDs = [CBUUID(string: "1130FBD0-6D61-422A-8939-042DD56B1EF5")]
-//            let options = [CBCentralManagerScanOptionSolicitedServiceUUIDsKey: CBUUID(string: "1130FBD0-6D61-422A-8939-042DD56B1EF5")]
-
-            self.centralManager!.scanForPeripheralsWithServices(serviceUUIDs, options: nil)
-        }
-    }
-    func stopScan() {
-        // stop scanning
-        self.centralManager!.stopScan()
-    }
-    func connect(peripheral: CBPeripheral, connectHandler: ((CBPeripheral) -> Void)? = nil) {
-        self.connectHandler = connectHandler
-
-//        if let name = peripheral.name {
-//            // Check the name 
-//            if name == "PIXEL" {
-        if dongle == nil {
-            self.dongle = peripheral
-            self.dongle!.delegate = self
-            NSLog("didDiscoverPeripheral \(peripheral)")
-
-            // save peripheral ID for reconnect
-            let id = peripheral.identifier.UUIDString
-            let defaults = NSUserDefaults.standardUserDefaults()
-            defaults.setObject(id, forKey: "pixelUUID")
-                    
-            self.centralManager!.connectPeripheral(peripheral, options: nil)
-        }
-//              }
-//          }
-    }
-
-    
-    
-    var transport: Transport = WriteWithResponseTransport.sharedInstance
-    //var transport: Transport = WriteWithoutResponseTransport.sharedInstance
-    
-    func connectCompleteHandler(peripheral: CBPeripheral) {
-        self.transport.connect(self.dongle, characteristic: self.dongleCharacteristic, completionHandler: self.connectHandler)
-    }        
-
-
-    func handleDidUpdateNotificationState(characteristic: CBCharacteristic, error: NSError?) {
-        transport.handleUpdateNotificationState(characteristic, error: error)
-    }
-    
-    func handleDidUpdateValue(characteristic: CBCharacteristic, error: NSError?) {
-        let value = characteristic.value
-        //NSLog("### handleNotification  data: \(data)")
-        transport.handleNotification(value)
-    }
-
-    func handleDidWriteValue(characteristic: CBCharacteristic?, error: NSError?) {
-        //NSLog("### handleNotification  data: \(data)")
-        transport.handleWriteAck()
-    }
-
-    
-    //--------------------------------------------------------------------------------
-    //
-    // MARK: - CBCentralManagerDelegate
-    //
-    
-   func centralManagerDidUpdateState(central: CBCentralManager!) {
-
-        switch ( central.state ) {
-        case CBCentralManagerState.Unsupported:
-            NSLog("centralManagerDidUpdateState  Unsupported    The platform/hardware doesn't support Bluetooth Low Energy.")
-        case CBCentralManagerState.Unauthorized:
-            NSLog("centralManagerDidUpdateState  Unauthorized   The app is not authorized to use Bluetooth Low Energy.")
-        case CBCentralManagerState.PoweredOff:
-            NSLog("centralManagerDidUpdateState  PoweredOff     Bluetooth is currently powered off.")
-        case CBCentralManagerState.PoweredOn:
-            NSLog("centralManagerDidUpdateState  PoweredOn      Powered On")
-            if self.autoReconnect {
-                self.reconnect()
-            }
-        case CBCentralManagerState.Unknown:
-            NSLog("centralManagerDidUpdateState  Unknown        Unknown")
-        default:
-            break
-        }
-//        NSLog("centralManagerDidUpdateState  \(central)")
-    }
-
-    //
-    // Handle discovery of a device found by the scan
-    //
-    func centralManager(central: CBCentralManager!,
-                        didDiscoverPeripheral peripheral: CBPeripheral!,
-                        advertisementData: [NSObject : AnyObject]!,
-                        RSSI: NSNumber!) {
-        let id = peripheral.identifier.UUIDString
-        
-        // look for PIXEL peripheral advertising service ID 0000FF10-0000-1000-8000-00805F9B34FB
-
-        // notify UI
-        if let handler = self.scanHandler {
-            handler(peripheral, advertisementData)
-        }
-    }
-
-    func centralManager(central: CBCentralManager!, didConnectPeripheral peripheral: CBPeripheral!) {
-        NSLog("didConnectPeripheral \(peripheral)")
-
-        self.dongle!.discoverServices(nil)
-    }
-
-    // MARK: - CBPeripheralDelegate
-    
-    func peripheral(peripheral: CBPeripheral!, didDiscoverServices error: NSError!) {
-        NSLog("didDiscoverServices \(peripheral)")
-        NSLog("    services = \(peripheral.services)")
-        self.dongleService = peripheral.services[0] as? CBService
-
-        self.dongle!.discoverCharacteristics(nil, forService: self.dongleService!)
-    }
-
-    func peripheral(peripheral: CBPeripheral!,
-                    didDiscoverCharacteristicsForService service: CBService!,
-                    error: NSError!) {
-        NSLog("didDiscoverCharacteristics \(peripheral)")
-        NSLog("    characteristics = \(self.dongleService!.characteristics)")
-
-        self.dongleCharacteristic = service.characteristics[0] as? CBCharacteristic
-
-        // stop scanning
-        self.centralManager!.stopScan()
-                    
-        // put the state machine into a CONNECTED state
-        self.connectCompleteHandler(peripheral)
-    }
-
-    func peripheral(peripheral: CBPeripheral!,
-                    didUpdateNotificationStateForCharacteristic characteristic: CBCharacteristic!,
-                    error: NSError!) {
-        NSLog("didUpdateNotificationStateForCharacteristics \(characteristic)")
-        self.handleDidUpdateNotificationState(characteristic, error: error)
-    }
-
-    func peripheral(peripheral: CBPeripheral!,
-                    didUpdateValueForCharacteristic characteristic: CBCharacteristic!,
-                    error: NSError!) {
-        //NSLog("didUpdateValueForCharacteristics \(characteristic)")
-        self.handleDidUpdateValue(characteristic, error: error)
-    }
-
-    func peripheral(peripheral: CBPeripheral!,
-                    didWriteValueForCharacteristic characteristic: CBCharacteristic!,
-                    error: NSError!) {
-        //NSLog("didWriteValueForCharacteristics \(characteristic)  error: \(error)")
-        self.handleDidWriteValue(characteristic, error: error)
-    }
-
-
     //--------------------------------------------------------------------------------
     //
     // API
@@ -253,85 +41,238 @@ class Protocol: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
     func matrixEnable(shifterLen32: UInt8, rows: UInt8, completionHandler: (() -> Void)? = nil) {
         let command = CommandEnable(shifterLen32: shifterLen32, rows: rows)
         // send command
-        sendCommand(command, completionHandler: completionHandler)
+        self.device!.sendCommand(command, completionHandler: completionHandler)
     }
 
 
     func matrixWriteFile(fps: Float, shifterLen32: UInt8, rows: UInt8, completionHandler: (() -> Void)? = nil) {
         let command = CommandWriteFile(fps: fps, shifterLen32: shifterLen32, rows: rows)
         // send command
-        sendCommand(command, completionHandler: completionHandler)
+        self.device!.sendCommand(command, completionHandler: completionHandler)
     }
 
     func matrixFrame(frame: NSData, completionHandler: (() -> Void)? = nil) {
         let command = CommandFrame(frame: frame)
         // send command
-        sendCommand(command, completionHandler: completionHandler)
+        self.device!.sendCommand(command, completionHandler: completionHandler)
     }
 
 
-    let commandQueue: dispatch_queue_t = dispatch_queue_create("com.ioio.commandQueue", DISPATCH_QUEUE_SERIAL)
 
-/*
-    func matrixUpload(data: NSData, completionHandler: (() -> Void)? = nil) {
-        let numFrames = ( data.length / 768 )
-            
-        let thread = NSThread.currentThread()
-        NSLog("matrixUpload - Thread: \(thread.description)  isMain: \(NSThread.isMainThread())  main: \(thread.isMainThread)")
 
-        dispatch_async(self.commandQueue) {
-            let thread = NSThread.currentThread()
-            NSLog("Thread: \(thread.description)  isMain: \(NSThread.isMainThread())  main: \(thread.isMainThread)")
-
-            self.matrixWriteFile(10.0, shifterLen32: 0x01, rows: 8)
-            for index in 0 ..< numFrames {
-                let data = data.subdataWithRange(NSMakeRange( (index * 768), 768 ))            
-                NSLog("write frame \(index)")
-                self.matrixFrame(data)
-            }
-            self.matrixPlay(0)
-
-            if let handler = self.connectHandler {
-                handler()
-            }
+    // function to handle an incoming command message
+    func handleCommandMessage(data: NSData) {
+        // parse the message to create a command
+        if let command = Command.parseMessage(data) {
+            command.dump()
         }
-
-        let thread2 = NSThread.currentThread()
-        NSLog("DONE - matrixUpload - Thread: \(thread2.description)  isMain: \(NSThread.isMainThread())  main: \(thread2.isMainThread)")
     }
-*/
-
-
-    //--------------------------------------------------------------------------------
-    //
-    // Command Queue
-    //
-
-
-    // release queue when you are done with all the work
-    //dispatch_release(backgroundQueue)
     
-
-    func sendCommand(command: Command, completionHandler: (() -> Void)? = nil) {
-        if let data = command.make() {
-            transport.sendCommand(data)
-        }
-
-        if let handler = completionHandler {
-            handler()
-        }
-    }
-
 }
 
 
+//--------------------------------------------------------------------------------
 //
 // Command protocol
 //
-protocol Command {
-    func make() -> NSData?
+
+class Command {
+    enum IncomingMessageType: UInt8 {
+        case ESTABLISH_CONNECTION                = 0x00
+        case REPORT_DIGITAL_IN_STATUS            = 0x04
+        case REPORT_PERIODIC_DIGITAL_IN_STATUS   = 0x05
+        case REPORT_ANALOG_IN_FORMAT             = 0x0C
+        case REPORT_ANALOG_IN_STATUS             = 0x0B
+        case UART_REPORT_TX_STATUS               = 0x0F
+        case UART_DATA                           = 0x0E
+        case SPI_REPORT_TX_STATUS                = 0x12
+        case SPI_DATA                            = 0x11
+        case I2C_RESULT                          = 0x14
+        case I2C_REPORT_TX_STATUS                = 0x15
+        case CHECK_INTERFACE_RESPONSE            = 0x02
+        case UART_STATUS                         = 0x0D
+        case SPI_STATUS                          = 0x10
+        case I2C_STATUS                          = 0x13
+        case ICSP_RESULT                         = 0x17
+        case ICSP_REPORT_RX_STATUS               = 0x16
+        case INCAP_STATUS                        = 0x1B
+        case INCAP_REPORT                        = 0x1C
+        case SOFT_CLOSE                          = 0x1D
+    }
+    enum OutgoingMessageType: UInt8 {
+        case HARD_RESET                          = 0x00
+        case SOFT_RESET                          = 0x01
+        case SET_PIN_DIGITAL_OUT                 = 0x03
+        case SET_DIGITAL_OUT_LEVEL               = 0x04
+        case SET_PIN_DIGITAL_IN                  = 0x05
+        case SET_CHANGE_NOTIFY                   = 0x06
+        case REGISTER_PERIODIC_DIGITAL_SAMPLING  = 0x07
+        case SET_PIN_PWM                         = 0x08
+        case SET_PWM_DUTY_CYCLE                  = 0x09
+        case SET_PWM_PERIOD                      = 0x0A
+        case SET_PIN_ANALOG_IN                   = 0x0B
+        case UART_DATA                           = 0x0E
+        case UART_CONFIG                         = 0x0D
+        case SET_PIN_UART                        = 0x0F
+        case SPI_MASTER_REQUEST                  = 0x11
+        case SPI_CONFIGURE_MASTER                = 0x10
+        case SET_PIN_SPI                         = 0x12
+        case I2C_CONFIGURE_MASTER                = 0x13
+        case I2C_WRITE_READ                      = 0x14
+        case SET_ANALOG_IN_SAMPLING              = 0x0C
+        case CHECK_INTERFACE                     = 0x02
+        case ICSP_SIX                            = 0x16
+        case ICSP_REGOUT                         = 0x17
+        case ICSP_PROG_ENTER                     = 0x18
+        case ICSP_PROG_EXIT                      = 0x19
+        case ICSP_CONFIG                         = 0x1A
+        case INCAP_CONFIG                        = 0x1B
+        case SET_PIN_INCAP                       = 0x1C
+        case SOFT_CLOSE                          = 0x1D
+        case RGB_LED_MATRIX_ENABLE               = 0x1E
+        case RGB_LED_MATRIX_FRAME                = 0x1F
+        case RGB_LED_MATRIX_WRITE_FILE           = 0x20
+    }
+  
+    func make() -> NSData? {
+        return nil
+    }
+
+    static func parseMessage(data: NSData) -> Command? {
+        //IncomingMessageType(dataBytes[0])
+        //let dataPtr = UnsafePointer<UInt8>(data.bytes)
+        //var dataBytes = UnsafeBufferPointer<UInt8>(start: dataPtr, count: data.length)
+
+        var stream = MessageStream(data: data)
+        let type = IncomingMessageType(rawValue: stream.readUInt8())
+        
+        switch ( type! ) {
+        //case ESTABLISH_CONNECTION:
+        case IncomingMessageType.ESTABLISH_CONNECTION:
+        //case Command.IncomingMessageType.ESTABLISH_CONNECTION:
+            return CommandEstablishConnection(stream: stream)
+                   
+        default:
+            NSLog("Protocol makeCommand  data: \(data)")
+            break
+        }
+        
+        return nil
+    }
+
+    func dump() {
+    }
+    
 }
 
+
+
+class MessageStream {
+    var data: NSData
+    var pos = 0
+    let ptr: UnsafePointer<UInt8>
+    var bytes: UnsafeBufferPointer<UInt8>
+    
+    init(data: NSData) {
+        self.data = data
+        self.ptr = UnsafePointer<UInt8>(data.bytes)
+        self.bytes = UnsafeBufferPointer<UInt8>(start: ptr, count: data.length)
+    }
+
+    func reset() {
+        self.pos = 0
+    }
+    
+    func hasData() -> Bool {
+        return ( pos < data.length )
+    }
+
+    func skip(count: Int) -> Bool {
+        if ( pos + count ) < data.length {
+            pos += count
+            return true
+        } else {
+            pos = data.length
+            return false
+        }
+    }
+
+    func readUInt8() -> UInt8 {
+        let value = bytes[pos]
+        pos++
+        return value
+    }
+
+    func readUInt16() -> UInt16 {
+        var value: UInt16
+        value = ( ( UInt16(bytes[pos+1]) << 8) | UInt16(bytes[pos]) )
+        pos += 2
+        return value
+    }
+
+    func readUInt32() -> UInt32 {
+        var value: UInt32
+        value = ( ( UInt32(bytes[pos+3]) << 24) |
+                  ( UInt32(bytes[pos+2]) << 16) |
+                  ( UInt32(bytes[pos+1]) << 8) |
+                  UInt32(bytes[pos]) )
+        pos += 4
+        return value
+    }
+
+    func readBytes(ptr: UnsafeMutablePointer<UInt8>, length: Int) {
+        for index in 0 ..< length {
+            ptr[index] = bytes[pos]
+            pos++
+        }
+    }
+
+    func readString(length: Int) -> String? {
+        if let buffer = NSMutableData(length: length) {
+            let ptr = UnsafeMutablePointer<UInt8>(buffer.mutableBytes)
+            self.readBytes(ptr, length: length)
+            if let str = NSString(bytes: ptr, length: length, encoding: NSASCIIStringEncoding) {
+                return String(str)
+            }
+        }
+        return nil
+    }
+}
+
+
+
+
+//--------------------------------------------------------------------------------
+//
+// Incoming Commands
+//
+
+class CommandEstablishConnection : Command {
+    // 00 494f49 4f - 504958 4c303032 35 - 494f49 4f303430 31 - 504958 4c303031 30
+    var magic: String?               // 4 bytes
+    var hardwareVersion: String?     // 8 bytes
+    var bootloaderVersion: String?   // 8 bytes
+    var firmwareVersion: String?     // 8 bytes
+    
+    init(stream: MessageStream) {
+        self.magic = stream.readString(4)
+        self.hardwareVersion = stream.readString(8)
+        self.bootloaderVersion = stream.readString(8)
+        self.firmwareVersion = stream.readString(8)
+    }
+    
+    override func dump() {
+        NSLog("Establish Connecton  magic: \(magic)   hw: \(self.hardwareVersion)  boot: \(self.bootloaderVersion)  fw: \(self.firmwareVersion)")
+    }
+}
+
+
+
+
+//--------------------------------------------------------------------------------
+//
+// Outgoing Commands
+//
 
 class CommandEnable : Command {
     var shifterLen32: UInt8 = 0
@@ -342,7 +283,7 @@ class CommandEnable : Command {
         self.rows = rows
     }
     
-    func make() -> NSData? {
+    override func make() -> NSData? {
         var flagsL: UInt8 = ( (shifterLen32 & 0x0F) )
         var flagsH: UInt8 = ( (rows == 8 ? 0 : 1) << 4)
         
@@ -352,7 +293,7 @@ class CommandEnable : Command {
         let flagsHex = String(flags, radix: 16, uppercase: false)
         let flagsHexL = String(flags, radix: 16, uppercase: false)
         let flagsHexH = String(flags, radix: 16, uppercase: false)
-        NSLog("matrixEnable \(shifterLen32)  \(rows)  \(flagsHex)  \(flagsHexH)  \(flagsHexL)")
+        // NSLog("matrixEnable \(shifterLen32)  \(rows)  \(flagsHex)  \(flagsHexH)  \(flagsHexL)")
         
         let data = NSData(bytes: packet, length: packet.count)
         return data
@@ -367,7 +308,7 @@ class CommandFrame : Command {
         self.frame = frame
     }
 
-    func make() -> NSData? {
+    override func make() -> NSData? {
         var bytes = [UInt8](count: 769, repeatedValue: 0)
         
         let framePtr = UnsafeMutablePointer<UInt8>(frame.bytes)
@@ -396,14 +337,14 @@ class CommandWriteFile : Command {
         self.rows = rows
     }
 
-    func make() -> NSData? {
+    override func make() -> NSData? {
         var flags: UInt8 = ( (shifterLen32 & 0x0F) | ((rows == 8 ? 0 : 1) << 4) )
 
         var delay: UInt16 = UInt16( round(62500.0 / fps ) - 1 )
         var delay0: UInt8 = UInt8( delay & 0xff )
         var delay1: UInt8 = UInt8( ( delay >> 8 ) & 0xff )
 
-        NSLog("matrixWriteFile  \(fps)  \(shifterLen32)  \(rows)")
+        // NSLog("matrixWriteFile  \(fps)  \(shifterLen32)  \(rows)")
 
         let packet: [UInt8] = [0x20, delay0, delay1, flags]
 

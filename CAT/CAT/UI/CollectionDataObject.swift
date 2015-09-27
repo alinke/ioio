@@ -17,7 +17,7 @@ class CollectionDataObject {
     init(reuseIdentifier identifier: String, indexPath path: NSIndexPath) {
         self.reuseIdentifier = identifier
         self.indexPath = path
-        self.layoutAttributes = UICollectionViewLayoutAttributes(forCellWithIndexPath:self.indexPath)
+        self.layoutAttributes = UICollectionViewLayoutAttributes(forCellWithIndexPath: self.indexPath)
     }
 
     func size() -> CGSize {

@@ -95,6 +95,8 @@
 		26E943311B953E6400BC1395 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 26E9432F1B953E6400BC1395 /* LaunchScreen.xib */; };
 		26E9433D1B953E6500BC1395 /* CATTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E9433C1B953E6500BC1395 /* CATTests.swift */; };
 		26E943471B953F0E00BC1395 /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26E943461B953F0E00BC1395 /* CoreBluetooth.framework */; };
+		26F2BDD91BB774540016A1FB /* DeviceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26F2BDD81BB774540016A1FB /* DeviceManager.swift */; };
+		26F2BDDB1BB775040016A1FB /* Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26F2BDDA1BB775040016A1FB /* Device.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -200,6 +202,8 @@
 		26E9433B1B953E6500BC1395 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		26E9433C1B953E6500BC1395 /* CATTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CATTests.swift; sourceTree = "<group>"; };
 		26E943461B953F0E00BC1395 /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
+		26F2BDD81BB774540016A1FB /* DeviceManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceManager.swift; sourceTree = "<group>"; };
+		26F2BDDA1BB775040016A1FB /* Device.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Device.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -224,6 +228,8 @@
 		26DF71731B966CDA00E3CED6 /* Protocol */ = {
 			isa = PBXGroup;
 			children = (
+				26F2BDDA1BB775040016A1FB /* Device.swift */,
+				26F2BDD81BB774540016A1FB /* DeviceManager.swift */,
 				26DF71741B966CDA00E3CED6 /* Protocol.swift */,
 				26DF71751B966CDA00E3CED6 /* Transport.swift */,
 			);
@@ -556,6 +562,7 @@
 				26DF718D1B966CDA00E3CED6 /* GIFColor.swift in Sources */,
 				26E943271B953E6400BC1395 /* CAT.xcdatamodeld in Sources */,
 				26DF71901B966CDA00E3CED6 /* GIFRect.swift in Sources */,
+				26F2BDD91BB774540016A1FB /* DeviceManager.swift in Sources */,
 				26DF71851B966CDA00E3CED6 /* Transport.swift in Sources */,
 				26DF71871B966CDA00E3CED6 /* CollectionDataObject.swift in Sources */,
 				26DF720B1B967ACC00E3CED6 /* SettingsView.swift in Sources */,
@@ -573,6 +580,7 @@
 				26DF71841B966CDA00E3CED6 /* Protocol.swift in Sources */,
 				26DF718A1B966CDA00E3CED6 /* CollectionView.swift in Sources */,
 				26DF71881B966CDA00E3CED6 /* CollectionDataObjectCellView.swift in Sources */,
+				26F2BDDB1BB775040016A1FB /* Device.swift in Sources */,
 				26DF718E1B966CDA00E3CED6 /* GIFDecoder.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

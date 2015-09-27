@@ -12,11 +12,13 @@ import UIKit
 class SettingsDataObject: CollectionDataObject {
 
     var name: String?
+    var device: Device?
     var selectHandler: ((SettingsDataObject) ->Void)?
     
-    convenience init(reuseIdentifier identifier: String, indexPath path: NSIndexPath, name: String, selectHandler: ((SettingsDataObject) -> Void)?) {
+    convenience init(reuseIdentifier identifier: String, indexPath path: NSIndexPath, device: Device? = nil, name: String, selectHandler: ((SettingsDataObject) -> Void)?) {
         self.init(reuseIdentifier: identifier, indexPath: path)
         self.name = name
+        self.device = device
         self.selectHandler = selectHandler
     }
 
@@ -24,12 +26,19 @@ class SettingsDataObject: CollectionDataObject {
         return CGSize(width: 375.0, height: 200.0)
     }
 
-    func didSelect() {
+    override func selectItem() {
         if let handler = self.selectHandler {
             handler(self)
         }
     }
 }
+
+extension SettingsDataObject: Printable {
+    var description: String {
+        return ("\(self.name)  \(device)")
+    }
+}
+
 
 
 class SettingsDataSource: CollectionDataSource {
@@ -37,17 +46,35 @@ class SettingsDataSource: CollectionDataSource {
     override func setupData() {
         var section: [SettingsDataObject] = [SettingsDataObject]()
         section.append(SettingsDataObject(reuseIdentifier: "SettingsCell", indexPath: NSIndexPath(forRow: 0, inSection: 0), name: "Scanning", selectHandler: scanSelected))
-        sections.append(section)
+        self.sections.append(section)
     }
 
     func add(dataObject: SettingsDataObject) {
         var section = self.sections[0]
         dataObject.indexPath = NSIndexPath(forRow: count(section), inSection: 0)
-        section.append(dataObject)
+        dataObject.layoutAttributes = UICollectionViewLayoutAttributes(forCellWithIndexPath: dataObject.indexPath)
+        
+        NSLog("SettingsDataSource  add   row: \(dataObject.indexPath.row)  section: \(dataObject.indexPath.section)   \(dataObject.layoutAttributes)")
+        self.sections[0].append(dataObject)
+        NSLog("SettingsDataSource  \(self.sections[0])")
     }
     
     func scanSelected(dataObject: SettingsDataObject) {
         NSLog("scanSelected \(dataObject)");
+    }
+
+    func deviceExists(device: Device) -> SettingsDataObject? {
+        var section = self.sections[0]
+        for row in section {
+            if let obj = row as? SettingsDataObject {
+                if let rowDevice = obj.device {
+                    if device == rowDevice {
+                        return obj
+                    }
+                }
+            }
+        }
+        return nil
     }
 }
 
@@ -71,7 +98,12 @@ class SettingsLayout: CollectionViewLayout {
         var x: CGFloat = ( self.itemInsets.left )
         var y: CGFloat = ( self.itemInsets.top + ( CGFloat(object.indexPath.row) * ( self.itemSize.height + self.interItemSpacingX ) ) )
         let frame = CGRect(x: x, y: y, width: self.itemSize.width, height: self.itemSize.height)
-//        NSLog("setupLayout \(object.indexPath.row)  frame: \(frame)")
+
+        if let obj = object as? SettingsDataObject {
+            NSLog("SettingsLayout row: \(object.indexPath.row)  \(obj.name)  frame: \(frame)")
+        } else {
+            NSLog("SettingsLayout row: \(object.indexPath.row)  frame: \(frame)")
+        }
         object.layoutAttributes.frame = frame
     }
 
@@ -82,7 +114,7 @@ class SettingsLayout: CollectionViewLayout {
         var width: CGFloat = ( self.itemInsets.left + self.itemInsets.right + self.itemSize.width )
         var height: CGFloat = ( self.itemInsets.top + self.itemInsets.bottom + ( CGFloat(numRows) * ( self.itemSize.height + self.interItemSpacingX ) ) )
 
-//        NSLog("collectionViewContentSize width: \(width)  height: \(height)")
+        NSLog("SettingsLayout contentSize  width: \(width)  height: \(height)")
         return CGSize(width: width, height: height)
     }
 
@@ -94,6 +126,7 @@ class SettingsCellView: CollectionDataObjectCellView {
     var separatorView: UIView?
 
 //    var iconView: UIImageView?
+    var connectView: UILabel?
     var titleView: UILabel?
     
     override init(frame aRect: CGRect) {
@@ -112,13 +145,22 @@ class SettingsCellView: CollectionDataObjectCellView {
 //        var iconFrame = CGRect(x:20.0, y:32.0, width:60.0, height:60.0)
 //        self.iconView = UIImageView(frame: iconFrame)
 //        self.addSubview(self.iconView!)
-        
-//        var titleFrame = CGRect(x:108, y:44.0, width:250.0, height:36.0)
-        var titleFrame = CGRect(x:20, y:44.0, width:300.0, height:36.0)
+//        var titleFrame = CGRect(x:108, y:44.0, width:250.0, height:36.0)        
+
+
+        var connectFrame = CGRect(x:20.0, y:44.0, width:60.0, height:36.0)
+        self.connectView = UILabel(frame: connectFrame)
+        self.connectView!.font = UIFont.systemFontOfSize(24.0)
+        self.connectView!.textColor = UIColor.whiteColor()
+        self.addSubview(self.connectView!)
+
+        //var titleFrame = CGRect(x:20, y:44.0, width:300.0, height:36.0)
+        var titleFrame = CGRect(x:88, y:44.0, width:240.0, height:36.0)
         self.titleView = UILabel(frame: titleFrame)
         self.titleView!.font = UIFont.systemFontOfSize(24.0)
         self.titleView!.textColor = UIColor.whiteColor()
         self.addSubview(self.titleView!)
+        
     }
 
     required init(coder decoder: NSCoder) {
@@ -132,7 +174,17 @@ class SettingsCellView: CollectionDataObjectCellView {
 
     override func setupCell(object: CollectionDataObject) {
         if let obj = object as? SettingsDataObject {
+            NSLog("setupCell \(obj.name)  frame: \(self.frame)  layout: \(object.layoutAttributes.frame)")
+
             self.titleView!.text = obj.name
+
+            if let device = obj.device {
+                if device.isConnected() {
+                    self.connectView!.text = "C"
+                } else {
+                    self.connectView!.text = ""
+                }
+            }
         }
     }
 }
