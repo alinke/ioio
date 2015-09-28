@@ -21,6 +21,7 @@
       <itemPath>adc.h</itemPath>
       <itemPath>digital.h</itemPath>
       <itemPath>features.h</itemPath>
+      <itemPath>traps.h</itemPath>
       <itemPath>i2c.h</itemPath>
       <itemPath>icsp.h</itemPath>
       <itemPath>incap.h</itemPath>
@@ -63,6 +64,7 @@
       <itemPath>adc.c</itemPath>
       <itemPath>digital.c</itemPath>
       <itemPath>features.c</itemPath>
+      <itemPath>traps.c</itemPath>
       <itemPath>i2c.c</itemPath>
       <itemPath>icsp.c</itemPath>
       <itemPath>incap.c</itemPath>
