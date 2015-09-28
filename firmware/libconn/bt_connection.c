@@ -176,11 +176,11 @@ static uint8_t hexChar(uint8_t n) {
 }
 
 static void PacketHandler(int l2cap_event, void * connection, uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t size) {
-  if ( l2cap_event ) {
-    printf("L2CAP   %d  ", size);
-  } else {
-    printf("RFCOMM  %d  ", size);
-  }
+  //  if ( l2cap_event ) {
+  //    printf("L2CAP   %d  ", size);
+  //  } else {
+  //    printf("RFCOMM  %d  ", size);
+  //  }
 
   /*
   if ( l2cap_event ) {

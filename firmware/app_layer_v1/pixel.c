@@ -54,7 +54,7 @@ static FSFILE *shifter_length_file;
 
 
 
-void hal_tick_call_handler(void);
+//void hal_tick_call_handler(void);
 
 //static frame_timer_enable = 0;
 
@@ -104,8 +104,8 @@ void __attribute__((__interrupt__, auto_psv)) _T1Interrupt() {
 
   _T1IF = 0;  // clear interrupt
 
-  if ( hal_tick_enabled )
-    hal_tick_call_handler();
+  //  if ( hal_tick_enabled )
+  //    hal_tick_call_handler();
 }
 
 
@@ -253,7 +253,7 @@ static void MaybeFrameFromFile() {
 #endif // NO_ANIMATION
 
     //hal_tick_call_handler();
-    PixelFrameTick();
+    //PixelFrameTick();
 
 
 #ifdef LED_DEBUG

@@ -108,11 +108,6 @@ static hci_stack_t * hci_stack = NULL;
 static uint8_t disable_l2cap_timeouts = 0;
 
 
-//const char *hciStackStateName() {
-//  return stackStateName(hci_stack->state);
-//}
-
-
 /**
  * create connection for given address
  *
@@ -1087,9 +1082,6 @@ static void hci_initializing_run(void) {
         case HCI_INIT_DONE:
             // done.
             hci_stack->state = HCI_STATE_WORKING;
-
-            LedSetFlag(0, 15, GREEN);
-
             hci_emit_state();
             return;
         default:

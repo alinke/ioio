@@ -491,19 +491,17 @@ int main() {
 
   SoftReset();    // PixelInit gets called by this
 
-  // Init UART and Log
-  //  LogUARTInit();
-  //  LogInit();
-
 
   LogMain("main()  state = %s", mainStateName(state) );
 
   LogMain("connection init");
   LogMain("SP: 0x%04x", (unsigned int)getTopOfStack());
 
+
   ConnectionInit();
+
   while (1) {
-    //    LogMain("  loop TOP state = %s", mainStateName(state) );
+    // LogMain("  loop TOP state = %s", mainStateName(state) );
 
     PixelTasks();
     ConnectionTasks();

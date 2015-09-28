@@ -2,15 +2,21 @@
 #ifndef __BTSTACK_CONFIG_H__
 #define __BTSTACK_CONFIG_H__
 
+#include "log.h"
 
 #define EMBEDDED
 
 //#define NO_RUN_LOOP
 
 
+#ifdef ENABLE_LOG
+
 #define ENABLE_LOG_DEBUG
 #define ENABLE_LOG_INFO
 #define ENABLE_LOG_ERROR
+
+#endif // ENABLE_LOG
+
 
 #define HAVE_BLE
 
