@@ -34,13 +34,33 @@ typedef enum {
 } STATE;
 
 static STATE state = STATE_NONE;
+
 static int frame_delay; // static int frame_delay;
+
 static int shifter_len_32;
 static int num_rows;
 
 static FSFILE *animation_file;
 static FSFILE *metadata_file;
 static FSFILE *shifter_length_file;
+
+/*
+typedef struct {
+  char animation_filename[12];
+  int shifter_len_32;
+  int num_rows;
+  FSFILE *animation_file;  
+} ANIMATION_STATE;
+
+// load animation metadata
+// save animation metadata
+// write frames
+// start playback
+// stop playback
+
+ANIMATON_STATE current_animation;
+*/
+
 
 // TODO: this can be optimized - we already have a buffer of this size for this
 // purpose in RgbLedMatrix.
@@ -66,7 +86,6 @@ void PixelStartTimer(int period) {
 void PixelStopTimer() {
   T1CON = 0x0000;
 }
-
 
 
 static unsigned timer_tick = 0;

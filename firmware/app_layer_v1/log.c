@@ -45,11 +45,25 @@ void p6(int state) {
 //
 
 void UART1Init(void) {
-  // UART 1
+  /*
+  // UART 1 on pins 3 and 4
   RPINR18 = 0x3f04;   // RX on RP4
   RPOR1 = ( 0x0300 | ( RPOR1 & 0x00ff ) );    // TX on RP3    U1TX output function 3
   // Setup
   //  UARTConfig(0, 34, 1, 0, 0);   // 115k  114285.7
+
+  U1BRG = 34;
+  U1MODE = 0;
+  U1MODEbits.BRGH = BRGH2;
+  U1STA = 0;
+  U1MODEbits.UARTEN = 1;
+  U1STAbits.UTXEN = 1;
+  IFS0bits.U1RXIF = 0;
+  */
+
+  // UART 1 on pins 1 (rp10)  and 2 (rp17)
+  RPINR18 = 0x3f0a;   // U1RX on RP10
+  RPOR8 = ( 0x0300 | ( RPOR8 & 0x00ff ) );    // U1TX on RP17    U1TX output function 3
 
   U1BRG = 34;
   U1MODE = 0;

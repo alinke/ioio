@@ -35,7 +35,9 @@
 
 #include "uart.h"
 #include "traps.h"
+#include "button.h"
 
+#include "timer2.h"
 #include "log.h"
 
 #include <stdint.h>
@@ -202,12 +204,15 @@ int main() {
   LogMain("connection init");
   LogMain("SP: 0x%04x", (unsigned int)getTopOfStack());
 
+  Timer2Init();
 
+  ButtonInit();
   ConnectionInit();
 
   while (1) {
     // LogMain("  loop TOP state = %s", mainStateName(state) );
 
+    //ButtonTasks();
     PixelTasks();
     ConnectionTasks();
 

@@ -22,6 +22,8 @@
       <itemPath>digital.h</itemPath>
       <itemPath>features.h</itemPath>
       <itemPath>traps.h</itemPath>
+      <itemPath>timer2.h</itemPath>
+      <itemPath>button.h</itemPath>
       <itemPath>i2c.h</itemPath>
       <itemPath>icsp.h</itemPath>
       <itemPath>incap.h</itemPath>
@@ -65,6 +67,8 @@
       <itemPath>digital.c</itemPath>
       <itemPath>features.c</itemPath>
       <itemPath>traps.c</itemPath>
+      <itemPath>timer2.c</itemPath>
+      <itemPath>button.c</itemPath>
       <itemPath>i2c.c</itemPath>
       <itemPath>icsp.c</itemPath>
       <itemPath>incap.c</itemPath>
