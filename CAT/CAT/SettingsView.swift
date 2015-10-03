@@ -96,8 +96,8 @@ class SettingsLayout: CollectionViewLayout {
     override init(dataSource: CollectionDataSource) {
         super.init(dataSource: dataSource)
 
-        self.itemInsets = UIEdgeInsets(top: 8.0, left: 8.0, bottom: 8.0, right: 8.0)
-        self.itemSize = CGSize(width: 359.0, height: 126.0)
+        self.itemInsets = UIEdgeInsets(top: 16.0, left: 8.0, bottom: 8.0, right: 8.0)
+        self.itemSize = CGSize(width: 359.0, height: 100.0)
         self.interItemSpacingX = 8.0
 //        self.numberOfRows = 4
     }
@@ -147,21 +147,7 @@ class SettingsCellView: CollectionDataObjectCellView {
 
         NSLog("SettingsCellView frame: \(frame)")
 
-        // top separator line
-        let separatorFrame = CGRect(x:20.0, y:0.0, width:335.0, height:1.0)
-        self.separatorView = UIView(frame: separatorFrame)
-        // from #111e35  to #233d53
-        self.separatorView!.backgroundColor = UIColor(hex: "ffffff", alpha: 0.3)
-        self.addSubview(self.separatorView!)
-        
-
-//        var iconFrame = CGRect(x:20.0, y:32.0, width:60.0, height:60.0)
-//        self.iconView = UIImageView(frame: iconFrame)
-//        self.addSubview(self.iconView!)
-//        var titleFrame = CGRect(x:108, y:44.0, width:250.0, height:36.0)        
-
-
-        let connectFrame = CGRect(x:20.0, y:44.0, width:60.0, height:36.0)
+        let connectFrame = CGRect(x:20.0, y:24.0, width:60.0, height:36.0)
         self.connectView = UILabel(frame: connectFrame)
         self.connectView!.font = UIFont.systemFontOfSize(24.0)
 //        self.connectView!.textColor = UIColor.whiteColor()
@@ -169,13 +155,20 @@ class SettingsCellView: CollectionDataObjectCellView {
         self.addSubview(self.connectView!)
 
         //var titleFrame = CGRect(x:20, y:44.0, width:300.0, height:36.0)
-        let titleFrame = CGRect(x:88, y:44.0, width:240.0, height:36.0)
+        let titleFrame = CGRect(x:88, y:24.0, width:240.0, height:36.0)
         self.titleView = UILabel(frame: titleFrame)
         self.titleView!.font = UIFont.systemFontOfSize(24.0)
 //        self.titleView!.textColor = UIColor.whiteColor()
         self.titleView!.textColor = UIColor.blackColor()
         self.addSubview(self.titleView!)
         
+        // top separator line
+        let separatorFrame = CGRect(x:20.0, y:84.0, width: (frame.width - 40.0), height:1.0)
+        self.separatorView = UIView(frame: separatorFrame)
+        // from #111e35  to #233d53
+        self.separatorView!.backgroundColor = UIColor(hex: "000000", alpha: 0.3)
+        self.addSubview(self.separatorView!)
+
     }
 
     required init?(coder decoder: NSCoder) {

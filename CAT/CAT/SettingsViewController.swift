@@ -22,7 +22,8 @@ class SettingsViewController: UIViewController {
         // Do any additional setup after loading the view, typically from a nib.
 
         let frame = self.view.bounds
-//        NSLog("frame \(frame)")
+        NSLog("SettingsView frame \(frame)")
+        
         self.settingsView = SettingsView(frame: frame)
         self.view.addSubview(self.settingsView!)
     }
