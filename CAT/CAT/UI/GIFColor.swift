@@ -39,9 +39,9 @@ class GIFColor {
 
     func rgb565() -> UInt16 {
         var pixel: UInt16 = 0
-        var r = ( ( self.red >> 3 ) & 0x1f )
-        var g = ( ( self.green >> 2 ) & 0x3f )
-        var b = ( ( self.blue >> 3 ) & 0x1f )
+//        var r = ( ( self.red >> 3 ) & 0x1f )
+//        var g = ( ( self.green >> 2 ) & 0x3f )
+//        var b = ( ( self.blue >> 3 ) & 0x1f )
         pixel |= ( ( UInt16( self.red & 0xf8 ) >> 3 ) << 11 )
         pixel |= ( ( UInt16( self.green & 0xf8 ) >> 2 ) << 5 )
         pixel |= ( UInt16( self.blue & 0xf8 ) >> 3 )

@@ -157,6 +157,7 @@ class App {
                     }
                 } catch let error as NSError {
                     loadError = error
+                    NSLog("uplaod error: \(loadError)")
                 }
             }
         }

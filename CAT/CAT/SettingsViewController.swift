@@ -67,8 +67,9 @@ class SettingsViewController: UIViewController {
         // Update the UI - add device to the SettingsDataSource
         if let settingsView = self.settingsView {
             if let dataSource = settingsView.settingsDataSource {
-                if let obj = dataSource.deviceExists(device) {
-                } else {
+                if dataSource.deviceExists(device) == nil {
+//                if let obj = dataSource.deviceExists(device) {
+//                } else {
                     // add device
                     let dataObject = SettingsDataObject(reuseIdentifier: "SettingsCell", indexPath: NSIndexPath(forRow: 0, inSection: 0), device: device, name: device.name) {
                         (dataObject: SettingsDataObject) -> Void in

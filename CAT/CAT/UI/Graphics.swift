@@ -41,8 +41,8 @@ extension UIGestureRecognizerState {
             return "Changed"
         case UIGestureRecognizerState.Ended:
             return "Ended"
-        default:
-            return "unknown"
+//        default:
+//            return "unknown"
         }
     }
 }

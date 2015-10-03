@@ -284,15 +284,15 @@ class CommandEnable : Command {
     }
     
     override func make() -> NSData? {
-        var flagsL: UInt8 = ( (shifterLen32 & 0x0F) )
-        var flagsH: UInt8 = ( (rows == 8 ? 0 : 1) << 4)
+//        var flagsL: UInt8 = ( (shifterLen32 & 0x0F) )
+//        var flagsH: UInt8 = ( (rows == 8 ? 0 : 1) << 4)
         
         let flags: UInt8 = ( (shifterLen32 & 0x0F) | ((rows == 8 ? 0 : 1) << 4) )
         let packet: [UInt8] = [0x1E, flags]
         
-        let flagsHex = String(flags, radix: 16, uppercase: false)
-        let flagsHexL = String(flags, radix: 16, uppercase: false)
-        let flagsHexH = String(flags, radix: 16, uppercase: false)
+//        let flagsHex = String(flags, radix: 16, uppercase: false)
+//        let flagsHexL = String(flags, radix: 16, uppercase: false)
+//        let flagsHexH = String(flags, radix: 16, uppercase: false)
         // NSLog("matrixEnable \(shifterLen32)  \(rows)  \(flagsHex)  \(flagsHexH)  \(flagsHexL)")
         
         let data = NSData(bytes: packet, length: packet.count)

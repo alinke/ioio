@@ -27,9 +27,9 @@ class GIFFrame {
     func image() -> UIImage? {
         if let frameBuffer = self.frameData {
             let framePtr = UnsafeMutablePointer<UInt8>(frameBuffer.bytes)
-            var frameBytes = UnsafeMutableBufferPointer<UInt8>(start: framePtr, count: frameBuffer.length)
+//            var frameBytes = UnsafeMutableBufferPointer<UInt8>(start: framePtr, count: frameBuffer.length)
                 
-            var provider = CGDataProviderCreateWithData(nil, framePtr, (self.width * self.height * 4), nil)
+            let provider = CGDataProviderCreateWithData(nil, framePtr, (self.width * self.height * 4), nil)
 
             let bitsPerComponent = 8
             let bitsPerPixel = 32
@@ -38,9 +38,9 @@ class GIFFrame {
             let bitmapInfo = CGBitmapInfo.ByteOrderDefault
             let renderingIntent: CGColorRenderingIntent = CGColorRenderingIntent.RenderingIntentDefault
                 
-            var cgImage = CGImageCreate(self.width, self.height, bitsPerComponent, bitsPerPixel, bytesPerRow, colorSpace, bitmapInfo, provider, nil, false, renderingIntent)
+            let cgImage = CGImageCreate(self.width, self.height, bitsPerComponent, bitsPerPixel, bytesPerRow, colorSpace, bitmapInfo, provider, nil, false, renderingIntent)
  
-            var newImage = UIImage(CGImage: cgImage!)
+            let newImage = UIImage(CGImage: cgImage!)
             return newImage
         }
         return nil

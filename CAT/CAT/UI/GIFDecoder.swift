@@ -195,7 +195,7 @@ class GIFDecoder {
 
     func frameIndex(n: Int) -> GIFBlockIndex? {
         var count = 0
-        for (index, blockIndex) in blockIndexes.enumerate() {
+        for blockIndex in blockIndexes {
             if ( (blockIndex.code == 0x21) && (blockIndex.subcode == 0xf9) ) {
                 // graphics control extension
                 if count == n {
@@ -215,11 +215,11 @@ class GIFDecoder {
             //NSLog("frame: \(n)  pos: \(blockIndex.pos)   stream: \(stream.pos)")
 
             // read graphics control extension
-            var code = stream.readUInt8()
-            code = stream.readUInt8()
+            stream.readUInt8()
+            stream.readUInt8()
             readGraphicControlExt()
             // read frame
-            code = stream.readUInt8()
+            stream.readUInt8()
             return readImage()
         }
         return nil
@@ -363,7 +363,7 @@ class GIFDecoder {
         var done = false
 
         while !( done || err() ) {
-            let pos = stream.pos
+//            let pos = stream.pos
 
             var code = stream.readUInt8()
             
@@ -420,7 +420,7 @@ class GIFDecoder {
     /// @return number of bytes stored in "buffer"
     func readBlock() -> Int {
         self.blockSize = Int(stream.readUInt8())
-        var n = 0
+//        var n = 0
         if self.blockSize > 0 {
             let ptr = UnsafeMutablePointer<UInt8>(self.blockBuffer!.mutableBytes)
 
@@ -666,7 +666,8 @@ class GIFDecoder {
                         if let color = color {
                             // fill dest with color
                             var pos = 0
-                            for i in 0 ..< (self.width * self.height) {
+//                            for i in 0 ..< (self.width * self.height) {
+                            for _ in 0 ..< (self.width * self.height) {
                                 dest[pos+0] = color.red
                                 dest[pos+1] = color.green
                                 dest[pos+2] = color.blue
@@ -758,7 +759,7 @@ class GIFDecoder {
                         let index = Int( self.pixels[sx++] & 0xff)
                         let color = self.act![index]
 
-                        let destColor = GIFColor(red: dest[(dx * 4) + 0], green: dest[(dx * 4) + 1], blue: dest[(dx * 4) + 2], alpha: dest[(dx * 4) + 3])
+//                        let destColor = GIFColor(red: dest[(dx * 4) + 0], green: dest[(dx * 4) + 1], blue: dest[(dx * 4) + 2], alpha: dest[(dx * 4) + 3])
 
                         // check color != 0
                         if color.aRGB() != 0 {

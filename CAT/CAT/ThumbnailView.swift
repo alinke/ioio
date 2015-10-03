@@ -191,7 +191,7 @@ class ThumbnailLayout: CollectionViewLayout {
 
     override func collectionViewContentSize() -> CGSize {
         // return the size of the cells + padding
-        var numRows: Int = self.collectionDataSource!.numberOfRows(inSection: 0)
+//        var numRows: Int = self.collectionDataSource!.numberOfRows(inSection: 0)
 
         let width: CGFloat = ( self.itemInsets.left + ( ( CGFloat(self.numberOfCols) * ( self.itemSize.width + self.interItemSpacingX ) ) - self.interItemSpacingX ) + self.itemInsets.right )
         let height: CGFloat = ( self.itemInsets.top + ( CGFloat(self.numberOfRows) * ( self.itemSize.height + self.interItemSpacingY ) ) + self.itemInsets.bottom )

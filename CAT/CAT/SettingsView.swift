@@ -54,9 +54,19 @@ class SettingsDataSource: CollectionDataSource {
         dataObject.indexPath = NSIndexPath(forRow: section.count, inSection: 0)
         dataObject.layoutAttributes = UICollectionViewLayoutAttributes(forCellWithIndexPath: dataObject.indexPath)
         
-        NSLog("SettingsDataSource  add   row: \(dataObject.indexPath.row)  section: \(dataObject.indexPath.section)   \(dataObject.layoutAttributes)")
+        NSLog("--")
+        NSLog("SettingsDataSource ADD")
+        NSLog("      row: \(dataObject.indexPath.row)")
+        NSLog("  section: \(dataObject.indexPath.section)")
+        NSLog("   layout: \(dataObject.layoutAttributes)")
+
         self.sections[0].append(dataObject)
-        NSLog("SettingsDataSource  \(self.sections[0])")
+
+        NSLog("--")
+        for (index, row) in self.sections[0].enumerate() {
+            NSLog("section[0][\(index)] = \(row)")
+        }
+        NSLog("--")
     }
     
     func scanSelected(dataObject: SettingsDataObject) {

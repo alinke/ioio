@@ -147,6 +147,7 @@ class ThumbnailViewController: UIViewController {
         } catch let error1 as NSError {
             error = error1
             docsArray = nil
+            NSLog("getAnimationFileNames error: \(error)")
         }
 
         var res = [String]()
@@ -198,6 +199,7 @@ class ThumbnailViewController: UIViewController {
                 }
             } catch let error as NSError {
                 loadError = error
+                NSLog("loadThumbnail error: \(loadError)")
             }
         }
         return nil
