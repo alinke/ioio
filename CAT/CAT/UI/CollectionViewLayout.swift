@@ -41,23 +41,54 @@ class CollectionViewLayout: UICollectionViewLayout {
     // UICollectionViewLayout sub-classed methods
     //
 
+    var sections = [[CollectionDataObject]]()
+
+    func LnumberOfRows(inSection: Int) -> Int {
+        let section = sections[inSection]
+        let numRows = section.count
+        return numRows
+    }
+    func Lobject(forIndexPath indexPath: NSIndexPath) -> CollectionDataObject? {
+        let section = sections[indexPath.section]
+        let obj = section[indexPath.row]
+        return obj
+    }
+    func Lobjects(inRect rect: CGRect) -> [CollectionDataObject]? {
+        var objects: [CollectionDataObject] = [CollectionDataObject]()
+        for section in self.sections {
+            for row in section {
+                if CGRectIntersectsRect(rect, row.layoutAttributes.frame) {
+                    objects.append(row)
+                }
+            }
+        }
+        return objects
+    }
+
+    
     override func prepareLayout() {
         // setup the frame for each cell in the collectionDataSource
         if let source = self.collectionDataSource {
-            for section in 0 ... ( source.numberOfSections() - 1 ) {
-                for row in 0 ... ( source.numberOfRows(inSection: section) - 1 ) {
-                    let indexPath = NSIndexPath(forRow: row, inSection: section)
-                    if let obj = source.object(forIndexPath: indexPath) {
-                        setupLayout(obj)
+            for section in 0 ..< source.numberOfSections() {
+                var layoutSection = [CollectionDataObject]()
+                if source.numberOfRows(inSection: section) > 0 {
+                    for row in 0 ..< source.numberOfRows(inSection: section) {
+                        let indexPath = NSIndexPath(forRow: row, inSection: section)
+                        if let obj = source.object(forIndexPath: indexPath) {
+                            setupLayout(obj)
+                            // add to the layout section
+                            layoutSection.append(obj)
+                        }
                     }
                 }
+                self.sections.append(layoutSection)
             }
         }
     }
 
     override func collectionViewContentSize() -> CGSize {
         // return the size of the cells + padding
-        let numRows: Int = self.collectionDataSource!.numberOfRows(inSection: 0)
+        let numRows = self.LnumberOfRows(0)
         
         let width: CGFloat = ( self.itemInsets.left + ( CGFloat(numRows) * ( self.itemSize.width + self.interItemSpacingX ) ) + self.itemInsets.right )
         let height: CGFloat = ( self.itemInsets.top + self.itemSize.height )
@@ -66,7 +97,8 @@ class CollectionViewLayout: UICollectionViewLayout {
     
 //    override func layoutAttributesForElementsInRect(rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
     override func layoutAttributesForElementsInRect(rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
-        if let objects = self.collectionDataSource?.objects(inRect: rect) {
+        // if let objects = self.collectionDataSource?.objects(inRect: rect) {
+        if let objects = self.Lobjects(inRect: rect) {
             var attrs = [UICollectionViewLayoutAttributes]()
             for object in objects {
                 attrs.append(object.layoutAttributes)
@@ -77,7 +109,8 @@ class CollectionViewLayout: UICollectionViewLayout {
     }
 
     override func layoutAttributesForItemAtIndexPath(indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes? {
-        if let obj = self.collectionDataSource?.object(forIndexPath: indexPath) {
+        // if let obj = self.collectionDataSource?.object(forIndexPath: indexPath) {
+        if let obj = self.Lobject(forIndexPath: indexPath) {
             return obj.layoutAttributes
         }
         return nil

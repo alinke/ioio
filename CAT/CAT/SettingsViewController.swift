@@ -31,7 +31,28 @@ class SettingsViewController: UIViewController {
 //        NSLog("viewWillAppear")
 
         let app = App.sharedInstance
+
+        // add the currently connected device to the list of devices
+        if let currentDevice = app.currentDevice {
+            self.didDiscoverDevice(currentDevice)
+        }        
+        
         app.startScan(didDiscoverDevice)
+    }
+
+    override func viewDidAppear(animated: Bool) {
+/*
+        //        NSLog("viewDidAppear")
+
+        let app = App.sharedInstance
+
+        // add the currently connected device to the list of devices
+        if let currentDevice = app.currentDevice {
+            self.didDiscoverDevice(currentDevice)
+        }        
+        
+        app.startScan(didDiscoverDevice)
+*/
     }
 
     func didSelectDevice(device: Device) {

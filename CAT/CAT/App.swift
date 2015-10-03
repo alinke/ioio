@@ -56,9 +56,6 @@ class App {
             manager.connect(device) {
                 (device: Device) -> Void in
 
-                self.currentDevice = device
-                manager.setReconnectUUID(device)
-                
                 if let handler = connectHandler {
                     handler(device: device)
                 }
@@ -69,6 +66,12 @@ class App {
 
     func didConnect(device: Device) {
         self.api = Protocol(device: device)
+
+        self.currentDevice = device
+
+        if let manager = self.deviceManager {
+            manager.setReconnectUUID(device)
+        }
     }
 
     

@@ -269,7 +269,7 @@ class DeviceManager: NSObject, CBCentralManagerDelegate {
         let defaults = NSUserDefaults.standardUserDefaults()
 
         // peripheral UUID for reconnect
-	let ids = [device.identifier]
+        let ids = [device.identifier]
         // set list of UUIDs
         defaults.setObject(ids, forKey: DeviceManager.kDeviceUUIDs)
 
@@ -303,8 +303,8 @@ class DeviceManager: NSObject, CBCentralManagerDelegate {
     func reconnectPeripheralNSUUIDs() -> [NSUUID] {
         let defaults = NSUserDefaults.standardUserDefaults()
 
-        // remove for testing
-//        clearReconnectUUIDs()
+        // un-comment for testing
+        // clearReconnectUUIDs()
 
         var ids = [NSUUID]()
 

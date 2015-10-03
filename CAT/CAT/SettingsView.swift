@@ -40,12 +40,14 @@ extension SettingsDataObject: CustomStringConvertible {
 }
 
 
-
+//
+// DataSource
+//
 class SettingsDataSource: CollectionDataSource {
 
     override func setupData() {
-        var section: [SettingsDataObject] = [SettingsDataObject]()
-        section.append(SettingsDataObject(reuseIdentifier: "SettingsCell", indexPath: NSIndexPath(forRow: 0, inSection: 0), name: "Scanning", selectHandler: scanSelected))
+        let section: [SettingsDataObject] = [SettingsDataObject]()
+        //section.append(SettingsDataObject(reuseIdentifier: "SettingsCell", indexPath: NSIndexPath(forRow: 0, inSection: 0), name: "Scanning", selectHandler: scanSelected))
         self.sections.append(section)
     }
 
@@ -97,7 +99,7 @@ class SettingsLayout: CollectionViewLayout {
         self.itemInsets = UIEdgeInsets(top: 8.0, left: 8.0, bottom: 8.0, right: 8.0)
         self.itemSize = CGSize(width: 359.0, height: 126.0)
         self.interItemSpacingX = 8.0
-        self.numberOfRows = 4
+//        self.numberOfRows = 4
     }
     
     required init?(coder decoder: NSCoder) {
@@ -119,7 +121,8 @@ class SettingsLayout: CollectionViewLayout {
 
     override func collectionViewContentSize() -> CGSize {
         // return the size of the cells + padding
-        let numRows: Int = self.collectionDataSource!.numberOfRows(inSection: 0)
+//        let numRows: Int = self.collectionDataSource!.numberOfRows(inSection: 0)
+        let numRows = self.LnumberOfRows(0)
         
         let width: CGFloat = ( self.itemInsets.left + self.itemInsets.right + self.itemSize.width )
         let height: CGFloat = ( self.itemInsets.top + self.itemInsets.bottom + ( CGFloat(numRows) * ( self.itemSize.height + self.interItemSpacingX ) ) )
@@ -142,7 +145,7 @@ class SettingsCellView: CollectionDataObjectCellView {
     override init(frame aRect: CGRect) {
         super.init(frame: aRect)
 
-//        NSLog("SettingsCellView frame: \(frame)")
+        NSLog("SettingsCellView frame: \(frame)")
 
         // top separator line
         let separatorFrame = CGRect(x:20.0, y:0.0, width:335.0, height:1.0)
@@ -161,14 +164,16 @@ class SettingsCellView: CollectionDataObjectCellView {
         let connectFrame = CGRect(x:20.0, y:44.0, width:60.0, height:36.0)
         self.connectView = UILabel(frame: connectFrame)
         self.connectView!.font = UIFont.systemFontOfSize(24.0)
-        self.connectView!.textColor = UIColor.whiteColor()
+//        self.connectView!.textColor = UIColor.whiteColor()
+        self.connectView!.textColor = UIColor.blackColor()
         self.addSubview(self.connectView!)
 
         //var titleFrame = CGRect(x:20, y:44.0, width:300.0, height:36.0)
         let titleFrame = CGRect(x:88, y:44.0, width:240.0, height:36.0)
         self.titleView = UILabel(frame: titleFrame)
         self.titleView!.font = UIFont.systemFontOfSize(24.0)
-        self.titleView!.textColor = UIColor.whiteColor()
+//        self.titleView!.textColor = UIColor.whiteColor()
+        self.titleView!.textColor = UIColor.blackColor()
         self.addSubview(self.titleView!)
         
     }
@@ -222,8 +227,10 @@ class SettingsView: UIView {
         // background gradient
         self.gradientLayer.frame = self.bounds
         self.backgroundColor = UIColor(hex: "ffffff", alpha: 0.0)
-        let color1 = UIColor(hex: "10182c").CGColor as CGColorRef
-        let color2 = UIColor(hex: "26363c").CGColor as CGColorRef
+//        let color1 = UIColor(hex: "10182c").CGColor as CGColorRef
+//        let color2 = UIColor(hex: "26363c").CGColor as CGColorRef
+        let color1 = UIColor(hex: "a8aaac").CGColor as CGColorRef
+        let color2 = UIColor(hex: "a8aaac").CGColor as CGColorRef
         self.gradientLayer.colors = [color1, color2]
         self.gradientLayer.locations = [0.0, 1.0]
         self.layer.addSublayer(self.gradientLayer)
