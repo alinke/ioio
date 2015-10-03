@@ -41,7 +41,7 @@ class DeviceManager: NSObject, CBCentralManagerDelegate {
         super.init()
 
         let defaults = NSUserDefaults.standardUserDefaults()
-        if let ids = defaults.stringArrayForKey(DeviceManager.kDeviceUUIDs) as? [String] {
+        if let ids = defaults.stringArrayForKey(DeviceManager.kDeviceUUIDs) {
             NSLog("DeviceManager  deviceUUIDs: \(ids)")
         }
     }
@@ -114,15 +114,15 @@ class DeviceManager: NSObject, CBCentralManagerDelegate {
     // MARK: - Scan - CBCentralManagerDelegate
 
     /// This method is called when peripherals are discovered during scanning.
-    func centralManager(central: CBCentralManager!,
-                        didDiscoverPeripheral peripheral: CBPeripheral!,
-                        advertisementData: [NSObject : AnyObject]!,
-                        RSSI: NSNumber!) {
+    func centralManager(central: CBCentralManager,
+                        didDiscoverPeripheral peripheral: CBPeripheral,
+                        advertisementData: [String : AnyObject],
+                        RSSI: NSNumber) {
         if findDevice(peripheral.identifier) == nil {
             NSLog("didDiscoverPeripheral \(peripheral)")
         }
 
-        var device = getDevice(peripheral)
+        let device = getDevice(peripheral)
         // notify the device of the adv data
         device.didDiscover(advertisementData)
 
@@ -136,7 +136,7 @@ class DeviceManager: NSObject, CBCentralManagerDelegate {
         if let device = findDevice(peripheral.identifier) {
             return device
         } else {
-            var device = Device(peripheral: peripheral)
+            let device = Device(peripheral: peripheral)
             self.devices.append(device)
             return device
         }
@@ -196,7 +196,7 @@ class DeviceManager: NSObject, CBCentralManagerDelegate {
         if let manager = self.centralManager {
             if manager.state == CBCentralManagerState.PoweredOn {
                 if let peripheral = device.peripheral {
-                    device.disconnect(disconnectHandler: disconnectHandler)
+                    device.disconnect(disconnectHandler)
                     manager.cancelPeripheralConnection(peripheral)
                 }
             }
@@ -217,8 +217,8 @@ class DeviceManager: NSObject, CBCentralManagerDelegate {
     
     // MARK: - Connect - CBCentralManagerDelegate
 
-    func centralManager(central: CBCentralManager!,
-                        didConnectPeripheral peripheral: CBPeripheral!) {
+    func centralManager(central: CBCentralManager,
+                        didConnectPeripheral peripheral: CBPeripheral) {
         if let device = findDevice(peripheral.identifier) {
             // start device setup
             device.didConnect()
@@ -226,9 +226,9 @@ class DeviceManager: NSObject, CBCentralManagerDelegate {
             // Should never get here.
         }
     }
-    func centralManager(central: CBCentralManager!,
-                        didDisconnectPeripheral peripheral: CBPeripheral!,
-                        error: NSError!) {
+    func centralManager(central: CBCentralManager,
+                        didDisconnectPeripheral peripheral: CBPeripheral,
+                        error: NSError?) {
         if let device = findDevice(peripheral.identifier) {
             if let handler = self.disconnectHandler {
                 handler(device: device)
@@ -239,9 +239,9 @@ class DeviceManager: NSObject, CBCentralManagerDelegate {
             // Should never get here.
         }
     }
-    func centralManager(central: CBCentralManager!,
-                        didFailToConnectPeripheral peripheral: CBPeripheral!,
-                        error: NSError!) {
+    func centralManager(central: CBCentralManager,
+                        didFailToConnectPeripheral peripheral: CBPeripheral,
+                        error: NSError?) {
         if let device = findDevice(peripheral.identifier) {
             device.didFailToConnect(error)
         } else {
@@ -261,7 +261,7 @@ class DeviceManager: NSObject, CBCentralManagerDelegate {
         let defaults = NSUserDefaults.standardUserDefaults()
         defaults.removeObjectForKey(DeviceManager.kDeviceUUIDs)
 
-        let ids = defaults.stringArrayForKey(DeviceManager.kDeviceUUIDs) as? [String]
+        let ids = defaults.stringArrayForKey(DeviceManager.kDeviceUUIDs)
         NSLog("clearReconnectUUIDs: \(ids)")
     }
 
@@ -269,11 +269,11 @@ class DeviceManager: NSObject, CBCentralManagerDelegate {
         let defaults = NSUserDefaults.standardUserDefaults()
 
         // peripheral UUID for reconnect
-        var ids = [device.identifier]
+	let ids = [device.identifier]
         // set list of UUIDs
         defaults.setObject(ids, forKey: DeviceManager.kDeviceUUIDs)
 
-        let newIds = defaults.stringArrayForKey(DeviceManager.kDeviceUUIDs) as? [String]
+        let newIds = defaults.stringArrayForKey(DeviceManager.kDeviceUUIDs)
         NSLog("setReconnectUUIDs: \(newIds)")
     }
 
@@ -285,7 +285,7 @@ class DeviceManager: NSObject, CBCentralManagerDelegate {
         var ids: [String]?
 
         // get existing list of UUIDs
-        if let reconnectIds = defaults.stringArrayForKey(DeviceManager.kDeviceUUIDs) as? [String] {
+        if let reconnectIds = defaults.stringArrayForKey(DeviceManager.kDeviceUUIDs) {
             ids = [String](reconnectIds)
             // add peripheral UUID
             ids!.append(id)
@@ -296,7 +296,7 @@ class DeviceManager: NSObject, CBCentralManagerDelegate {
         // save list of UUIDs
         defaults.setObject(ids, forKey: DeviceManager.kDeviceUUIDs)
 
-        let newIds = defaults.stringArrayForKey(DeviceManager.kDeviceUUIDs) as? [String]
+        let newIds = defaults.stringArrayForKey(DeviceManager.kDeviceUUIDs)
         NSLog("addReconnectUUID: \(newIds)")
     }
 
@@ -310,7 +310,7 @@ class DeviceManager: NSObject, CBCentralManagerDelegate {
 
         if let uuids = defaults.stringArrayForKey(DeviceManager.kDeviceUUIDs) {
             for uuid in uuids {
-                if let nsuuid = NSUUID(UUIDString: uuid as! String) {
+                if let nsuuid = NSUUID(UUIDString: uuid ) {
                     ids.append(nsuuid)
                 }
             }
@@ -327,13 +327,14 @@ class DeviceManager: NSObject, CBCentralManagerDelegate {
         let peripherals = self.centralManager!.retrievePeripheralsWithIdentifiers(peripheralNSUUIDs)
 
         // rconnect to peripherals
-        for obj in peripherals {
-            if let peripheral = obj as? CBPeripheral {
-                var device = getDevice(peripheral)
+        for peripheral in peripherals {
+//        for obj in peripherals {
+//            if let peripheral = obj as? CBPeripheral {
+                let device = getDevice(peripheral)
 
                 // connect to device
                 self.connect(device, connectHandler: didReconnectDevice)
-            }
+//            }
         }
     }
 
@@ -364,7 +365,7 @@ class DeviceManager: NSObject, CBCentralManagerDelegate {
     // MARK: - CentralManager State - CBCentralManagerDelegate
 
     // CentralManager state update
-    func centralManagerDidUpdateState(central: CBCentralManager!) {
+    func centralManagerDidUpdateState(central: CBCentralManager) {
 
         switch ( central.state ) {
         case CBCentralManagerState.Unknown:
@@ -380,8 +381,8 @@ class DeviceManager: NSObject, CBCentralManagerDelegate {
         case CBCentralManagerState.PoweredOn:
             self.poweredOn()
 
-        default:
-            break
+//        default:
+//            break
         }
     }
 

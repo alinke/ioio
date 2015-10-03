@@ -24,13 +24,13 @@ class CollectionViewLayout: UICollectionViewLayout {
         self.collectionDataSource = dataSource
     }
     
-    required init(coder decoder: NSCoder) {
+    required init?(coder decoder: NSCoder) {
         super.init(coder: decoder)
     }
     
     func setupLayout(object: CollectionDataObject) {
-        var x: CGFloat = ( self.itemInsets.left + ( CGFloat(object.indexPath.row) * ( self.itemSize.width + self.interItemSpacingX ) ) )
-        var y: CGFloat = ( self.itemInsets.top )
+        let x: CGFloat = ( self.itemInsets.left + ( CGFloat(object.indexPath.row) * ( self.itemSize.width + self.interItemSpacingX ) ) )
+        let y: CGFloat = ( self.itemInsets.top )
         let frame = CGRect(x: x, y: y, width: self.itemSize.width, height: self.itemSize.height)
         object.layoutAttributes.frame = frame
     }
@@ -46,7 +46,7 @@ class CollectionViewLayout: UICollectionViewLayout {
         if let source = self.collectionDataSource {
             for section in 0 ... ( source.numberOfSections() - 1 ) {
                 for row in 0 ... ( source.numberOfRows(inSection: section) - 1 ) {
-                    var indexPath = NSIndexPath(forRow: row, inSection: section)
+                    let indexPath = NSIndexPath(forRow: row, inSection: section)
                     if let obj = source.object(forIndexPath: indexPath) {
                         setupLayout(obj)
                     }
@@ -57,15 +57,15 @@ class CollectionViewLayout: UICollectionViewLayout {
 
     override func collectionViewContentSize() -> CGSize {
         // return the size of the cells + padding
-        var numRows: Int = self.collectionDataSource!.numberOfRows(inSection: 0)
+        let numRows: Int = self.collectionDataSource!.numberOfRows(inSection: 0)
         
-        var width: CGFloat = ( self.itemInsets.left + ( CGFloat(numRows) * ( self.itemSize.width + self.interItemSpacingX ) ) + self.itemInsets.right )
-        var height: CGFloat = ( self.itemInsets.top + self.itemSize.height )
+        let width: CGFloat = ( self.itemInsets.left + ( CGFloat(numRows) * ( self.itemSize.width + self.interItemSpacingX ) ) + self.itemInsets.right )
+        let height: CGFloat = ( self.itemInsets.top + self.itemSize.height )
         return CGSize(width: width, height: height)
     }
     
 //    override func layoutAttributesForElementsInRect(rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
-    override func layoutAttributesForElementsInRect(rect: CGRect) -> [AnyObject]? {
+    override func layoutAttributesForElementsInRect(rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         if let objects = self.collectionDataSource?.objects(inRect: rect) {
             var attrs = [UICollectionViewLayoutAttributes]()
             for object in objects {

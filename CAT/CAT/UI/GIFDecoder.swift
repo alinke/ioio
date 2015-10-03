@@ -122,7 +122,7 @@ class GIFDecoder {
             frame = frames[n]
         }
         if frame == nil {
-            if count(blockIndexes) == 0 {
+            if blockIndexes.count == 0 {
                 self.scan()
             }
             frame = readFrame(n)
@@ -195,7 +195,7 @@ class GIFDecoder {
 
     func frameIndex(n: Int) -> GIFBlockIndex? {
         var count = 0
-        for (index, blockIndex) in enumerate(blockIndexes) {
+        for (index, blockIndex) in blockIndexes.enumerate() {
             if ( (blockIndex.code == 0x21) && (blockIndex.subcode == 0xf9) ) {
                 // graphics control extension
                 if count == n {
@@ -318,7 +318,7 @@ class GIFDecoder {
     func scanImage() {
         stream.skip(8)   // (sub)image position & size
 
-        var packed = stream.readUInt8()
+        let packed = stream.readUInt8()
         self.lctFlag = ( (packed & 0x80) != 0 )     // 1 - local color table flag
         self.interlace = ( (packed & 0x40) != 0 )   // 2 - interlace flag
         // 3 - sort flag
@@ -473,7 +473,7 @@ class GIFDecoder {
         self.height = Int(stream.readUInt16())
 
         // packed fields
-        var packed = stream.readUInt8()
+        let packed = stream.readUInt8()
         self.gctFlag = (packed & 0x80) != 0         // 1   : global color table flag
         // 2-4 : color resolution
         // 5   : gct sort flag
@@ -488,7 +488,7 @@ class GIFDecoder {
     /// @param ncolors int number of colors to read
     /// @return int array containing 256 colors (packed ARGB with full alpha)
     func readColorTable(ncolors: Int) -> [GIFColor]? {
-        var nbytes = ( 3 * ncolors )
+        let nbytes = ( 3 * ncolors )
 
         if let buffer = NSMutableData(length: nbytes) {
             let ptr = UnsafeMutablePointer<UInt8>(buffer.mutableBytes)
@@ -498,7 +498,7 @@ class GIFDecoder {
             // create colormap
             var colorMap = [GIFColor]()
 
-            var bytes = UnsafeBufferPointer<UInt8>(start: ptr, count: buffer.length)
+            let bytes = UnsafeBufferPointer<UInt8>(start: ptr, count: buffer.length)
             for index in 0 ..< ncolors {
                 let color = GIFColor(red: bytes[(index*3)], green: bytes[(index*3)+1], blue: bytes[(index*3)+2])
                 colorMap.append(color)
@@ -511,7 +511,7 @@ class GIFDecoder {
     /// Reads Graphics Control Extension values
     func readGraphicControlExt() {
         stream.readUInt8()          // block size
-        var packed = stream.readUInt8()              // packed fields
+        let packed = stream.readUInt8()              // packed fields
         self.dispose = Int( (packed & 0x1c) >> 2 )   // disposal method
         if  self.dispose == 0 {
             self.dispose = 1                         // elect to keep old image if discretionary
@@ -529,7 +529,7 @@ class GIFDecoder {
         rect.width = Int(stream.readUInt16())
         rect.height = Int(stream.readUInt16())
 
-        var packed = stream.readUInt8()
+        let packed = stream.readUInt8()
         self.lctFlag = ( (packed & 0x80) != 0 )     // 1 - local color table flag
         self.interlace = ( (packed & 0x40) != 0 )   // 2 - interlace flag
         // 3 - sort flag
@@ -597,7 +597,7 @@ class GIFDecoder {
         readBlock()
         while ( (blockSize > 0) && !err() ) {
             let ptr = UnsafeMutablePointer<UInt8>(self.blockBuffer!.mutableBytes)            
-            var bytes = UnsafeBufferPointer<UInt8>(start: ptr, count: self.blockSize)
+            let bytes = UnsafeBufferPointer<UInt8>(start: ptr, count: self.blockSize)
             
             if bytes[0] == UInt8(1) {
                 // loop count sub-block
@@ -623,7 +623,7 @@ class GIFDecoder {
             let ptr = UnsafeMutablePointer<UInt8>(frameBuffer.mutableBytes)
 
             // expose destination image's pixels as int array
-            var dest = UnsafeMutableBufferPointer<UInt8>(start: ptr, count: frameBuffer.length)
+            let dest = UnsafeMutableBufferPointer<UInt8>(start: ptr, count: frameBuffer.length)
 
             //int[] dest = ((DataBufferInt) image.getRaster().getDataBuffer()).getData()
 
@@ -635,7 +635,7 @@ class GIFDecoder {
             if self.lastDispose > 0 {
                 if self.lastDispose == 3 {
                     // use image before last
-                    var n = frameCount - 2
+                    let n = frameCount - 2
                     if n > 0 {
                         lastImage = self.getFrame(n - 1)
                     } else {
@@ -647,7 +647,7 @@ class GIFDecoder {
                     // copy last frame pixel data
                     if let lastFrameBuffer = lastImage.frameData {
                         let lastPtr = UnsafePointer<UInt8>(lastFrameBuffer.bytes)
-                        var prev = UnsafeBufferPointer<UInt8>(start: lastPtr, count: lastFrameBuffer.length)
+                        let prev = UnsafeBufferPointer<UInt8>(start: lastPtr, count: lastFrameBuffer.length)
                         // int[] prev = ((DataBufferInt) lastImage.getRaster().getDataBuffer()).getData()
 
                         // copy pixels
@@ -746,7 +746,7 @@ class GIFDecoder {
 */
                 
                 if line < self.height {
-                    var k = line * self.width
+                    let k = line * self.width
                     var dx = k + self.rect.x            // start of line in dest
                     var dlim = dx + self.rect.width     // end of dest line
                     if (k + self.width) < dlim {
@@ -755,8 +755,8 @@ class GIFDecoder {
                     var sx = i * self.rect.width        // start of line in source
                     while dx < dlim {
                         // map color and insert in destination
-                        var index = Int( self.pixels[sx++] & 0xff)
-                        var color = self.act![index]
+                        let index = Int( self.pixels[sx++] & 0xff)
+                        let color = self.act![index]
 
                         let destColor = GIFColor(red: dest[(dx * 4) + 0], green: dest[(dx * 4) + 1], blue: dest[(dx * 4) + 2], alpha: dest[(dx * 4) + 3])
 
@@ -794,12 +794,12 @@ class GIFDecoder {
     func pixelData() -> NSData? {
         // copy pixel data
         if self.debug {
-            NSLog("pixelData  frame: \(self.frameCount)  width: \(self.width)  height: \(self.height)  pixels size: \(count(self.pixels))   rect: \(self.rect)  last: \(self.lastRect)")
+            NSLog("pixelData  frame: \(self.frameCount)  width: \(self.width)  height: \(self.height)  pixels size: \(self.pixels.count)   rect: \(self.rect)  last: \(self.lastRect)")
         }
 
         if let indexBuffer = NSMutableData(length: (self.width * self.height)) {
             let indexPtr = UnsafeMutablePointer<UInt8>(indexBuffer.mutableBytes)
-            var indexBytes = UnsafeMutableBufferPointer<UInt8>(start: indexPtr, count: indexBuffer.length)
+            let indexBytes = UnsafeMutableBufferPointer<UInt8>(start: indexPtr, count: indexBuffer.length)
             // copy pixel index data
             for row in 0 ..< self.height {
                 for col in 0 ..< self.width {
@@ -836,8 +836,8 @@ class GIFDecoder {
     /// Decodes LZW image data into pixel array.
     /// Adapted from John Cristy's ImageMagick.
     func decodeImageData() {
-        var NullCode = -1
-        var npix = (self.rect.width * self.rect.height)
+        let NullCode = -1
+        let npix = (self.rect.width * self.rect.height)
 
         pixels = [UInt8](count: npix, repeatedValue: UInt8(0))
 //        if ((pixels == null) || (pixels.length < npix)) {
@@ -849,9 +849,9 @@ class GIFDecoder {
 
         //  Initialize GIF data stream decoder.
 
-        var data_size = Int(stream.readUInt8())
-        var clear = ( 1 << data_size )
-        var end_of_information = ( clear + 1 )
+        let data_size = Int(stream.readUInt8())
+        let clear = ( 1 << data_size )
+        let end_of_information = ( clear + 1 )
         var available = ( clear + 2 )
         var old_code = NullCode
         var code_size = ( data_size + 1 )

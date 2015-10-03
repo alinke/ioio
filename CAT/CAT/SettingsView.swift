@@ -33,7 +33,7 @@ class SettingsDataObject: CollectionDataObject {
     }
 }
 
-extension SettingsDataObject: Printable {
+extension SettingsDataObject: CustomStringConvertible {
     var description: String {
         return ("\(self.name)  \(device)")
     }
@@ -50,8 +50,8 @@ class SettingsDataSource: CollectionDataSource {
     }
 
     func add(dataObject: SettingsDataObject) {
-        var section = self.sections[0]
-        dataObject.indexPath = NSIndexPath(forRow: count(section), inSection: 0)
+        let section = self.sections[0]
+        dataObject.indexPath = NSIndexPath(forRow: section.count, inSection: 0)
         dataObject.layoutAttributes = UICollectionViewLayoutAttributes(forCellWithIndexPath: dataObject.indexPath)
         
         NSLog("SettingsDataSource  add   row: \(dataObject.indexPath.row)  section: \(dataObject.indexPath.section)   \(dataObject.layoutAttributes)")
@@ -64,7 +64,7 @@ class SettingsDataSource: CollectionDataSource {
     }
 
     func deviceExists(device: Device) -> SettingsDataObject? {
-        var section = self.sections[0]
+        let section = self.sections[0]
         for row in section {
             if let obj = row as? SettingsDataObject {
                 if let rowDevice = obj.device {
@@ -90,13 +90,13 @@ class SettingsLayout: CollectionViewLayout {
         self.numberOfRows = 4
     }
     
-    required init(coder decoder: NSCoder) {
+    required init?(coder decoder: NSCoder) {
         super.init(coder: decoder)
     }
 
     override func setupLayout(object: CollectionDataObject) {
-        var x: CGFloat = ( self.itemInsets.left )
-        var y: CGFloat = ( self.itemInsets.top + ( CGFloat(object.indexPath.row) * ( self.itemSize.height + self.interItemSpacingX ) ) )
+        let x: CGFloat = ( self.itemInsets.left )
+        let y: CGFloat = ( self.itemInsets.top + ( CGFloat(object.indexPath.row) * ( self.itemSize.height + self.interItemSpacingX ) ) )
         let frame = CGRect(x: x, y: y, width: self.itemSize.width, height: self.itemSize.height)
 
         if let obj = object as? SettingsDataObject {
@@ -109,10 +109,10 @@ class SettingsLayout: CollectionViewLayout {
 
     override func collectionViewContentSize() -> CGSize {
         // return the size of the cells + padding
-        var numRows: Int = self.collectionDataSource!.numberOfRows(inSection: 0)
+        let numRows: Int = self.collectionDataSource!.numberOfRows(inSection: 0)
         
-        var width: CGFloat = ( self.itemInsets.left + self.itemInsets.right + self.itemSize.width )
-        var height: CGFloat = ( self.itemInsets.top + self.itemInsets.bottom + ( CGFloat(numRows) * ( self.itemSize.height + self.interItemSpacingX ) ) )
+        let width: CGFloat = ( self.itemInsets.left + self.itemInsets.right + self.itemSize.width )
+        let height: CGFloat = ( self.itemInsets.top + self.itemInsets.bottom + ( CGFloat(numRows) * ( self.itemSize.height + self.interItemSpacingX ) ) )
 
         NSLog("SettingsLayout contentSize  width: \(width)  height: \(height)")
         return CGSize(width: width, height: height)
@@ -135,7 +135,7 @@ class SettingsCellView: CollectionDataObjectCellView {
 //        NSLog("SettingsCellView frame: \(frame)")
 
         // top separator line
-        var separatorFrame = CGRect(x:20.0, y:0.0, width:335.0, height:1.0)
+        let separatorFrame = CGRect(x:20.0, y:0.0, width:335.0, height:1.0)
         self.separatorView = UIView(frame: separatorFrame)
         // from #111e35  to #233d53
         self.separatorView!.backgroundColor = UIColor(hex: "ffffff", alpha: 0.3)
@@ -148,14 +148,14 @@ class SettingsCellView: CollectionDataObjectCellView {
 //        var titleFrame = CGRect(x:108, y:44.0, width:250.0, height:36.0)        
 
 
-        var connectFrame = CGRect(x:20.0, y:44.0, width:60.0, height:36.0)
+        let connectFrame = CGRect(x:20.0, y:44.0, width:60.0, height:36.0)
         self.connectView = UILabel(frame: connectFrame)
         self.connectView!.font = UIFont.systemFontOfSize(24.0)
         self.connectView!.textColor = UIColor.whiteColor()
         self.addSubview(self.connectView!)
 
         //var titleFrame = CGRect(x:20, y:44.0, width:300.0, height:36.0)
-        var titleFrame = CGRect(x:88, y:44.0, width:240.0, height:36.0)
+        let titleFrame = CGRect(x:88, y:44.0, width:240.0, height:36.0)
         self.titleView = UILabel(frame: titleFrame)
         self.titleView!.font = UIFont.systemFontOfSize(24.0)
         self.titleView!.textColor = UIColor.whiteColor()
@@ -163,7 +163,7 @@ class SettingsCellView: CollectionDataObjectCellView {
         
     }
 
-    required init(coder decoder: NSCoder) {
+    required init?(coder decoder: NSCoder) {
         super.init(coder: decoder)
     }
 
@@ -202,7 +202,7 @@ class SettingsView: UIView {
     var titleView: UILabel?
 
 
-    required init(coder decoder: NSCoder) {
+    required init?(coder decoder: NSCoder) {
         super.init(coder: decoder)
     }
 

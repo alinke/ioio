@@ -36,11 +36,11 @@ class GIFFrame {
             let bytesPerRow = (self.width * 4)
             let colorSpace = CGColorSpaceCreateDeviceRGB()
             let bitmapInfo = CGBitmapInfo.ByteOrderDefault
-            let renderingIntent: CGColorRenderingIntent = kCGRenderingIntentDefault
+            let renderingIntent: CGColorRenderingIntent = CGColorRenderingIntent.RenderingIntentDefault
                 
             var cgImage = CGImageCreate(self.width, self.height, bitsPerComponent, bitsPerPixel, bytesPerRow, colorSpace, bitmapInfo, provider, nil, false, renderingIntent)
-            
-            var newImage = UIImage(CGImage: cgImage)
+ 
+            var newImage = UIImage(CGImage: cgImage!)
             return newImage
         }
         return nil
@@ -50,11 +50,11 @@ class GIFFrame {
     func frame565() -> NSData? {
         if let frameBuffer = NSMutableData(length: (self.width * self.height * 2)) {
             let framePtr = UnsafeMutablePointer<UInt8>(frameBuffer.mutableBytes)
-            var frameBytes = UnsafeMutableBufferPointer<UInt8>(start: framePtr, count: frameBuffer.length)
+            let frameBytes = UnsafeMutableBufferPointer<UInt8>(start: framePtr, count: frameBuffer.length)
                 
             if let frame = self.frameData {
                 let ptr = UnsafeMutablePointer<UInt8>(frame.bytes)
-                var bytes = UnsafeMutableBufferPointer<UInt8>(start: ptr, count: frame.length)
+                let bytes = UnsafeMutableBufferPointer<UInt8>(start: ptr, count: frame.length)
                 
                 for row in 0 ..< self.height {                    
                     for col in 0 ..< self.width {
@@ -76,11 +76,11 @@ class GIFFrame {
     func pixelFrame() -> NSData? {
         if let frame = self.frame565() {
             let ptr = UnsafeMutablePointer<UInt16>(frame.bytes)
-            var bytes = UnsafeMutableBufferPointer<UInt16>(start: ptr, count: (frame.length / 2))
+            let bytes = UnsafeMutableBufferPointer<UInt16>(start: ptr, count: (frame.length / 2))
 
             if let frameBuffer = NSMutableData(length: 768) {
                 let framePtr = UnsafeMutablePointer<UInt8>(frameBuffer.mutableBytes)
-                var frameBytes = UnsafeMutableBufferPointer<UInt8>(start: framePtr, count: frameBuffer.length)
+                let frameBytes = UnsafeMutableBufferPointer<UInt8>(start: framePtr, count: frameBuffer.length)
                 
                 for row in 0 ..< 8 {
                     for col in 0 ..< 32 {

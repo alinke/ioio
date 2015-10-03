@@ -18,7 +18,7 @@ class Device: NSObject, CBPeripheralDelegate {
 
     var name: String {
         get {
-            return self.peripheral!.name
+            return self.peripheral!.name!
         }
     }
     var identifier: String {
@@ -85,7 +85,7 @@ class Device: NSObject, CBPeripheralDelegate {
     }
 
     // Called when the device fails to connect
-    func didFailToConnect(error: NSError) {
+    func didFailToConnect(error: NSError?) {
         NSLog("didFailToConnect \(self.name)  error: \(error)")
     }
 
@@ -148,29 +148,33 @@ class Device: NSObject, CBPeripheralDelegate {
     }
 
     // MARK: - CBPeripheralDelegate
-    func peripheral(peripheral: CBPeripheral!, didDiscoverServices error: NSError!) {
+    func peripheral(peripheral: CBPeripheral, didDiscoverServices error: NSError?) {
         // NSLog("didDiscoverServices \(peripheral.name)  error: \(error)")
         // NSLog("    services = \(peripheral.services)")
 
-        self.service = peripheral.services[0] as? CBService
-        self.peripheral!.discoverCharacteristics(nil, forService: self.service!)
+	if let services = peripheral.services {
+            self.service = services[0]
+            self.peripheral!.discoverCharacteristics(nil, forService: self.service!)
+        }
     }
 
-    func peripheral(peripheral: CBPeripheral!,
-                    didDiscoverCharacteristicsForService service: CBService!,
-                    error: NSError!) {
+    func peripheral(peripheral: CBPeripheral,
+                    didDiscoverCharacteristicsForService service: CBService,
+                    error: NSError?) {
         // NSLog("didDiscoverCharacteristicsForService \(peripheral.name)  \(service)  error: \(error)")
         // NSLog("    characteristics = \(self.service!.characteristics)")
 
-        self.characteristic = service.characteristics[0] as? CBCharacteristic
+	if let characteristics = service.characteristics {
+          self.characteristic = characteristics[0]
+	}
 
         // enable notifications
         self.peripheral!.setNotifyValue(true, forCharacteristic: self.characteristic!)
     }
 
-    func peripheral(peripheral: CBPeripheral!,
-                    didUpdateNotificationStateForCharacteristic characteristic: CBCharacteristic!,
-                    error: NSError!) {
+    func peripheral(peripheral: CBPeripheral,
+                    didUpdateNotificationStateForCharacteristic characteristic: CBCharacteristic,
+                    error: NSError?) {
         // NSLog("didUpdateNotificationStateForCharacteristics \(peripheral.name)  \(characteristic)  error: \(error)")
 
         // put the state machine into a CONNECTED state
@@ -199,25 +203,28 @@ class Device: NSObject, CBPeripheralDelegate {
         if let peripheral = self.peripheral {
             if let characteristic = self.characteristic {
                 // NSLog("  writePacket: \(packet.data)")
-                peripheral.writeValue(packet.data, forCharacteristic: characteristic, type: CBCharacteristicWriteType.WithResponse)
+		if let data = packet.data {
+                    peripheral.writeValue(data, forCharacteristic: characteristic, type: CBCharacteristicWriteType.WithResponse)
+                }
             }
         }
     }
 
     // MARK: - CBPeripheralDelegate
-    func peripheral(peripheral: CBPeripheral!,
-                    didUpdateValueForCharacteristic characteristic: CBCharacteristic!,
-                    error: NSError!) {
+    func peripheral(peripheral: CBPeripheral,
+                    didUpdateValueForCharacteristic characteristic: CBCharacteristic,
+                    error: NSError?) {
         if error != nil {
             NSLog("handleDidUpdateValue error: \(error)")
         }
-        let value = characteristic.value
-        transport.handleNotification(value)
+	if let value = characteristic.value {
+            transport.handleNotification(value)
+        }
     }
 
-    func peripheral(peripheral: CBPeripheral!,
-                    didWriteValueForCharacteristic characteristic: CBCharacteristic!,
-                    error: NSError!) {
+    func peripheral(peripheral: CBPeripheral,
+                    didWriteValueForCharacteristic characteristic: CBCharacteristic,
+                    error: NSError?) {
         if error != nil {
             NSLog("handleDidWriteValue error: \(error)")
         }

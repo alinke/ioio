@@ -49,7 +49,7 @@ class GIFDimension {
 
 
 
-extension GIFRect: Printable {
+extension GIFRect: CustomStringConvertible {
     var description: String {
         return ( "\(self.x),\(self.y) \(self.width)x\(self.height)" )
     }

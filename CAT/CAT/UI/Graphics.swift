@@ -12,7 +12,7 @@ import UIKit
 // UIColor
 extension UIColor {
     convenience init(hex: String, alpha: CGFloat = 1.0) {
-        var scanner = NSScanner(string: hex)
+        let scanner = NSScanner(string: hex)
         var color: UInt32 = 0
         scanner.scanHexInt(&color)
 
@@ -48,7 +48,7 @@ extension UIGestureRecognizerState {
 }
 
 
-extension UIViewAutoresizing: Printable {
+extension UIViewAutoresizing: CustomStringConvertible {
     public var description: String {
         switch self {
         case UIViewAutoresizing.None:

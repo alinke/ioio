@@ -26,7 +26,7 @@ class App {
     
     func startProtocol(reconnectHandler: Device.ConnectHandler? = nil, disconnectHandler: Device.DisconnectHandler? = nil) {
         self.deviceManager = DeviceManager.sharedInstance
-        self.deviceManager!.startCentral(reconnectHandler: reconnectHandler, disconnectHandler: disconnectHandler)
+        self.deviceManager!.startCentral(reconnectHandler, disconnectHandler: disconnectHandler)
     }
 
     //
@@ -34,7 +34,7 @@ class App {
     //
     func startScan(discoverHandler: DeviceManager.DiscoverCompletionHandler? = nil) -> Bool {
         if let manager = self.deviceManager {
-            manager.startScan(discoverHandler: discoverHandler)
+            manager.startScan(discoverHandler)
             return true
         } else {
             // handle case where manager == nil
@@ -100,7 +100,7 @@ class App {
 
     func isConnected() -> Bool {
         if let device = self.currentDevice {
-            var res = device.isConnected()
+            let res = device.isConnected()
             NSLog("App  isConnected: \(res)")
             return res
         } else {
@@ -121,12 +121,13 @@ class App {
         
             if let path: String = NSBundle.mainBundle().pathForResource(thumbnail.name, ofType: "gif") {
                 var loadError: NSError?
-                if let data = NSData(contentsOfFile: path, options: NSDataReadingOptions.DataReadingMapped, error: &loadError) {
-                    var decoder = GIFDecoder(data: data)
+                do {
+                    let data = try NSData(contentsOfFile: path, options: NSDataReadingOptions.DataReadingMapped)
+                    let decoder = GIFDecoder(data: data)
                     //decoder.debug = true
                     decoder.read()
                     
-                    var numFrames = decoder.getFrameCount()
+                    let numFrames = decoder.getFrameCount()
                     var images = [NSData]()
                     for i in 0 ..< numFrames {
                         if let frame = decoder.getFrame(i) {
@@ -154,6 +155,8 @@ class App {
                             }
                         }
                     }
+                } catch let error as NSError {
+                    loadError = error
                 }
             }
         }

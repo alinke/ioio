@@ -139,7 +139,7 @@ class ThumbnailDataSource: CollectionDataSource {
         var section: [ThumbnailDataObject] = [ThumbnailDataObject]()
 
         if let thumbnails = self.thumbnails {
-            for (index, thumbnail) in enumerate(thumbnails) {
+            for (index, thumbnail) in thumbnails.enumerate() {
                 let dataObject = ThumbnailDataObject(reuseIdentifier: "ThumbnailCell", indexPath: NSIndexPath(forRow: index, inSection: 0), thumbnail: thumbnail, viewController: viewController!)
                 section.append(dataObject)
             }
@@ -175,7 +175,7 @@ class ThumbnailLayout: CollectionViewLayout {
         }
     }
     
-    required init(coder decoder: NSCoder) {
+    required init?(coder decoder: NSCoder) {
         super.init(coder: decoder)
     }
 
@@ -183,8 +183,8 @@ class ThumbnailLayout: CollectionViewLayout {
         let row = ( object.indexPath.row / self.numberOfCols )
         let col = ( object.indexPath.row % self.numberOfCols )
         
-        var x: CGFloat = ( self.itemInsets.left + ( CGFloat(col) * ( self.itemSize.width + self.interItemSpacingX ) ) )
-        var y: CGFloat = ( self.itemInsets.top + ( CGFloat(row) * ( self.itemSize.height + self.interItemSpacingY ) ) )
+        let x: CGFloat = ( self.itemInsets.left + ( CGFloat(col) * ( self.itemSize.width + self.interItemSpacingX ) ) )
+        let y: CGFloat = ( self.itemInsets.top + ( CGFloat(row) * ( self.itemSize.height + self.interItemSpacingY ) ) )
         let frame = CGRect(x: x, y: y, width: self.itemSize.width, height: self.itemSize.height)
         object.layoutAttributes.frame = frame
     }
@@ -193,8 +193,8 @@ class ThumbnailLayout: CollectionViewLayout {
         // return the size of the cells + padding
         var numRows: Int = self.collectionDataSource!.numberOfRows(inSection: 0)
 
-        var width: CGFloat = ( self.itemInsets.left + ( ( CGFloat(self.numberOfCols) * ( self.itemSize.width + self.interItemSpacingX ) ) - self.interItemSpacingX ) + self.itemInsets.right )
-        var height: CGFloat = ( self.itemInsets.top + ( CGFloat(self.numberOfRows) * ( self.itemSize.height + self.interItemSpacingY ) ) + self.itemInsets.bottom )
+        let width: CGFloat = ( self.itemInsets.left + ( ( CGFloat(self.numberOfCols) * ( self.itemSize.width + self.interItemSpacingX ) ) - self.interItemSpacingX ) + self.itemInsets.right )
+        let height: CGFloat = ( self.itemInsets.top + ( CGFloat(self.numberOfRows) * ( self.itemSize.height + self.interItemSpacingY ) ) + self.itemInsets.bottom )
 
 //        NSLog("ThumbnailLayout contentSize  width: \(width)  height: \(height)")
         return CGSize(width: width, height: height)
@@ -214,15 +214,15 @@ class ThumbnailCellView: CollectionDataObjectCellView {
 //        self.backgroundColor = UIColor(hex: "ecf0f1")
         self.backgroundColor = UIColor(hex: "ffffff")
 
-        var thumbnailFrame = CGRect(x:0, y:0.0, width: frame.size.width, height: frame.size.height)
-        var imageFrame = CGRectInset(thumbnailFrame, 3, 3)
+        let thumbnailFrame = CGRect(x:0, y:0.0, width: frame.size.width, height: frame.size.height)
+        let imageFrame = CGRectInset(thumbnailFrame, 3, 3)
 
 //        self.thumbnailView = UIImageView(frame: thumbnailFrame)
         self.thumbnailView = UIImageView(frame: imageFrame)
         self.addSubview(self.thumbnailView!)
     }
 
-    required init(coder decoder: NSCoder) {
+    required init?(coder decoder: NSCoder) {
         super.init(coder: decoder)
     }
 

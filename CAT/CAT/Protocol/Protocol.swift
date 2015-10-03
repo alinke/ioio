@@ -143,7 +143,7 @@ class Command {
         //let dataPtr = UnsafePointer<UInt8>(data.bytes)
         //var dataBytes = UnsafeBufferPointer<UInt8>(start: dataPtr, count: data.length)
 
-        var stream = MessageStream(data: data)
+        let stream = MessageStream(data: data)
         let type = IncomingMessageType(rawValue: stream.readUInt8())
         
         switch ( type! ) {
@@ -287,7 +287,7 @@ class CommandEnable : Command {
         var flagsL: UInt8 = ( (shifterLen32 & 0x0F) )
         var flagsH: UInt8 = ( (rows == 8 ? 0 : 1) << 4)
         
-        var flags: UInt8 = ( (shifterLen32 & 0x0F) | ((rows == 8 ? 0 : 1) << 4) )
+        let flags: UInt8 = ( (shifterLen32 & 0x0F) | ((rows == 8 ? 0 : 1) << 4) )
         let packet: [UInt8] = [0x1E, flags]
         
         let flagsHex = String(flags, radix: 16, uppercase: false)
@@ -312,7 +312,7 @@ class CommandFrame : Command {
         var bytes = [UInt8](count: 769, repeatedValue: 0)
         
         let framePtr = UnsafeMutablePointer<UInt8>(frame.bytes)
-        var frameBytes = UnsafeMutableBufferPointer<UInt8>(start: framePtr, count: frame.length)
+        let frameBytes = UnsafeMutableBufferPointer<UInt8>(start: framePtr, count: frame.length)
 
         bytes[0] = 0x1F
         for index in 0 ..< 768 {
@@ -338,11 +338,11 @@ class CommandWriteFile : Command {
     }
 
     override func make() -> NSData? {
-        var flags: UInt8 = ( (shifterLen32 & 0x0F) | ((rows == 8 ? 0 : 1) << 4) )
+        let flags: UInt8 = ( (shifterLen32 & 0x0F) | ((rows == 8 ? 0 : 1) << 4) )
 
-        var delay: UInt16 = UInt16( round(62500.0 / fps ) - 1 )
-        var delay0: UInt8 = UInt8( delay & 0xff )
-        var delay1: UInt8 = UInt8( ( delay >> 8 ) & 0xff )
+        let delay: UInt16 = UInt16( round(62500.0 / fps ) - 1 )
+        let delay0: UInt8 = UInt8( delay & 0xff )
+        let delay1: UInt8 = UInt8( ( delay >> 8 ) & 0xff )
 
         // NSLog("matrixWriteFile  \(fps)  \(shifterLen32)  \(rows)")
 

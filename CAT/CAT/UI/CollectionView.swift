@@ -32,7 +32,7 @@ class CollectionView: UICollectionView, UICollectionViewDataSource, UICollection
         self.delegate = self
     }
     
-    required init(coder decoder: NSCoder) {
+    required init?(coder decoder: NSCoder) {
         self.collectionDataSource = CollectionDataSource()
         self.collectionLayout = CollectionViewLayout(dataSource: self.collectionDataSource)
         super.init(coder: decoder)
@@ -70,7 +70,7 @@ class CollectionView: UICollectionView, UICollectionViewDataSource, UICollection
         
         // what happens if obj is nil ?
         let cellIdentifier = obj!.reuseIdentifier
-        var cell = self.dequeueReusableCellWithReuseIdentifier(cellIdentifier, forIndexPath:indexPath) as! UICollectionViewCell
+        let cell = self.dequeueReusableCellWithReuseIdentifier(cellIdentifier, forIndexPath:indexPath) 
 
         if let cell = cell as? CollectionDataObjectCellView {
             // setup cell contents

@@ -46,7 +46,7 @@ class ThumbnailViewController: UIViewController {
         // create the app to create the Protocol object to start bluetooth
         let app = App.sharedInstance
         // this should try to automatically connect to paired peripherals
-        app.startProtocol(reconnectHandler: reconnectHandler, disconnectHandler: disconnectHandler)
+        app.startProtocol(reconnectHandler, disconnectHandler: disconnectHandler)
 
         let frame = self.view.bounds
 
@@ -141,7 +141,13 @@ class ThumbnailViewController: UIViewController {
         let docsPath = NSBundle.mainBundle().resourcePath!
         let fileManager = NSFileManager.defaultManager()
         var error: NSError?
-        let docsArray = fileManager.contentsOfDirectoryAtPath(docsPath, error:&error)
+        let docsArray: [AnyObject]?
+        do {
+            docsArray = try fileManager.contentsOfDirectoryAtPath(docsPath)
+        } catch let error1 as NSError {
+            error = error1
+            docsArray = nil
+        }
 
         var res = [String]()
 
@@ -149,7 +155,7 @@ class ThumbnailViewController: UIViewController {
             for i in 0 ..< paths.count {
                 var str = String(paths[i] as! NSString)
                 if str.hasSuffix(".gif") {
-                    let range = advance(str.endIndex, -4) ..< str.endIndex
+                    let range = str.endIndex.advancedBy(-4) ..< str.endIndex
                     str.removeRange(range)
                     res.append(str)
                 }
@@ -179,8 +185,9 @@ class ThumbnailViewController: UIViewController {
     func loadThumbnail(name: String) -> Thumbnail? {
         if let path: String = NSBundle.mainBundle().pathForResource(name, ofType: "gif") {
             var loadError: NSError?
-            if let data = NSData(contentsOfFile: path, options: NSDataReadingOptions.DataReadingMapped, error: &loadError) {
-                var decoder = GIFDecoder(data: data)
+            do {
+                let data = try NSData(contentsOfFile: path, options: NSDataReadingOptions.DataReadingMapped)
+                let decoder = GIFDecoder(data: data)
 
                 let thumbNum = Thumbnail.thumbnailFrame(name)
                 if let frame = decoder.getFrame(thumbNum) {
@@ -189,6 +196,8 @@ class ThumbnailViewController: UIViewController {
                     let thumbnail = Thumbnail(name: name, frame: frame)
                     return thumbnail
                 }
+            } catch let error as NSError {
+                loadError = error
             }
         }
         return nil

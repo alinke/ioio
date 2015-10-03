@@ -31,7 +31,7 @@ class SettingsViewController: UIViewController {
 //        NSLog("viewWillAppear")
 
         let app = App.sharedInstance
-        app.startScan(discoverHandler: didDiscoverDevice)
+        app.startScan(didDiscoverDevice)
     }
 
     func didSelectDevice(device: Device) {

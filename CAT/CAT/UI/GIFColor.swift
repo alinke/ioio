@@ -51,22 +51,22 @@ class GIFColor {
 
 
 
-extension GIFColor: Printable {
+extension GIFColor: CustomStringConvertible {
     var description: String {
         var rhex = String(red, radix: 16)
-        if count(rhex) == 1 {
+        if rhex.characters.count == 1 {
             rhex = ( "0" + rhex )
         }
         var ghex = String(green, radix: 16)
-        if count(ghex) == 1 {
+        if ghex.characters.count == 1 {
             ghex = ( "0" + ghex )
         }
         var bhex = String(blue, radix: 16)
-        if count(bhex) == 1 {
+        if bhex.characters.count == 1 {
             bhex = ( "0" + bhex )
         }
         var ahex = String(alpha, radix: 16)
-        if count(ahex) == 1 {
+        if ahex.characters.count == 1 {
             ahex = ( "0" + ahex )
         }
 

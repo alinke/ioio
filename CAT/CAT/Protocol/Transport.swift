@@ -36,11 +36,11 @@ class Packet {
     
     func copyFrom(data: NSData, start: Int, count: Int) {
         let dataPtr = UnsafePointer<UInt8>(data.bytes)
-        var dataBytes = UnsafeBufferPointer<UInt8>(start: dataPtr, count: data.length)
+        let dataBytes = UnsafeBufferPointer<UInt8>(start: dataPtr, count: data.length)
         
         if let buffer = self.data {
             let ptr = UnsafeMutablePointer<UInt8>(buffer.mutableBytes)
-            var bytes = UnsafeMutableBufferPointer<UInt8>(start: ptr, count: buffer.length)
+            let bytes = UnsafeMutableBufferPointer<UInt8>(start: ptr, count: buffer.length)
             bytes[0] = 0
             bytes[1] = 0
             for index in 0 ..< count {
@@ -54,7 +54,7 @@ class Packet {
     func setHeader(localSequenceNumber: Int, remoteSequenceNumber: Int) {
         if let buffer = self.data {
             let ptr = UnsafeMutablePointer<UInt8>(buffer.mutableBytes)
-            var bytes = UnsafeMutableBufferPointer<UInt8>(start: ptr, count: buffer.length)
+            let bytes = UnsafeMutableBufferPointer<UInt8>(start: ptr, count: buffer.length)
 
             self.localSequenceNumber = UInt8(localSequenceNumber)
             self.remoteSequenceNumber = UInt8(remoteSequenceNumber)
@@ -67,7 +67,7 @@ class Packet {
     func dump() {
         if let buffer = self.data {
             let ptr = UnsafeMutablePointer<UInt8>(buffer.mutableBytes)
-            var bytes = UnsafeMutableBufferPointer<UInt8>(start: ptr, count: buffer.length)
+            let bytes = UnsafeMutableBufferPointer<UInt8>(start: ptr, count: buffer.length)
 
             NSLog("Packet  local: \(self.localSequenceNumber)  remote: \(self.remoteSequenceNumber)  size: \(size)")
             var str = ""
