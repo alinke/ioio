@@ -22,8 +22,17 @@ class Thumbnail {
         return frame.image()
     }
 
-
     static let thumbIndex = [
+               "0catandfish16":                    18,
+               "0line-game":                       14,
+               "barber_shop":                       6,
+               "deuces":                           27,
+               "diagonals":                         0,
+               "equalizer1":                        0,
+               "equalizer2":                       23,
+               "merging-arrows16":                 10,
+               "octopus16":                         0,
+
                "0apaulrgreenmonster16":             0,
                "0apaulrkanji16":                    0,
                "0apaulrkanji216":                   0,

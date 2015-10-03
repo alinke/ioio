@@ -160,12 +160,23 @@ class ThumbnailViewController: UIViewController {
 
     func loadThumbnails() {
         let names = getAnimationFileNames()
+        var thumbs = [Thumbnail]()        
         for name in names {
-            self.loadThumbnail(name)
+            if let thumbnail = self.loadThumbnail(name) {
+                thumbs.append(thumbnail)
+            }
+        }
+
+        for name in thumbOrder {
+            for thumb in thumbs {
+                if thumb.name == name {
+                    thumbnails.append(thumb)
+                }
+            }
         }
     }
 
-    func loadThumbnail(name: String) {
+    func loadThumbnail(name: String) -> Thumbnail? {
         if let path: String = NSBundle.mainBundle().pathForResource(name, ofType: "gif") {
             var loadError: NSError?
             if let data = NSData(contentsOfFile: path, options: NSDataReadingOptions.DataReadingMapped, error: &loadError) {
@@ -176,10 +187,81 @@ class ThumbnailViewController: UIViewController {
                     //NSLog("width: \(decoder.width)  height: \(decoder.height)  frames: \(decoder.getFrameCount())  thumb: \(thumbNum)   \(name)")
 
                     let thumbnail = Thumbnail(name: name, frame: frame)
-                    thumbnails.append(thumbnail)
+                    return thumbnail
                 }
             }
         }
+        return nil
     }
 
+    let thumbOrder = [
+        "0catandfish16",
+        "0line-game",
+        "barber_shop",
+        "deuces",
+        "diagonals",
+        "equalizer1",
+        "equalizer2",
+        "merging-arrows16",
+        "octopus16",
+        "0apaulrgreenmonster16",
+        "0apaulrkanji16",
+        "0apaulrkanji216",
+        "0fire16",
+        "0glitter16",
+        "0hermippe16_bw",
+        "0matrix16",
+        "0pacghosts16",
+        "0petit_kitty16",
+        "0rain16",
+        "1adata16",
+        "Angled_100_Perc",
+        "Angled_Color-Change_100_Perc_2",
+        "Circles_100_Perc_2",
+        "Dueces_Darker_100_Perc",
+        "Fleek_100_Perc_2",
+        "Lattice_Color_Change_100_Perc",
+        "Trill_Animation_100_perc",
+        "arrowfinal16",
+        "bike16",
+        "boat16",
+        "bubbles16",
+        "colortiles16",
+        "firehalf16",
+        "firewhole16",
+        "fliptile16",
+        "float16",
+        "flow16",
+        "fountain16",
+        "gousa",
+        "lines16",
+        "mbutterflies_black16",
+        "pauldots16",
+        "paulglasses16",
+        "paulrainbow16",
+        "paulrcircles16",
+        "paulrfallingdrops16",
+        "paulrgreenmonser16",
+        "paulrnintendo16",
+        "paulrpackages_left16",
+        "paulrpackages_right16",
+        "paulrpurpleguy",
+        "paulrteeth16",
+        "paulryellowcat16",
+        "paulryellowguy",
+        "paultriangle16",
+        "postman_dog16",
+        "quest16",
+        "rshifter16",
+        "rspray16",
+        "rstarburst16",
+        "sboxerpink16",
+        "shark16",
+        "sjumppink16",
+        "squid16",
+        "triopy16",
+        "usnowy16",
+        "waterflow16",
+        "worm16",
+    ]
 }

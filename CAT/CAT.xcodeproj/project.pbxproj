@@ -8,6 +8,15 @@
 
 /* Begin PBXBuildFile section */
 		264DE70F1B98EFBB00F71F82 /* 1adata16.gif in Resources */ = {isa = PBXBuildFile; fileRef = 264DE70E1B98EFBB00F71F82 /* 1adata16.gif */; };
+		26841C341BC047F40081C03F /* 0catandfish16.gif in Resources */ = {isa = PBXBuildFile; fileRef = 26841C2B1BC047F40081C03F /* 0catandfish16.gif */; };
+		26841C351BC047F40081C03F /* 0line-game.gif in Resources */ = {isa = PBXBuildFile; fileRef = 26841C2C1BC047F40081C03F /* 0line-game.gif */; };
+		26841C361BC047F40081C03F /* barber_shop.gif in Resources */ = {isa = PBXBuildFile; fileRef = 26841C2D1BC047F40081C03F /* barber_shop.gif */; };
+		26841C371BC047F40081C03F /* deuces.gif in Resources */ = {isa = PBXBuildFile; fileRef = 26841C2E1BC047F40081C03F /* deuces.gif */; };
+		26841C381BC047F40081C03F /* diagonals.gif in Resources */ = {isa = PBXBuildFile; fileRef = 26841C2F1BC047F40081C03F /* diagonals.gif */; };
+		26841C391BC047F40081C03F /* equalizer1.gif in Resources */ = {isa = PBXBuildFile; fileRef = 26841C301BC047F40081C03F /* equalizer1.gif */; };
+		26841C3A1BC047F40081C03F /* equalizer2.gif in Resources */ = {isa = PBXBuildFile; fileRef = 26841C311BC047F40081C03F /* equalizer2.gif */; };
+		26841C3B1BC047F40081C03F /* merging-arrows16.gif in Resources */ = {isa = PBXBuildFile; fileRef = 26841C321BC047F40081C03F /* merging-arrows16.gif */; };
+		26841C3C1BC047F40081C03F /* octopus16.gif in Resources */ = {isa = PBXBuildFile; fileRef = 26841C331BC047F40081C03F /* octopus16.gif */; };
 		26DF71711B96213100E3CED6 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26DF716F1B96213100E3CED6 /* SettingsViewController.swift */; };
 		26DF71721B96213100E3CED6 /* ThumbnailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26DF71701B96213100E3CED6 /* ThumbnailViewController.swift */; };
 		26DF71841B966CDA00E3CED6 /* Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26DF71741B966CDA00E3CED6 /* Protocol.swift */; };
@@ -111,6 +120,15 @@
 
 /* Begin PBXFileReference section */
 		264DE70E1B98EFBB00F71F82 /* 1adata16.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = 1adata16.gif; sourceTree = "<group>"; };
+		26841C2B1BC047F40081C03F /* 0catandfish16.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = 0catandfish16.gif; sourceTree = "<group>"; };
+		26841C2C1BC047F40081C03F /* 0line-game.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = "0line-game.gif"; sourceTree = "<group>"; };
+		26841C2D1BC047F40081C03F /* barber_shop.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = barber_shop.gif; sourceTree = "<group>"; };
+		26841C2E1BC047F40081C03F /* deuces.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = deuces.gif; sourceTree = "<group>"; };
+		26841C2F1BC047F40081C03F /* diagonals.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = diagonals.gif; sourceTree = "<group>"; };
+		26841C301BC047F40081C03F /* equalizer1.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = equalizer1.gif; sourceTree = "<group>"; };
+		26841C311BC047F40081C03F /* equalizer2.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = equalizer2.gif; sourceTree = "<group>"; };
+		26841C321BC047F40081C03F /* merging-arrows16.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = "merging-arrows16.gif"; sourceTree = "<group>"; };
+		26841C331BC047F40081C03F /* octopus16.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = octopus16.gif; sourceTree = "<group>"; };
 		26DF716F1B96213100E3CED6 /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		26DF71701B96213100E3CED6 /* ThumbnailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThumbnailViewController.swift; sourceTree = "<group>"; };
 		26DF71741B966CDA00E3CED6 /* Protocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Protocol.swift; sourceTree = "<group>"; };
@@ -258,6 +276,15 @@
 		26DF71931B966FE000E3CED6 /* gifs */ = {
 			isa = PBXGroup;
 			children = (
+				26841C2B1BC047F40081C03F /* 0catandfish16.gif */,
+				26841C2C1BC047F40081C03F /* 0line-game.gif */,
+				26841C2D1BC047F40081C03F /* barber_shop.gif */,
+				26841C2E1BC047F40081C03F /* deuces.gif */,
+				26841C2F1BC047F40081C03F /* diagonals.gif */,
+				26841C301BC047F40081C03F /* equalizer1.gif */,
+				26841C311BC047F40081C03F /* equalizer2.gif */,
+				26841C321BC047F40081C03F /* merging-arrows16.gif */,
+				26841C331BC047F40081C03F /* octopus16.gif */,
 				26DF71951B966FE000E3CED6 /* 0apaulrgreenmonster16.gif */,
 				26DF71961B966FE000E3CED6 /* 0apaulrkanji16.gif */,
 				26DF71971B966FE000E3CED6 /* 0apaulrkanji216.gif */,
@@ -490,6 +517,7 @@
 				26DF71F21B966FE000E3CED6 /* paulrfallingdrops16.gif in Resources */,
 				26DF71F11B966FE000E3CED6 /* paulrcircles16.gif in Resources */,
 				26DF71E21B966FE000E3CED6 /* Dueces_Darker_100_Perc.gif in Resources */,
+				26841C3C1BC047F40081C03F /* octopus16.gif in Resources */,
 				26DF72011B966FE000E3CED6 /* sboxerpink16.gif in Resources */,
 				26DF71DE1B966FE000E3CED6 /* boat16.gif in Resources */,
 				26DF71D81B966FE000E3CED6 /* 0petit_kitty16.gif in Resources */,
@@ -500,6 +528,7 @@
 				26DF72031B966FE000E3CED6 /* sjumppink16.gif in Resources */,
 				26DF71F41B966FE000E3CED6 /* paulrnintendo16.gif in Resources */,
 				26DF71E11B966FE000E3CED6 /* colortiles16.gif in Resources */,
+				26841C371BC047F40081C03F /* deuces.gif in Resources */,
 				26DF72091B966FE000E3CED6 /* worm16.gif in Resources */,
 				26DF71EF1B966FE000E3CED6 /* paulglasses16.gif in Resources */,
 				26DF71E61B966FE000E3CED6 /* fliptile16.gif in Resources */,
@@ -516,19 +545,26 @@
 				26DF71F81B966FE000E3CED6 /* paulrteeth16.gif in Resources */,
 				26DF71FE1B966FE000E3CED6 /* rshifter16.gif in Resources */,
 				26DF71DA1B966FE000E3CED6 /* Angled_100_Perc.gif in Resources */,
+				26841C391BC047F40081C03F /* equalizer1.gif in Resources */,
 				26DF71ED1B966FE000E3CED6 /* mbutterflies_black16.gif in Resources */,
+				26841C351BC047F40081C03F /* 0line-game.gif in Resources */,
 				26E943311B953E6400BC1395 /* LaunchScreen.xib in Resources */,
 				26DF72001B966FE000E3CED6 /* rstarburst16.gif in Resources */,
 				26DF71EB1B966FE000E3CED6 /* Lattice_Color_Change_100_Perc.gif in Resources */,
+				26841C3A1BC047F40081C03F /* equalizer2.gif in Resources */,
+				26841C381BC047F40081C03F /* diagonals.gif in Resources */,
 				26DF71F91B966FE000E3CED6 /* paulryellowcat16.gif in Resources */,
 				26DF72021B966FE000E3CED6 /* shark16.gif in Resources */,
 				26DF71DB1B966FE000E3CED6 /* Angled_Color-Change_100_Perc_2.gif in Resources */,
 				26DF72051B966FE000E3CED6 /* Trill_Animation_100_perc.gif in Resources */,
+				26841C341BC047F40081C03F /* 0catandfish16.gif in Resources */,
 				26DF71DD1B966FE000E3CED6 /* bike16.gif in Resources */,
+				26841C361BC047F40081C03F /* barber_shop.gif in Resources */,
 				26E9432E1B953E6400BC1395 /* Images.xcassets in Resources */,
 				26DF71EE1B966FE000E3CED6 /* pauldots16.gif in Resources */,
 				26DF71E01B966FE000E3CED6 /* Circles_100_Perc_2.gif in Resources */,
 				26DF71E81B966FE000E3CED6 /* flow16.gif in Resources */,
+				26841C3B1BC047F40081C03F /* merging-arrows16.gif in Resources */,
 				26DF71E51B966FE000E3CED6 /* Fleek_100_Perc_2.gif in Resources */,
 				26DF71FD1B966FE000E3CED6 /* quest16.gif in Resources */,
 				26DF71FC1B966FE000E3CED6 /* postman_dog16.gif in Resources */,
