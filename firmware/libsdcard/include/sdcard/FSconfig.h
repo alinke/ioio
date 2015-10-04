@@ -49,7 +49,7 @@
 //              This macro defines the maximum number of open files at any given time.  The amount of RAM used by FSFILE objects will
 //              be equal to the size of an FSFILE object multipled by this macro value.  This value should be kept as small as possible
 //              as dictated by the application.  This will reduce memory usage.
-#define FS_MAX_FILES_OPEN 	3
+#define FS_MAX_FILES_OPEN 	1
 
 
 // Summary: A macro defining the size of a sector
