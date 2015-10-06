@@ -32,6 +32,9 @@
 #include <string.h>
 #include <p24Fxxxx.h>
 
+#include "log.h"
+
+
 // Connections:
 //
 // (r1 g1 b1 r2 g2 b2) (24 .. 19)
@@ -70,6 +73,8 @@ static uint8_t address;
 //};
 
 void RgbLedMatrixEnable(int shifter_len_32, int num_rows) {
+  LogRgb("RgbLedMatrixEnable  shifter_len_32: %d  num_rows: %d", shifter_len_32, num_rows);
+
   _T4IE = 0;
 
   if (shifter_len_32) {
@@ -199,5 +204,21 @@ void __attribute__((__interrupt__, auto_psv)) _T4Interrupt() {
   PR4 = times[sub_frame] - 1;
   draw_row();
   _T4IF = 0; // clear
+}
+
+
+// level is  0 - 15
+void RgbLedSetBrightness(int level) {
+  // 1    600
+  // 7    300
+  // 15   100
+  int new_level = level;
+  if ( new_level < 0 )
+    new_level = 0;
+  if ( new_level > 15 )
+    new_level = 15;
+
+  int blank_period = ( 600 - ( new_level * 32 ) );
+  times[3] = blank_period;
 }
 

@@ -35,6 +35,7 @@
 
 #include "uart.h"
 #include "traps.h"
+#include "device_info.h"
 #include "button.h"
 
 #include "timer2.h"
@@ -205,8 +206,9 @@ int main() {
   LogMain("SP: 0x%04x", (unsigned int)getTopOfStack());
 
   Timer2Init();
-
+  DeviceInfoInit();
   ButtonInit();
+
   ConnectionInit();
 
   while (1) {

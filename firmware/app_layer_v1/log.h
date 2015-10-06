@@ -25,23 +25,28 @@
 
 #else // ENABLE_LOG
 
+#include <stdio.h>
+#include "GenericTypeDefs.h"
+
 #define LogButton(f, ...) printf("[button] - [%s:%d] " f "\n", __FILE__, __LINE__, ##__VA_ARGS__)
 
 #define LogMain(f, ...) printf("[main] - [%s:%d] " f "\n", __FILE__, __LINE__, ##__VA_ARGS__)
 #define LogConn(f, ...) printf("[conn] - [%s:%d] " f "\n", __FILE__, __LINE__, ##__VA_ARGS__)
 #define LogProtocol(f, ...) printf("[protocol] - [%s:%d] " f "\n", __FILE__, __LINE__, ##__VA_ARGS__)
 
-#define LogFeature(f, ...) printf("[feature] - [%s:%d] " f "\n", __FILE__, __LINE__, ##__VA_ARGS__)
+//#define LogFeature(f, ...) printf("[feature] - [%s:%d] " f "\n", __FILE__, __LINE__, ##__VA_ARGS__)
+#define LogFeature(f, ...)
 #define LogPixel(f, ...) printf("[pixel] - [%s:%d] " f "\n", __FILE__, __LINE__, ##__VA_ARGS__)
 #define LogRgb(f, ...) printf("[rgb] - [%s:%d] " f "\n", __FILE__, __LINE__, ##__VA_ARGS__)
-#define LogUSB(f, ...) printf("[usb] - [%s:%d] " f "\n", __FILE__, __LINE__, ##__VA_ARGS__)
+//#define LogUSB(f, ...) printf("[usb] - [%s:%d] " f "\n", __FILE__, __LINE__, ##__VA_ARGS__)
+#define LogUSB(f, ...)
 
 //--------------------------------------------------------------------------------
 //
 // UART 1 setup
 //
 //#define SAVE_PIN_FOR_STDIO_LOG(pin) if ((pin == 5) || (pin == 6)) return
-#define SAVE_PIN_FOR_STDIO_LOG(pin) if ((pin == 1) || (pin == 2)) return
+#define SAVE_PIN_FOR_STDIO_LOG(pin) if ((pin == 1) || (pin == 2) || (pin == 6)) return
 #define SAVE_UART_FOR_STDIO_LOG(uart) if (uart == 0) return
 
 void UART1Init(void);

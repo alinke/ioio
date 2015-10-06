@@ -52,6 +52,7 @@
 #include "libconn/connection.h"
 #include "pixel.h"
 
+#include "device_info.h"
 
 #include "log.h"
 
@@ -92,6 +93,11 @@ const BYTE incoming_arg_size[MESSAGE_TYPE_LIMIT] = {
   sizeof(RGB_LED_MATRIX_ENABLE_ARGS),
   sizeof(RGB_LED_MATRIX_FRAME_ARGS),
   sizeof(RGB_LED_MATRIX_WRITE_FILE_ARGS),
+#ifdef API2
+  sizeof(API2_IN_GET_DEVICE_INFO_ARGS),
+  sizeof(API2_IN_SET_DEVICE_BRIGHTNESS_ARGS),
+#endif // API2
+
   // BOOKMARK(add_feature): Add sizeof (argument for incoming message).
   // Array is indexed by message type enum.
 };
@@ -130,6 +136,9 @@ const BYTE outgoing_arg_size[MESSAGE_TYPE_LIMIT] = {
   sizeof(RESERVED_ARGS),
   sizeof(RESERVED_ARGS),
   sizeof(RESERVED_ARGS),
+#ifdef API2
+  sizeof(API2_OUT_GET_DEVICE_INFO_ARGS),
+#endif // API2
 
   // BOOKMARK(add_feature): Add sizeof (argument for outgoing message).
   // Array is indexed by message type enum.
@@ -379,6 +388,7 @@ static BOOL MessageDone() {
       CHECK(rx_msg.args.spi_master_request.spi_num < NUM_SPI_MODULES);
       CHECK(rx_msg.args.spi_master_request.ss_pin < NUM_PINS);
       {
+#ifdef ENABLE_SPI
         const BYTE total_size = rx_msg.args.spi_master_request.total_size + 1;
         const BYTE data_size = rx_msg.args.spi_master_request.data_size_neq_total
             ? rx_msg.args.spi_master_request.data_size
@@ -397,6 +407,7 @@ static BOOL MessageDone() {
                     data_size,
                     total_size,
                     total_size - res_size);
+#endif // ENABLE_SPI
       }
       break;
 
@@ -542,6 +553,18 @@ static BOOL MessageDone() {
                      rx_msg.args.rgb_led_matrix_write_file.rows);
       break;
       
+#ifdef API2
+    case API2_IN_GET_DEVICE_INFO:
+      LogProtocol("Get Device Info");
+      DeviceSendInfo();
+      break;
+
+    case API2_IN_SET_DEVICE_BRIGHTNESS:
+      LogProtocol("Set Device Brightness  level: %d", rx_msg.args.api2_in_set_device_brightness_args.level);
+      DeviceSetBrightnessLevel(rx_msg.args.api2_in_set_device_brightness_args.level);
+      break;
+#endif // API2
+
     // BOOKMARK(add_feature): Add incoming message handling to switch clause.
     // Call Echo() if the message is to be echoed back.
 
@@ -562,8 +585,14 @@ BOOL AppProtocolHandleIncoming(const BYTE* data, UINT32 data_len) {
   }
 
 
-
   while (data_len > 0) {
+    /*
+    LogProtocol("HandleIncoming  size: %d  remaining: %d  cursor: %d  state: %s",
+                (int)data_len,
+                rx_message_remaining, rx_buffer_cursor,
+                ((state == 0) ? "WAIT_TYPE" : ((state == 1) ? "WAIT_ARGS" : "WAIT_VAR_ARGS")) );
+    */
+
     // copy a chunk of data to rx_msg
     //case RGB_LED_MATRIX_FRAME:
         //RgbLedMatrixFrame(rx_msg.args.rgb_led_matrix_frame.data);
@@ -575,8 +604,6 @@ BOOL AppProtocolHandleIncoming(const BYTE* data, UINT32 data_len) {
       data_len -= rx_message_remaining;
       rx_buffer_cursor += rx_message_remaining;
       rx_message_remaining = 0;
-     
-
 
     } else {
       memcpy(((BYTE *) &rx_msg) + rx_buffer_cursor, data, data_len);

@@ -23,6 +23,7 @@
       <itemPath>features.h</itemPath>
       <itemPath>traps.h</itemPath>
       <itemPath>timer2.h</itemPath>
+      <itemPath>device_info.h</itemPath>
       <itemPath>button.h</itemPath>
       <itemPath>i2c.h</itemPath>
       <itemPath>icsp.h</itemPath>
@@ -68,6 +69,7 @@
       <itemPath>features.c</itemPath>
       <itemPath>traps.c</itemPath>
       <itemPath>timer2.c</itemPath>
+      <itemPath>device_info.c</itemPath>
       <itemPath>button.c</itemPath>
       <itemPath>i2c.c</itemPath>
       <itemPath>icsp.c</itemPath>

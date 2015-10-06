@@ -77,6 +77,7 @@ const uint8_t adv_data[] = {
     0x11, 0x06, 0xF5, 0x1E, 0x6B, 0xD5, 0x2D, 0x04, 0x39, 0x89, 0x2A, 0x42, 0x61, 0x6D, 0xD0, 0xFB, 0x30, 0x11,
     // Name
     0x06, 0x09, 'C', '.', 'A', '.', 'T',
+    //0x09, 0x09, 'C', 'A', 'T', ' ', '0', '0', '0', '0'
 };
 /* LISTING_END */
 uint8_t adv_data_len = sizeof(adv_data);
@@ -402,7 +403,42 @@ void hci_transport_mchpusb_tasks();
 //
 static int ble_notification_enabled = 0;
 
+// Send packets
+//static int packet_resend = 0;
+static uint16_t send_size = 0;
+static uint8_t send_buffer[256];
 
+
+static uint16_t att_send_packet() {
+  int res = 0;
+  int res2 = 0;
+  LogConn("  send packet to phone   size: %d", (int)send_size);
+
+  if ( ble_notification_enabled ) {
+    // send packet
+    res = att_server_can_send();
+    LogConn("    2 can send  %d", res );
+    if ( res ) {
+      res2 = att_server_notify(ATT_CHARACTERISTIC_1130FBD1_6D61_422A_8939_042DD56B1EF5_01_VALUE_HANDLE, send_buffer, send_size);
+      LogConn("    2 sent res2  %d", res2 );
+      //      packet_resend = 1;
+    }
+  }
+
+  return send_size;
+}
+
+// Send data to the central
+static uint16_t att_send(uint8_t *buffer, uint16_t buffer_size) {
+  LogConn("Send AppProtocol packet to phone   size: %d", (int)buffer_size);
+
+  send_size = buffer_size;
+  memcpy(send_buffer, buffer, (int)send_size);
+
+  return att_send_packet();
+}
+
+// Heartbeat
 #define HEARTBEAT_PERIOD_MS 1000
 
 static timer_source_t heartbeat;
@@ -413,6 +449,10 @@ static int  counter = 0;
 static void  heartbeat_handler(struct timer *ts) {
   LogConn("heartbeat %d", counter);
   counter++;
+
+  //  if ( packet_resend )
+  //    // packet needs to be re-sent
+  //    att_send_packet();
 
   run_loop_set_timer(ts, HEARTBEAT_PERIOD_MS);
   run_loop_add_timer(ts);
@@ -448,6 +488,7 @@ static void ble_disconnect(uint8_t packet_type, uint16_t channel, uint8_t *packe
     LogConn("BLE disconect");
     ble_connected = 0;
     ble_notification_enabled = 0;
+    //    packet_resend = 0;
 
     // notify the main.c AppCallback that the connection has closed
     client_callback(NULL, 0, client_callback_arg);
@@ -823,17 +864,6 @@ static void att_packet_handler(uint8_t packet_type, uint16_t channel, uint8_t *p
 }
 
 
-// Send data to the central
-static uint16_t att_send(uint8_t *buffer, uint16_t buffer_size) {
-  LogConn("Send AppProtocol packet to phone   size: %d", (int)buffer_size);
-
-  if ( ble_notification_enabled ) {
-    att_server_notify(ATT_CHARACTERISTIC_1130FBD1_6D61_422A_8939_042DD56B1EF5_01_VALUE_HANDLE, buffer, buffer_size);
-  }
-
-  return buffer_size;
-}
-
 
 // ATT Client Read Callback for Dynamic Data
 // - if buffer == NULL, don't copy data, just return size of value
@@ -864,10 +894,10 @@ static int att_write_callback(uint16_t con_handle, uint16_t att_handle, uint16_t
 
   // handle write value
   if ( att_handle == ATT_CHARACTERISTIC_1130FBD1_6D61_422A_8939_042DD56B1EF5_01_VALUE_HANDLE ) {
-    //LogConn("att_write  mode: %u  offset: %u  size: %u", (unsigned int)transaction_mode, (unsigned int)offset, (unsigned int)buffer_size );
+    //    LogConn("att_write  mode: %u  offset: %u  size: %u", (unsigned int)transaction_mode, (unsigned int)offset, (unsigned int)buffer_size );
 
     if ( buffer_size > 0 ) {
-      //LogConn("Send to AppProtocolHandleIncoming   size: %d", (int)buffer_size);
+      //      LogConn("Send to AppProtocolHandleIncoming   size: %d", (int)buffer_size);
 
       // Send the packet data to the App protocol handler
       client_callback(&buffer[2], ( buffer_size - 2 ), client_callback_arg);
@@ -879,6 +909,18 @@ static int att_write_callback(uint16_t con_handle, uint16_t att_handle, uint16_t
     LogConn("  ble_notification_enabled  %d", ( READ_BT_16(buffer, 0) == GATT_CLIENT_CHARACTERISTICS_CONFIGURATION_NOTIFICATION ) );
 
     ble_notification_enabled = READ_BT_16(buffer, 0) == GATT_CLIENT_CHARACTERISTICS_CONFIGURATION_NOTIFICATION;
+    //    packet_resend = 0;
+  }
+
+  // handle control write value
+  if ( att_handle == ATT_CHARACTERISTIC_1130FBD2_6D61_422A_8939_042DD56B1EF5_01_VALUE_HANDLE ) {
+    LogConn("CONTROL att_write  mode: %u  offset: %u  size: %u", (unsigned int)transaction_mode, (unsigned int)offset, (unsigned int)buffer_size );
+
+    if ( buffer_size > 0 ) {
+      // notificaion received
+      LogConn("  packet_sent  received ACK");
+      //      packet_resend = 0;
+    }
   }
 
   return 0;
@@ -1077,7 +1119,8 @@ static int BTCanSend(int h) {
 
   if ( ble_connected ) {
     if ( ble_notification_enabled ) {
-      return 1;
+      //      if ( !packet_resend )
+        return att_server_can_send();
     }
   } else {
     if ( rfcomm_channel_id != 0 ) {

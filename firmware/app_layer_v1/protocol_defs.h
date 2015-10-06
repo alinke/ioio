@@ -30,6 +30,8 @@
 #ifndef __PROTOCOLDEFS_H__
 #define __PROTOCOLDEFS_H__
 
+#define API2
+
 #include "GenericTypeDefs.h"
 
 #define PACKED __attribute__ ((packed))
@@ -397,6 +399,30 @@ typedef struct PACKED {
   BYTE : 2;
 } RGB_LED_MATRIX_WRITE_FILE_ARGS;
 
+//
+// New APIs
+//
+#ifdef API2
+
+// Get Device Info Request
+typedef struct PACKED {
+  WORD client_version;
+} API2_IN_GET_DEVICE_INFO_ARGS;
+
+// Get Device Info Response
+typedef struct PACKED {
+  WORD brightness_level;
+  WORD battery_level;
+} API2_OUT_GET_DEVICE_INFO_ARGS;
+
+// Set Device brightness
+typedef struct PACKED {
+  BYTE level;
+} API2_IN_SET_DEVICE_BRIGHTNESS_ARGS;
+
+#endif // API2
+
+
 // BOOKMARK(add_feature): Add a struct for the new incoming / outgoing message
 // arguments.
 
@@ -435,6 +461,10 @@ typedef struct PACKED {
     RGB_LED_MATRIX_ENABLE_ARGS               rgb_led_matrix_enable;
     RGB_LED_MATRIX_FRAME_ARGS                rgb_led_matrix_frame;
     RGB_LED_MATRIX_WRITE_FILE_ARGS           rgb_led_matrix_write_file;
+#ifdef API2
+    API2_IN_GET_DEVICE_INFO_ARGS             api2_in_get_device_info;
+    API2_IN_SET_DEVICE_BRIGHTNESS_ARGS       api2_in_set_device_brightness_args;
+#endif // API2
 
     // BOOKMARK(add_feature): Add argument struct to the union.
   } args;
@@ -464,6 +494,10 @@ typedef struct PACKED {
     INCAP_STATUS_ARGS                       incap_status;
     INCAP_REPORT_ARGS                       incap_report;
     SOFT_CLOSE_ARGS                         soft_close;
+#ifdef API2
+    API2_OUT_GET_DEVICE_INFO_ARGS           api2_out_get_device_info;
+#endif // API2
+
     // BOOKMARK(add_feature): Add argument struct to the union.
   } args;
 } OUTGOING_MESSAGE;
@@ -531,6 +565,12 @@ typedef enum {
   RGB_LED_MATRIX_FRAME                = 0x1F,
 
   RGB_LED_MATRIX_WRITE_FILE           = 0x20,
+
+#ifdef API2
+  API2_IN_GET_DEVICE_INFO             = 0x21,
+  API2_OUT_GET_DEVICE_INFO            = 0x21,
+  API2_IN_SET_DEVICE_BRIGHTNESS       = 0x22,
+#endif // API2
 
   // BOOKMARK(add_feature): Add new message type to enum.
   MESSAGE_TYPE_LIMIT

@@ -13,11 +13,12 @@
 
 #else // ENABLE_BUTTON
 
-#include <stdint.h>
+//#include <stdint.h>
 
 // Initialize this module.
 void ButtonInit();
-uint8_t ButtonPressed();
+
+int ButtonPressed();
 
 
 #endif // ENABLE_BUTTON

@@ -1,4 +1,9 @@
 
+#include "button.h"
+
+#ifdef ENABLE_BUTTON
+
+
 #include "Compiler.h"
 #include <stdint.h>
 
@@ -12,9 +17,10 @@ static uint16_t button_off_time;
 static uint16_t button_state;
 
 int ButtonPressed() {
-  return button_state;
+  return (int)button_state;
 }
 
+//void PixelPlayNext();
 
 static uint16_t input_state;
 
@@ -41,6 +47,11 @@ void ButtonService() {
   if ( last_button_state && !button_state ) {
     button_off_time = 0;
     LogMain("Button Released  on: %d  off: %d", button_on_time, button_off_time);
+
+    //    // If the press is a quick press, less than 30 microseconds then play the next animation
+    //    if ( button_on_time < 30 ) {
+    //      PixelPlayNext();
+    //    }
   }
 
   // track how long the button has been on
@@ -66,3 +77,4 @@ void ButtonInit() {
   Timer2Start("button");
 }
 
+#endif // ENABLE_BUTTON

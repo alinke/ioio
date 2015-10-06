@@ -49,4 +49,6 @@ int RgbLedMatrixFrameSize();
 
 void RgbLedMatrixGetBackBuffer(void ** buffer, unsigned int * page);
 
+void RgbLedSetBrightness(int level);
+
 #endif  // __RGBLEDMATRIX_H__

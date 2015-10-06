@@ -81,18 +81,10 @@ void UART1Init(void) {
 // UART Logging
 //
 
+/*
 static int enable_uart_logging = 0;
 
 void LogUARTInit(void) {
-  /*
-  _uartMsg[0] = 0x01;
-  _uartMsg[1] = 0x03;
-  _uartMsg[2] = 0x07;
-  _uartMsg[3] = 0x0f;
-  _uartMsg[4] = 0xc0;
-  _uartMsg[6] = 0x00;
-  */
-
   //    UARTConfig(1, 115200, 0, 0, 0);
   //  UARTConfig(1, 8, 0, 0, 0);   // 115k  111111.1
   UARTConfig(1, 34, 1, 0, 0);   // 115k  114285.7
@@ -142,7 +134,7 @@ void LogUARTWrite(int len0, int len1)
 
   UARTTransmit(1, p_log_buf, len);
 }
-
+*/
 
 /*
 void LogBytes( uint8_t *data, int size ) {
