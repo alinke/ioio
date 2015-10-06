@@ -96,7 +96,7 @@ class GIFFrame {
                         
                         let offset = ( (row * self.width) + col )
 
-//                        NSLog("\(row)  \(col)  \(offset)   pixel1: \(String(pixel1, radix: 16))  \(String(pixel1, radix: 2))")
+//                        Log.info("\(row)  \(col)  \(offset)   pixel1: \(String(pixel1, radix: 16))  \(String(pixel1, radix: 2))")
                         
                         let r1 = ( ( pixel1 >> 11 ) & 0x1f )
                         let g1 = ( ( pixel1 >> 5 ) & 0x3f )
@@ -124,7 +124,7 @@ class GIFFrame {
                         frameBytes[offset+256] = f1
                         frameBytes[offset+512] = f2
                         
-                        //NSLog("\(row)  \(col)  \(offset)   pixel1: \(String(pixel1, radix: 16))  \(String(pixel1, radix: 2))   pixel2: \(String(pixel2, radix: 16))  \(String(pixel2, radix: 2))  f0: \(String(f0, radix: 16)) f1: \(String(f1, radix: 16)) f2: \(String(f2, radix: 16))")
+                        //Log.info("\(row)  \(col)  \(offset)   pixel1: \(String(pixel1, radix: 16))  \(String(pixel1, radix: 2))   pixel2: \(String(pixel2, radix: 16))  \(String(pixel2, radix: 2))  f0: \(String(f0, radix: 16)) f1: \(String(f1, radix: 16)) f2: \(String(f2, radix: 16))")
                     }
                 }
 
@@ -141,7 +141,7 @@ class GIFFrame {
             let ptr = UnsafePointer<UInt8>(data.bytes)
             var bytes = UnsafeBufferPointer<UInt8>(start: ptr, count: data.length)
 
-            NSLog("frame \(number)  width: \(frame.width)  height: \(frame.height)   size: \(data.length)")
+            Log.info("frame \(number)  width: \(frame.width)  height: \(frame.height)   size: \(data.length)")
             for row in 0 ..< frame.height {
                 var str = ""
                 for col in 0 ..< frame.width {
@@ -157,9 +157,9 @@ class GIFFrame {
                 if count(rs) == 1 {
                     rs = ( "0" + rs )
                 }
-                NSLog("[\(rs)]  \(str)")
+                Log.info("[\(rs)]  \(str)")
             }
-            NSLog("--")
+            Log.info("--")
         }
 
         // frameData is RGBa pixels
@@ -167,7 +167,7 @@ class GIFFrame {
             let ptr = UnsafePointer<UInt8>(data.bytes)
             var bytes = UnsafeBufferPointer<UInt8>(start: ptr, count: data.length)
 
-            NSLog("frame \(number)  width: \(frame.width)  height: \(frame.height)   size: \(data.length)")
+            Log.info("frame \(number)  width: \(frame.width)  height: \(frame.height)   size: \(data.length)")
             for row in 0 ..< frame.height {
                 var str = ""
                 for col in 0 ..< frame.width {
@@ -198,9 +198,9 @@ class GIFFrame {
                 if count(rs) == 1 {
                     rs = ( "0" + rs )
                 }
-                NSLog("[\(rs)]  \(str)")
+                Log.info("[\(rs)]  \(str)")
             }
-            NSLog("--")
+            Log.info("--")
         }
     }
 
@@ -215,9 +215,9 @@ class GIFFrame {
                     let b = bytes[offset]
                     str += (" " + String(b, radix: 16))
                 }
-                NSLog("[\(subframe) : \(row)]  \(str)")
+                Log.info("[\(subframe) : \(row)]  \(str)")
             }
-            NSLog("--")
+            Log.info("--")
         }
     }
 */

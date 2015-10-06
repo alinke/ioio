@@ -25,6 +25,6 @@ class CollectionDataObject {
     }
     
     func selectItem() {
-        NSLog("didSelectItem: \(self.indexPath)")
+        Log.info("didSelectItem: \(self.indexPath)")
     }
 }

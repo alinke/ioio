@@ -196,7 +196,7 @@ class ThumbnailLayout: CollectionViewLayout {
         let width: CGFloat = ( self.itemInsets.left + ( ( CGFloat(self.numberOfCols) * ( self.itemSize.width + self.interItemSpacingX ) ) - self.interItemSpacingX ) + self.itemInsets.right )
         let height: CGFloat = ( self.itemInsets.top + ( CGFloat(self.numberOfRows) * ( self.itemSize.height + self.interItemSpacingY ) ) + self.itemInsets.bottom )
 
-//        NSLog("ThumbnailLayout contentSize  width: \(width)  height: \(height)")
+//        Log.info("ThumbnailLayout contentSize  width: \(width)  height: \(height)")
         return CGSize(width: width, height: height)
     }
 
@@ -209,7 +209,7 @@ class ThumbnailCellView: CollectionDataObjectCellView {
     override init(frame aRect: CGRect) {
         super.init(frame: aRect)
 
-//        NSLog("ThumbnailCellView frame: \(frame)")
+//        Log.info("ThumbnailCellView frame: \(frame)")
 
 //        self.backgroundColor = UIColor(hex: "ecf0f1")
         self.backgroundColor = UIColor(hex: "ffffff")
@@ -228,7 +228,7 @@ class ThumbnailCellView: CollectionDataObjectCellView {
 
 
     override func prepareForReuse() {
-//        NSLog("ThumbnailCellView: prepareForReuse")
+//        Log.info("ThumbnailCellView: prepareForReuse")
     }
 
     override func setupCell(object: CollectionDataObject) {

@@ -212,7 +212,7 @@ class GIFDecoder {
             // move the start of the graphics control extension
             stream.skip(blockIndex.pos)
 
-            //NSLog("frame: \(n)  pos: \(blockIndex.pos)   stream: \(stream.pos)")
+            //Log.info("frame: \(n)  pos: \(blockIndex.pos)   stream: \(stream.pos)")
 
             // read graphics control extension
             stream.readUInt8()
@@ -230,7 +230,7 @@ class GIFDecoder {
         reset()
         readHeader()
 
-        //NSLog("width: \(self.width)  height: \(self.height)  frames: \(self.frameCount)")
+        //Log.info("width: \(self.width)  height: \(self.height)  frames: \(self.frameCount)")
 
         if !err() {
             scanContents()
@@ -292,7 +292,7 @@ class GIFDecoder {
                 self.status = DecoderStatus.FormatError
             }
 
-            //NSLog("frame: \(self.frameCount)  pos: \(blockIndex.pos)  code: \(String(blockIndex.code, radix: 16))  subcode: \(String(blockIndex.subcode, radix: 16))")
+            //Log.info("frame: \(self.frameCount)  pos: \(blockIndex.pos)  code: \(String(blockIndex.code, radix: 16))  subcode: \(String(blockIndex.subcode, radix: 16))")
             blockIndexes.append(blockIndex)
         }
     }
@@ -371,7 +371,7 @@ class GIFDecoder {
             case 0x2C:
                 // image separator
                 let frame = readImage()
-                //NSLog("add frame  \(self.frameCount-1)")
+                //Log.info("add frame  \(self.frameCount-1)")
                 frames[self.frameCount - 1] = frame // add image to frame list
 
             case 0x21: 
@@ -567,7 +567,7 @@ class GIFDecoder {
         }
 
         if self.debug {
-            NSLog("frame \(frameCount)  transparency: \(self.transparency)  transIndex: \(self.transIndex)  save: \(save)  lastBgColor: \(self.lastBgColor)")
+            Log.info("frame \(frameCount)  transparency: \(self.transparency)  transIndex: \(self.transIndex)  save: \(save)  lastBgColor: \(self.lastBgColor)")
         }
         
         self.frameCount++
@@ -628,7 +628,7 @@ class GIFDecoder {
             //int[] dest = ((DataBufferInt) image.getRaster().getDataBuffer()).getData()
 
             if self.debug {
-                NSLog("  setPixels \(self.frameCount)  lastDispose: \(self.lastDispose)")
+                Log.info("  setPixels \(self.frameCount)  lastDispose: \(self.lastDispose)")
             }
             
             // fill in starting image contents based on last image's dispose code
@@ -711,7 +711,7 @@ class GIFDecoder {
 
 /*
                 if self.debug {
-                    NSLog("  line: \(line)  pass: \(pass)  inc: \(inc)  iline: \(iline)  iy: \(self.rect.y)     rect: \(self.rect)")
+                    Log.info("  line: \(line)  pass: \(pass)  inc: \(inc)  iline: \(iline)  iy: \(self.rect.y)     rect: \(self.rect)")
 
                     var str = ""
                     for col in 0 ..< self.width {
@@ -742,7 +742,7 @@ class GIFDecoder {
                     if count(rs) == 1 {
                         rs = ( "0" + rs )
                     }
-                    NSLog("[\(rs)]  \(str)")
+                    Log.info("[\(rs)]  \(str)")
                 }
 */
                 
@@ -776,7 +776,7 @@ class GIFDecoder {
                                 hex = ( "0" + hex )
                             }
                             let dc = GIFColor(red: dest[(dx * 4) + 0], green: dest[(dx * 4) + 1], blue: dest[(dx * 4) + 2], alpha: dest[(dx * 4) + 3])
-                            NSLog("    dx: \(dx)  dlim: \(dlim)  line: \(line)  sx: \(sx)  index: \(hex)  color: \(color)  dest: \(dc)  destColor: \(destColor)")
+                            Log.info("    dx: \(dx)  dlim: \(dlim)  line: \(line)  sx: \(sx)  index: \(hex)  color: \(color)  dest: \(dc)  destColor: \(destColor)")
                         }
 */
                         dx++
@@ -795,7 +795,7 @@ class GIFDecoder {
     func pixelData() -> NSData? {
         // copy pixel data
         if self.debug {
-            NSLog("pixelData  frame: \(self.frameCount)  width: \(self.width)  height: \(self.height)  pixels size: \(self.pixels.count)   rect: \(self.rect)  last: \(self.lastRect)")
+            Log.info("pixelData  frame: \(self.frameCount)  width: \(self.width)  height: \(self.height)  pixels size: \(self.pixels.count)   rect: \(self.rect)  last: \(self.lastRect)")
         }
 
         if let indexBuffer = NSMutableData(length: (self.width * self.height)) {

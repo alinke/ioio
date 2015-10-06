@@ -50,7 +50,7 @@ class ThumbnailViewController: UIViewController {
 
         let frame = self.view.bounds
 
-//        NSLog("frame \(frame)")
+//        Log.info("frame \(frame)")
 
         loadThumbnails()
         //self.showThumbnail(0)
@@ -115,14 +115,14 @@ class ThumbnailViewController: UIViewController {
     let uploadDispatchQueue: dispatch_queue_t = dispatch_queue_create("com.ioio.uploadDispatchQueue", DISPATCH_QUEUE_SERIAL)
 
     func thumbnailSelected(thumbnail: Thumbnail) {
-        NSLog("upload \(thumbnail.name)")
+        Log.info("upload \(thumbnail.name)")
         self.setupProgress()
 
         dispatch_async(uploadDispatchQueue) {
             let app = App.sharedInstance
             app.upload(thumbnail, frameHandler: self.updateProgress) {
                 () -> Void in
-                NSLog("done")
+                Log.info("done")
                 self.stopProgress()
             }
         }
@@ -147,7 +147,7 @@ class ThumbnailViewController: UIViewController {
         } catch let error1 as NSError {
             error = error1
             docsArray = nil
-            NSLog("getAnimationFileNames error: \(error)")
+            Log.info("getAnimationFileNames error: \(error)")
         }
 
         var res = [String]()
@@ -192,14 +192,14 @@ class ThumbnailViewController: UIViewController {
 
                 let thumbNum = Thumbnail.thumbnailFrame(name)
                 if let frame = decoder.getFrame(thumbNum) {
-                    //NSLog("width: \(decoder.width)  height: \(decoder.height)  frames: \(decoder.getFrameCount())  thumb: \(thumbNum)   \(name)")
+                    //Log.info("width: \(decoder.width)  height: \(decoder.height)  frames: \(decoder.getFrameCount())  thumb: \(thumbNum)   \(name)")
 
                     let thumbnail = Thumbnail(name: name, frame: frame)
                     return thumbnail
                 }
             } catch let error as NSError {
                 loadError = error
-                NSLog("loadThumbnail error: \(loadError)")
+                Log.info("loadThumbnail error: \(loadError)")
             }
         }
         return nil

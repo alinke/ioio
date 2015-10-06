@@ -22,14 +22,14 @@ class SettingsViewController: UIViewController {
         // Do any additional setup after loading the view, typically from a nib.
 
         let frame = self.view.bounds
-        NSLog("SettingsView frame \(frame)")
+        Log.info("SettingsView frame \(frame)")
         
         self.settingsView = SettingsView(frame: frame)
         self.view.addSubview(self.settingsView!)
     }
 
     override func viewWillAppear(animated: Bool) {
-//        NSLog("viewWillAppear")
+//        Log.info("viewWillAppear")
 
         let app = App.sharedInstance
 
@@ -43,7 +43,7 @@ class SettingsViewController: UIViewController {
 
     override func viewDidAppear(animated: Bool) {
 /*
-        //        NSLog("viewDidAppear")
+        //        Log.info("viewDidAppear")
 
         let app = App.sharedInstance
 
@@ -57,7 +57,7 @@ class SettingsViewController: UIViewController {
     }
 
     func didSelectDevice(device: Device) {
-        NSLog("didSelectDevice: \(device.name)")
+        Log.info("didSelectDevice: \(device.name)")
 
         let app = App.sharedInstance
         // disconnect from any connected devices
@@ -74,7 +74,7 @@ class SettingsViewController: UIViewController {
     }
 
     func didConnectDevice(device: Device) {
-        NSLog("didConnectDevice \(device)")
+        Log.info("didConnectDevice \(device)")
         let app = App.sharedInstance
         app.didConnect(device)
         
@@ -84,7 +84,7 @@ class SettingsViewController: UIViewController {
     }    
     
     func didDiscoverDevice(device: Device) {
-        NSLog("didDiscoverDevice \(device)")
+        Log.info("didDiscoverDevice \(device)")
 
         // Update the UI - add device to the SettingsDataSource
         if let settingsView = self.settingsView {
@@ -107,7 +107,7 @@ class SettingsViewController: UIViewController {
 
 /*
         if self.autoConnect {
-            NSLog("  autoConnect")
+            Log.info("  autoConnect")
             let app = App.sharedInstance
             app.connect(peripheral, connectHandler: didConnect)
         }
@@ -116,11 +116,11 @@ class SettingsViewController: UIViewController {
 
 
     func didConnect(peripheral: CBPeripheral) {
-        NSLog("didConnect")
+        Log.info("didConnect")
     }
     
     override func viewWillDisappear(animated: Bool) {
-//        NSLog("viewWillDisappear")
+//        Log.info("viewWillDisappear")
         let app = App.sharedInstance
         app.stopScan()
     }

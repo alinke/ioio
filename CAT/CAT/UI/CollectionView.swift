@@ -58,7 +58,7 @@ class CollectionView: UICollectionView, UICollectionViewDataSource, UICollection
     }
 
     func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
-//        NSLog("CollectionView numSections: \(self.collectionDataSource.numberOfSections())")
+//        Log.info("CollectionView numSections: \(self.collectionDataSource.numberOfSections())")
         return self.collectionDataSource.numberOfSections()
     }
 
@@ -66,7 +66,7 @@ class CollectionView: UICollectionView, UICollectionViewDataSource, UICollection
     func collectionView(collectionView: UICollectionView,
                         cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         let obj = self.collectionDataSource.object(forIndexPath: indexPath)
-//        NSLog("cellForItemAtIndexPath  row: \(indexPath.row)  section: \(indexPath.section)  obj: \(obj)")
+//        Log.info("cellForItemAtIndexPath  row: \(indexPath.row)  section: \(indexPath.section)  obj: \(obj)")
         
         // what happens if obj is nil ?
         let cellIdentifier = obj!.reuseIdentifier

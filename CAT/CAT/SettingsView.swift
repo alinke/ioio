@@ -56,23 +56,23 @@ class SettingsDataSource: CollectionDataSource {
         dataObject.indexPath = NSIndexPath(forRow: section.count, inSection: 0)
         dataObject.layoutAttributes = UICollectionViewLayoutAttributes(forCellWithIndexPath: dataObject.indexPath)
         
-        NSLog("--")
-        NSLog("SettingsDataSource ADD")
-        NSLog("      row: \(dataObject.indexPath.row)")
-        NSLog("  section: \(dataObject.indexPath.section)")
-        NSLog("   layout: \(dataObject.layoutAttributes)")
+        Log.info("--")
+        Log.info("SettingsDataSource ADD")
+        Log.info("      row: \(dataObject.indexPath.row)")
+        Log.info("  section: \(dataObject.indexPath.section)")
+        Log.info("   layout: \(dataObject.layoutAttributes)")
 
         self.sections[0].append(dataObject)
 
-        NSLog("--")
+        Log.info("--")
         for (index, row) in self.sections[0].enumerate() {
-            NSLog("section[0][\(index)] = \(row)")
+            Log.info("section[0][\(index)] = \(row)")
         }
-        NSLog("--")
+        Log.info("--")
     }
     
     func scanSelected(dataObject: SettingsDataObject) {
-        NSLog("scanSelected \(dataObject)");
+        Log.info("scanSelected \(dataObject)");
     }
 
     func deviceExists(device: Device) -> SettingsDataObject? {
@@ -112,9 +112,9 @@ class SettingsLayout: CollectionViewLayout {
         let frame = CGRect(x: x, y: y, width: self.itemSize.width, height: self.itemSize.height)
 
         if let obj = object as? SettingsDataObject {
-            NSLog("SettingsLayout row: \(object.indexPath.row)  \(obj.name)  frame: \(frame)")
+            Log.info("SettingsLayout row: \(object.indexPath.row)  \(obj.name)  frame: \(frame)")
         } else {
-            NSLog("SettingsLayout row: \(object.indexPath.row)  frame: \(frame)")
+            Log.info("SettingsLayout row: \(object.indexPath.row)  frame: \(frame)")
         }
         object.layoutAttributes.frame = frame
     }
@@ -127,7 +127,7 @@ class SettingsLayout: CollectionViewLayout {
         let width: CGFloat = ( self.itemInsets.left + self.itemInsets.right + self.itemSize.width )
         let height: CGFloat = ( self.itemInsets.top + self.itemInsets.bottom + ( CGFloat(numRows) * ( self.itemSize.height + self.interItemSpacingX ) ) )
 
-        NSLog("SettingsLayout contentSize  width: \(width)  height: \(height)")
+        Log.info("SettingsLayout contentSize  width: \(width)  height: \(height)")
         return CGSize(width: width, height: height)
     }
 
@@ -145,7 +145,7 @@ class SettingsCellView: CollectionDataObjectCellView {
     override init(frame aRect: CGRect) {
         super.init(frame: aRect)
 
-        NSLog("SettingsCellView frame: \(frame)")
+        Log.info("SettingsCellView frame: \(frame)")
 
         let connectFrame = CGRect(x:20.0, y:24.0, width:60.0, height:36.0)
         self.connectView = UILabel(frame: connectFrame)
@@ -177,12 +177,12 @@ class SettingsCellView: CollectionDataObjectCellView {
 
 
     override func prepareForReuse() {
-//        NSLog("prepareForReuse")
+//        Log.info("prepareForReuse")
     }
 
     override func setupCell(object: CollectionDataObject) {
         if let obj = object as? SettingsDataObject {
-            NSLog("setupCell \(obj.name)  frame: \(self.frame)  layout: \(object.layoutAttributes.frame)")
+            Log.info("setupCell \(obj.name)  frame: \(self.frame)  layout: \(object.layoutAttributes.frame)")
 
             self.titleView!.text = obj.name
 

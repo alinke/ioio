@@ -153,7 +153,7 @@ class Command {
             return CommandEstablishConnection(stream: stream)
                    
         default:
-            NSLog("Protocol makeCommand  data: \(data)")
+            Log.info("Protocol makeCommand  data: \(data)")
             break
         }
         
@@ -262,7 +262,7 @@ class CommandEstablishConnection : Command {
     }
     
     override func dump() {
-        NSLog("Establish Connecton  magic: \(magic)   hw: \(self.hardwareVersion)  boot: \(self.bootloaderVersion)  fw: \(self.firmwareVersion)")
+        Log.info("Establish Connecton  magic: \(magic)   hw: \(self.hardwareVersion)  boot: \(self.bootloaderVersion)  fw: \(self.firmwareVersion)")
     }
 }
 
@@ -293,7 +293,7 @@ class CommandEnable : Command {
 //        let flagsHex = String(flags, radix: 16, uppercase: false)
 //        let flagsHexL = String(flags, radix: 16, uppercase: false)
 //        let flagsHexH = String(flags, radix: 16, uppercase: false)
-        // NSLog("matrixEnable \(shifterLen32)  \(rows)  \(flagsHex)  \(flagsHexH)  \(flagsHexL)")
+        // Log.info("matrixEnable \(shifterLen32)  \(rows)  \(flagsHex)  \(flagsHexH)  \(flagsHexL)")
         
         let data = NSData(bytes: packet, length: packet.count)
         return data
@@ -344,7 +344,7 @@ class CommandWriteFile : Command {
         let delay0: UInt8 = UInt8( delay & 0xff )
         let delay1: UInt8 = UInt8( ( delay >> 8 ) & 0xff )
 
-        // NSLog("matrixWriteFile  \(fps)  \(shifterLen32)  \(rows)")
+        // Log.info("matrixWriteFile  \(fps)  \(shifterLen32)  \(rows)")
 
         let packet: [UInt8] = [0x20, delay0, delay1, flags]
 

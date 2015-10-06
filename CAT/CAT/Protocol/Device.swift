@@ -53,7 +53,7 @@ class Device: NSObject, CBPeripheralDelegate {
     // Called when the central is scanning and discovers a device.
     func didDiscover(advertisementData: [NSObject: AnyObject]) {
         self.advertisementData = advertisementData
-        NSLog("Device \(self.name)   advData \(advertisementData)")
+        Log.info("Device \(self.name)   advData \(advertisementData)")
     }
 
 
@@ -86,7 +86,7 @@ class Device: NSObject, CBPeripheralDelegate {
 
     // Called when the device fails to connect
     func didFailToConnect(error: NSError?) {
-        NSLog("didFailToConnect \(self.name)  error: \(error)")
+        Log.info("didFailToConnect \(self.name)  error: \(error)")
     }
 
     
@@ -105,12 +105,12 @@ class Device: NSObject, CBPeripheralDelegate {
     
     // Called when the device disconnects
     func didDisconnect(error: NSError?) {
-        NSLog("didDisconnect \(self.name)  error: \(error)")
+        Log.info("didDisconnect \(self.name)  error: \(error)")
         self.stopTransport()
         self.connected = false
         
         if error != nil {
-            NSLog("  error: \(error)")
+            Log.info("  error: \(error)")
             if let handler = self.disconnectHandler {
                 handler(device: self)
             }
@@ -131,12 +131,12 @@ class Device: NSObject, CBPeripheralDelegate {
     // MARK: - Setup
 
     func startDeviceSetup() {
-        // NSLog("startDeviceSetup")
+        // Log.info("startDeviceSetup")
         self.peripheral!.discoverServices(nil)
     }
 
     func didSetupDevice(error: NSError?) {
-        NSLog("Device - didSetupDevice \(self.name)  error: \(error)")
+        Log.info("Device - didSetupDevice \(self.name)  error: \(error)")
 
         self.connected = true
         self.startTransport()
@@ -149,8 +149,8 @@ class Device: NSObject, CBPeripheralDelegate {
 
     // MARK: - CBPeripheralDelegate
     func peripheral(peripheral: CBPeripheral, didDiscoverServices error: NSError?) {
-        // NSLog("didDiscoverServices \(peripheral.name)  error: \(error)")
-        // NSLog("    services = \(peripheral.services)")
+        // Log.info("didDiscoverServices \(peripheral.name)  error: \(error)")
+        // Log.info("    services = \(peripheral.services)")
 
 	if let services = peripheral.services {
             self.service = services[0]
@@ -161,8 +161,8 @@ class Device: NSObject, CBPeripheralDelegate {
     func peripheral(peripheral: CBPeripheral,
                     didDiscoverCharacteristicsForService service: CBService,
                     error: NSError?) {
-        // NSLog("didDiscoverCharacteristicsForService \(peripheral.name)  \(service)  error: \(error)")
-        // NSLog("    characteristics = \(self.service!.characteristics)")
+        // Log.info("didDiscoverCharacteristicsForService \(peripheral.name)  \(service)  error: \(error)")
+        // Log.info("    characteristics = \(self.service!.characteristics)")
 
 	if let characteristics = service.characteristics {
           self.characteristic = characteristics[0]
@@ -175,7 +175,7 @@ class Device: NSObject, CBPeripheralDelegate {
     func peripheral(peripheral: CBPeripheral,
                     didUpdateNotificationStateForCharacteristic characteristic: CBCharacteristic,
                     error: NSError?) {
-        // NSLog("didUpdateNotificationStateForCharacteristics \(peripheral.name)  \(characteristic)  error: \(error)")
+        // Log.info("didUpdateNotificationStateForCharacteristics \(peripheral.name)  \(characteristic)  error: \(error)")
 
         // put the state machine into a CONNECTED state
         self.didSetupDevice(error)
@@ -202,7 +202,7 @@ class Device: NSObject, CBPeripheralDelegate {
     func writePacket(packet: Packet) {
         if let peripheral = self.peripheral {
             if let characteristic = self.characteristic {
-                // NSLog("  writePacket: \(packet.data)")
+                // Log.info("  writePacket: \(packet.data)")
 		if let data = packet.data {
                     peripheral.writeValue(data, forCharacteristic: characteristic, type: CBCharacteristicWriteType.WithResponse)
                 }
@@ -215,7 +215,7 @@ class Device: NSObject, CBPeripheralDelegate {
                     didUpdateValueForCharacteristic characteristic: CBCharacteristic,
                     error: NSError?) {
         if error != nil {
-            NSLog("handleDidUpdateValue error: \(error)")
+            Log.info("handleDidUpdateValue error: \(error)")
         }
 	if let value = characteristic.value {
             transport.handleNotification(value)
@@ -226,7 +226,7 @@ class Device: NSObject, CBPeripheralDelegate {
                     didWriteValueForCharacteristic characteristic: CBCharacteristic,
                     error: NSError?) {
         if error != nil {
-            NSLog("handleDidWriteValue error: \(error)")
+            Log.info("handleDidWriteValue error: \(error)")
         }
         transport.handleWriteAck()
     }
@@ -250,7 +250,7 @@ class Device: NSObject, CBPeripheralDelegate {
         }
 
         if let handler = completionHandler {
-            // NSLog("SendCommand call completionHandler")
+            // Log.info("SendCommand call completionHandler")
             handler()
         }
     }

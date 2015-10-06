@@ -28,23 +28,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidEnterBackground(application: UIApplication) {
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
-        NSLog("didEnterBackground")
+        Log.info("didEnterBackground")
     }
 
     func applicationWillEnterForeground(application: UIApplication) {
         // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
-        NSLog("willEnterForeground")
+        Log.info("willEnterForeground")
     }
 
     func applicationDidBecomeActive(application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-        NSLog("didBecomeActive")
+        Log.info("didBecomeActive")
     }
 
     func applicationWillTerminate(application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
         // Saves changes in the application's managed object context before the application terminates.
-        NSLog("willTerminate")
+        Log.info("willTerminate")
         self.saveContext()
     }
 
@@ -82,7 +82,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             error = NSError(domain: "YOUR_ERROR_DOMAIN", code: 9999, userInfo: dict)
             // Replace this with code to handle the error appropriately.
             // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-            NSLog("Unresolved error \(error), \(error!.userInfo)")
+            Log.info("Unresolved error \(error), \(error!.userInfo)")
             abort()
         } catch {
             fatalError()
@@ -114,7 +114,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     error = error1
                     // Replace this implementation with code to handle the error appropriately.
                     // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                    NSLog("Unresolved error \(error), \(error!.userInfo)")
+                    Log.info("Unresolved error \(error), \(error!.userInfo)")
                     abort()
                 }
             }

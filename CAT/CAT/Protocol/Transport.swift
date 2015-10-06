@@ -69,12 +69,12 @@ class Packet {
             let ptr = UnsafeMutablePointer<UInt8>(buffer.mutableBytes)
             let bytes = UnsafeMutableBufferPointer<UInt8>(start: ptr, count: buffer.length)
 
-            NSLog("Packet  local: \(self.localSequenceNumber)  remote: \(self.remoteSequenceNumber)  size: \(size)")
+            Log.info("Packet  local: \(self.localSequenceNumber)  remote: \(self.remoteSequenceNumber)  size: \(size)")
             var str = ""
             for i in 0 ..< self.size {
                 str += ( String(bytes[i], radix: 16) + " " )
             }
-            NSLog("  \(str)")
+            Log.info("  \(str)")
         }
     }
 }
@@ -105,7 +105,7 @@ public class Transport {
     }
 
     func handleNotification(data: NSData) {
-        //NSLog("+++ Transport :: handleNotification  data: \(data)")
+        //Log.info("+++ Transport :: handleNotification  data: \(data)")
         receivePacket(data)
     }
 

@@ -42,7 +42,7 @@ class DeviceManager: NSObject, CBCentralManagerDelegate {
 
         let defaults = NSUserDefaults.standardUserDefaults()
         if let ids = defaults.stringArrayForKey(DeviceManager.kDeviceUUIDs) {
-            NSLog("DeviceManager  deviceUUIDs: \(ids)")
+            Log.info("DeviceManager  deviceUUIDs: \(ids)")
         }
     }
 
@@ -52,14 +52,15 @@ class DeviceManager: NSObject, CBCentralManagerDelegate {
 
         // self.centralManager = CBCentralManager(delegate: self, queue: self.centralQueue, options: self.centralOptions)
         self.centralManager = CBCentralManager(delegate: self, queue: self.centralQueue)
-        NSLog("CentralManager init")
+
+        Log.info("CentralManager init")
     }
     
 /*
     // Restore state - only if the 'bluetooth-central' background mode is specified
     func centralManager(central: CBCentralManager!,
                         willRestoreState dict: [NSObject : AnyObject]!) {
-        NSLog("willRestoreState \(dict)")
+        Log.info("willRestoreState \(dict)")
     }
 */
 
@@ -119,7 +120,7 @@ class DeviceManager: NSObject, CBCentralManagerDelegate {
                         advertisementData: [String : AnyObject],
                         RSSI: NSNumber) {
         if findDevice(peripheral.identifier) == nil {
-            NSLog("didDiscoverPeripheral \(peripheral)")
+            Log.info("didDiscoverPeripheral \(peripheral)")
         }
 
         let device = getDevice(peripheral)
@@ -262,7 +263,7 @@ class DeviceManager: NSObject, CBCentralManagerDelegate {
         defaults.removeObjectForKey(DeviceManager.kDeviceUUIDs)
 
         let ids = defaults.stringArrayForKey(DeviceManager.kDeviceUUIDs)
-        NSLog("clearReconnectUUIDs: \(ids)")
+        Log.info("clearReconnectUUIDs: \(ids)")
     }
 
     func setReconnectUUID(device: Device) {
@@ -274,7 +275,7 @@ class DeviceManager: NSObject, CBCentralManagerDelegate {
         defaults.setObject(ids, forKey: DeviceManager.kDeviceUUIDs)
 
         let newIds = defaults.stringArrayForKey(DeviceManager.kDeviceUUIDs)
-        NSLog("setReconnectUUIDs: \(newIds)")
+        Log.info("setReconnectUUIDs: \(newIds)")
     }
 
     func addReconnectUUID(device: Device) {
@@ -297,7 +298,7 @@ class DeviceManager: NSObject, CBCentralManagerDelegate {
         defaults.setObject(ids, forKey: DeviceManager.kDeviceUUIDs)
 
         let newIds = defaults.stringArrayForKey(DeviceManager.kDeviceUUIDs)
-        NSLog("addReconnectUUID: \(newIds)")
+        Log.info("addReconnectUUID: \(newIds)")
     }
 
     func reconnectPeripheralNSUUIDs() -> [NSUUID] {
@@ -339,7 +340,7 @@ class DeviceManager: NSObject, CBCentralManagerDelegate {
     }
 
     func didReconnectDevice(device: Device) {
-        NSLog("  reconnect: \(device.name)")
+        Log.info("  reconnect: \(device.name)")
 
         let app = App.sharedInstance
         app.didConnect(device)
@@ -350,14 +351,14 @@ class DeviceManager: NSObject, CBCentralManagerDelegate {
     /// This method returns the result of a retrieveConnectedPeripherals call. Since the array of currently connected peripherals can include those connected to the system by other apps, you typically implement this method to reconnect the peripherals in which your app is interested.
     func centralManager(central: CBCentralManager!,
                         didRetrieveConnectedPeripherals peripherals: [AnyObject]!) {
-        NSLog("didRetrieveConnectedPeripherals \(peripherals)")
+        Log.info("didRetrieveConnectedPeripherals \(peripherals)")
     }
 
     
     /// This method returns the result of a call to retrievePeripherals: with an array of the peripherals that the central manager was able to match to the provided universally unique identifiers (UUIDs). You typically implement this method to reconnect to a known peripheral.
     func centralManager(central: CBCentralManager!,
                         didRetrievePeripherals peripherals: [AnyObject]!) {
-        NSLog("didRetrievePeripherals \(peripherals)")
+        Log.info("didRetrievePeripherals \(peripherals)")
     }
 
 
@@ -387,26 +388,26 @@ class DeviceManager: NSObject, CBCentralManagerDelegate {
     }
 
     func unknown() {
-        NSLog("centralManagerDidUpdateState: Unknown - The current state of the central manager is unknown; an update is imminent.")
+        Log.info("centralManagerDidUpdateState: Unknown - The current state of the central manager is unknown; an update is imminent.")
     }
     func resetting() {
-        NSLog("centralManagerDidUpdateState: Resetting - The connection with the system service was momentarily lost; an update is imminent.")
+        Log.info("centralManagerDidUpdateState: Resetting - The connection with the system service was momentarily lost; an update is imminent.")
     }
     func unsupported() {
-        NSLog("centralManagerDidUpdateState  Unsupported    The platform/hardware doesn't support Bluetooth Low Energy.")
+        Log.info("centralManagerDidUpdateState  Unsupported    The platform/hardware doesn't support Bluetooth Low Energy.")
         // Handle missing BLE hardware
     }
     func unauthorized() {
-        NSLog("centralManagerDidUpdateState  Unauthorized   The app is not authorized to use Bluetooth Low Energy.")
+        Log.info("centralManagerDidUpdateState  Unauthorized   The app is not authorized to use Bluetooth Low Energy.")
         // Ask user for permission
     }
 
     func poweredOff() {
-        NSLog("  PoweredOff")
+        Log.info("  PoweredOff")
     }
 
     func poweredOn() {
-        NSLog("  PoweredOn")
+        Log.info("  PoweredOn")
         self.reconnect()
 
         // reconnect to known peripherals

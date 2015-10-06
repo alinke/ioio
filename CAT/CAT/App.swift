@@ -104,10 +104,10 @@ class App {
     func isConnected() -> Bool {
         if let device = self.currentDevice {
             let res = device.isConnected()
-            NSLog("App  isConnected: \(res)")
+            Log.info("App  isConnected: \(res)")
             return res
         } else {
-            NSLog("App  isConnected   currentDevice = nil")
+            Log.info("App  isConnected   currentDevice = nil")
         }
         return false
     }
@@ -160,7 +160,7 @@ class App {
                     }
                 } catch let error as NSError {
                     loadError = error
-                    NSLog("uplaod error: \(loadError)")
+                    Log.info("uplaod error: \(loadError)")
                 }
             }
         }
@@ -191,7 +191,7 @@ class App {
             let ptr = UnsafePointer<UInt8>(data.bytes)
             var bytes = UnsafeBufferPointer<UInt8>(start: ptr, count: data.length)
 
-            NSLog("frame \(number)  width: \(frame.width)  height: \(frame.height)   size: \(data.length)")
+            Log.info("frame \(number)  width: \(frame.width)  height: \(frame.height)   size: \(data.length)")
             for row in 0 ..< frame.height {
                 var str = ""
                 for col in 0 ..< frame.width {
@@ -207,9 +207,9 @@ class App {
                 if count(rs) == 1 {
                     rs = ( "0" + rs )
                 }
-                NSLog("[\(rs)]  \(str)")
+                Log.info("[\(rs)]  \(str)")
             }
-            NSLog("--")
+            Log.info("--")
         }
 
         // frameData is RGBa pixels
@@ -217,7 +217,7 @@ class App {
             let ptr = UnsafePointer<UInt8>(data.bytes)
             var bytes = UnsafeBufferPointer<UInt8>(start: ptr, count: data.length)
 
-            NSLog("frame \(number)  width: \(frame.width)  height: \(frame.height)   size: \(data.length)")
+            Log.info("frame \(number)  width: \(frame.width)  height: \(frame.height)   size: \(data.length)")
             for row in 0 ..< frame.height {
                 var str = ""
                 for col in 0 ..< frame.width {
@@ -248,9 +248,9 @@ class App {
                 if count(rs) == 1 {
                     rs = ( "0" + rs )
                 }
-                NSLog("[\(rs)]  \(str)")
+                Log.info("[\(rs)]  \(str)")
             }
-            NSLog("--")
+            Log.info("--")
         }
     }
 
@@ -265,9 +265,9 @@ class App {
                     let b = bytes[offset]
                     str += (" " + String(b, radix: 16))
                 }
-                NSLog("[\(subframe) : \(row)]  \(str)")
+                Log.info("[\(subframe) : \(row)]  \(str)")
             }
-            NSLog("--")
+            Log.info("--")
         }
     }
 */
