@@ -17,6 +17,7 @@
 		26841C3A1BC047F40081C03F /* equalizer2.gif in Resources */ = {isa = PBXBuildFile; fileRef = 26841C311BC047F40081C03F /* equalizer2.gif */; };
 		26841C3B1BC047F40081C03F /* merging-arrows16.gif in Resources */ = {isa = PBXBuildFile; fileRef = 26841C321BC047F40081C03F /* merging-arrows16.gif */; };
 		26841C3C1BC047F40081C03F /* octopus16.gif in Resources */ = {isa = PBXBuildFile; fileRef = 26841C331BC047F40081C03F /* octopus16.gif */; };
+		26AFDB221BC39FB20050677B /* Packet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AFDB211BC39FB20050677B /* Packet.swift */; settings = {ASSET_TAGS = (); }; };
 		26B22B2B1BC35D3D00E1383F /* Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26B22B2A1BC35D3D00E1383F /* Logging.swift */; settings = {ASSET_TAGS = (); }; };
 		26DF71711B96213100E3CED6 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26DF716F1B96213100E3CED6 /* SettingsViewController.swift */; };
 		26DF71721B96213100E3CED6 /* ThumbnailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26DF71701B96213100E3CED6 /* ThumbnailViewController.swift */; };
@@ -130,6 +131,7 @@
 		26841C311BC047F40081C03F /* equalizer2.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = equalizer2.gif; sourceTree = "<group>"; };
 		26841C321BC047F40081C03F /* merging-arrows16.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = "merging-arrows16.gif"; sourceTree = "<group>"; };
 		26841C331BC047F40081C03F /* octopus16.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = octopus16.gif; sourceTree = "<group>"; };
+		26AFDB211BC39FB20050677B /* Packet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Packet.swift; sourceTree = "<group>"; };
 		26B22B2A1BC35D3D00E1383F /* Logging.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logging.swift; sourceTree = "<group>"; };
 		26DF716F1B96213100E3CED6 /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		26DF71701B96213100E3CED6 /* ThumbnailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThumbnailViewController.swift; sourceTree = "<group>"; };
@@ -248,6 +250,7 @@
 		26DF71731B966CDA00E3CED6 /* Protocol */ = {
 			isa = PBXGroup;
 			children = (
+				26AFDB211BC39FB20050677B /* Packet.swift */,
 				26F2BDDA1BB775040016A1FB /* Device.swift */,
 				26F2BDD81BB774540016A1FB /* DeviceManager.swift */,
 				26DF71741B966CDA00E3CED6 /* Protocol.swift */,
@@ -607,6 +610,7 @@
 				26DF71851B966CDA00E3CED6 /* Transport.swift in Sources */,
 				26DF71871B966CDA00E3CED6 /* CollectionDataObject.swift in Sources */,
 				26DF720B1B967ACC00E3CED6 /* SettingsView.swift in Sources */,
+				26AFDB221BC39FB20050677B /* Packet.swift in Sources */,
 				26B22B2B1BC35D3D00E1383F /* Logging.swift in Sources */,
 				26E943241B953E6400BC1395 /* AppDelegate.swift in Sources */,
 				26DF71911B966CDA00E3CED6 /* GIFStream.swift in Sources */,

@@ -15,6 +15,7 @@ class Device: NSObject, CBPeripheralDelegate {
     var peripheral: CBPeripheral?
     var service: CBService?
     var characteristic: CBCharacteristic?
+    var controlCharacteristic: CBCharacteristic?
 
     var name: String {
         get {
@@ -152,9 +153,11 @@ class Device: NSObject, CBPeripheralDelegate {
         // Log.info("didDiscoverServices \(peripheral.name)  error: \(error)")
         // Log.info("    services = \(peripheral.services)")
 
-	if let services = peripheral.services {
+        if let services = peripheral.services {
             self.service = services[0]
             self.peripheral!.discoverCharacteristics(nil, forService: self.service!)
+        } else {
+            Log.info("nil services")
         }
     }
 
@@ -164,9 +167,19 @@ class Device: NSObject, CBPeripheralDelegate {
         // Log.info("didDiscoverCharacteristicsForService \(peripheral.name)  \(service)  error: \(error)")
         // Log.info("    characteristics = \(self.service!.characteristics)")
 
-	if let characteristics = service.characteristics {
-          self.characteristic = characteristics[0]
-	}
+        if let characteristics = service.characteristics {
+            for characteristic in characteristics {
+                let uuid = characteristic.UUID.UUIDString
+                Log.info("    characteristic: \(uuid)")
+
+                if uuid == "1130FBD1-6D61-422A-8939-042DD56B1EF5" {
+                    self.characteristic = characteristic
+                }
+                if uuid == "1130FBD2-6D61-422A-8939-042DD56B1EF5" {
+                    self.controlCharacteristic = characteristic
+                }
+            }
+        }
 
         // enable notifications
         self.peripheral!.setNotifyValue(true, forCharacteristic: self.characteristic!)
@@ -203,9 +216,21 @@ class Device: NSObject, CBPeripheralDelegate {
         if let peripheral = self.peripheral {
             if let characteristic = self.characteristic {
                 // Log.info("  writePacket: \(packet.data)")
-		if let data = packet.data {
+                if let data = packet.data {
                     peripheral.writeValue(data, forCharacteristic: characteristic, type: CBCharacteristicWriteType.WithResponse)
                 }
+            }
+        }
+    }
+
+    var writeControlCompletionHandler: (() -> Void)?
+
+    func writeControlPacket(data: NSData, completionHandler: (() -> Void)? = nil) {
+        if let peripheral = self.peripheral {
+            if let characteristic = self.controlCharacteristic {
+                Log.info("  writeControlPacket: \(data)")
+                self.writeControlCompletionHandler = completionHandler
+                peripheral.writeValue(data, forCharacteristic: characteristic, type: CBCharacteristicWriteType.WithResponse)
             }
         }
     }
@@ -214,10 +239,14 @@ class Device: NSObject, CBPeripheralDelegate {
     func peripheral(peripheral: CBPeripheral,
                     didUpdateValueForCharacteristic characteristic: CBCharacteristic,
                     error: NSError?) {
+//        let uuid = characteristic.UUID.UUIDString
+//        Log.info("didUpdateValueForCharacteristic: \(uuid)  error: \(error)")
+
         if error != nil {
             Log.info("handleDidUpdateValue error: \(error)")
         }
-	if let value = characteristic.value {
+
+        if let value = characteristic.value {
             transport.handleNotification(value)
         }
     }
@@ -225,10 +254,23 @@ class Device: NSObject, CBPeripheralDelegate {
     func peripheral(peripheral: CBPeripheral,
                     didWriteValueForCharacteristic characteristic: CBCharacteristic,
                     error: NSError?) {
+        let uuid = characteristic.UUID.UUIDString
+//        Log.info("didWriteValueForCharacteristic: \(uuid)  error: \(error)")
+
         if error != nil {
             Log.info("handleDidWriteValue error: \(error)")
         }
-        transport.handleWriteAck()
+
+        if uuid == "1130FBD1-6D61-422A-8939-042DD56B1EF5" {
+            transport.handleWriteAck()
+        }
+        if uuid == "1130FBD2-6D61-422A-8939-042DD56B1EF5" {
+            Log.info("Control characteristic did write")
+            if let handler = self.writeControlCompletionHandler {
+                handler();
+                self.writeControlCompletionHandler = nil
+            }
+        }
     }
 
 
@@ -253,6 +295,31 @@ class Device: NSObject, CBPeripheralDelegate {
             // Log.info("SendCommand call completionHandler")
             handler()
         }
+    }
+
+    func sendAck(completionHandler: (() -> Void)? = nil) {
+        // send ACK
+        let ack: [UInt8] = [0x01]
+        let packet = NSData(bytes: ack, length: ack.count)
+        self.writeControlPacket(packet)
+
+        Log.info("DONE writing control ACK")
+
+        if let handler = completionHandler {
+            Log.info("sendAck call completionHandler")
+            handler()
+        }
+/*
+        self.writeControlPacket(packet) {
+            () -> Void in
+            Log.info("DONE writing control ACK")
+
+            if let handler = completionHandler {
+                Log.info("sendAck call completionHandler")
+                handler()
+            }
+        }
+*/
     }
 
     // function to handle an incoming command message

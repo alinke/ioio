@@ -33,6 +33,7 @@ class Log {
                "DeviceManager": true,
                "Protocol": true,
                "Transport": true,
+               "Packet": true,
                
                "CollectionDataObject": true,
                "CollectionDataObjectCellView": true,

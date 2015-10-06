@@ -15,7 +15,6 @@ class Protocol {
 
     var device: Device?
 
-
     init(device: Device) {
         self.device = device
         // register with the device
@@ -58,16 +57,38 @@ class Protocol {
     }
 
 
+    //
+    // Device Control
+    //
+    func getDeviceInfo(version: Int, completionHandler: (() -> Void)? = nil) {
+        let command = CommandGetDeviceInfo(version: UInt16(version))
+        // send command
+        self.device!.sendCommand(command, completionHandler: completionHandler)
+    }
+
+    func setBrightnessLevel(level: Int, completionHandler: (() -> Void)? = nil) {
+        let command = CommandSetBrightnessLevel(level: UInt8(level))
+        // send command
+        self.device!.sendCommand(command, completionHandler: completionHandler)
+    }
 
 
+    //
     // function to handle an incoming command message
+    //
     func handleCommandMessage(data: NSData) {
         // parse the message to create a command
         if let command = Command.parseMessage(data) {
             command.dump()
+            // handle command
+            command.handle(self)
         }
     }
-    
+
+    func sendAck() {
+        // send ACK
+        self.device!.sendAck()
+    }
 }
 
 
@@ -98,6 +119,8 @@ class Command {
         case INCAP_STATUS                        = 0x1B
         case INCAP_REPORT                        = 0x1C
         case SOFT_CLOSE                          = 0x1D
+            // API2
+        case API2_OUT_GET_DEVICE_INFO            = 0x21
     }
     enum OutgoingMessageType: UInt8 {
         case HARD_RESET                          = 0x00
@@ -132,6 +155,9 @@ class Command {
         case RGB_LED_MATRIX_ENABLE               = 0x1E
         case RGB_LED_MATRIX_FRAME                = 0x1F
         case RGB_LED_MATRIX_WRITE_FILE           = 0x20
+            // API2
+        case API2_IN_GET_DEVICE_INFO             = 0x21
+        case API2_IN_SET_DEVICE_BRIGHTNESS       = 0x22
     }
   
     func make() -> NSData? {
@@ -144,28 +170,32 @@ class Command {
         //var dataBytes = UnsafeBufferPointer<UInt8>(start: dataPtr, count: data.length)
 
         let stream = MessageStream(data: data)
-        let type = IncomingMessageType(rawValue: stream.readUInt8())
-        
-        switch ( type! ) {
-        //case ESTABLISH_CONNECTION:
-        case IncomingMessageType.ESTABLISH_CONNECTION:
-        //case Command.IncomingMessageType.ESTABLISH_CONNECTION:
-            return CommandEstablishConnection(stream: stream)
-                   
-        default:
-            Log.info("Protocol makeCommand  data: \(data)")
-            break
+        if let type = IncomingMessageType(rawValue: stream.readUInt8()) {
+            switch type {
+            //case ESTABLISH_CONNECTION:
+            case IncomingMessageType.ESTABLISH_CONNECTION:
+                return CommandEstablishConnection(stream: stream)
+                       
+            case IncomingMessageType.API2_OUT_GET_DEVICE_INFO:
+                return CommandDeviceInfoResponse(stream: stream)
+                       
+            default:
+                Log.info("Protocol makeCommand  data: \(data)")
+                break
+            }
+        } else {
+            Log.info("Protocol makeCommand  invalid type  data: \(data)")
         }
-        
+
         return nil
     }
 
     func dump() {
     }
-    
+
+    func handle(api: Protocol) {
+    }
 }
-
-
 
 class MessageStream {
     var data: NSData
@@ -240,14 +270,14 @@ class MessageStream {
 }
 
 
-
-
 //--------------------------------------------------------------------------------
 //
 // Incoming Commands
 //
 
 class CommandEstablishConnection : Command {
+    static var sendCount = 0
+
     // 00 494f49 4f - 504958 4c303032 35 - 494f49 4f303430 31 - 504958 4c303031 30
     var magic: String?               // 4 bytes
     var hardwareVersion: String?     // 8 bytes
@@ -262,11 +292,47 @@ class CommandEstablishConnection : Command {
     }
     
     override func dump() {
-        Log.info("Establish Connecton  magic: \(magic)   hw: \(self.hardwareVersion)  boot: \(self.bootloaderVersion)  fw: \(self.firmwareVersion)")
+        Log.info("Establish Connecton  magic: \(self.magic)   hw: \(self.hardwareVersion)  boot: \(self.bootloaderVersion)  fw: \(self.firmwareVersion)")
+    }
+
+    override func handle(api: Protocol) {
+//        api.sendAck()
+//        CommandEstablishConnection.sendCount++
+//        if CommandEstablishConnection.sendCount > 5 {
+//            api.sendAck()
+//            CommandEstablishConnection.sendCount = 0
+//        }
+
+        dispatch_async(dispatch_get_main_queue()) {
+            // Send dev info request
+            let app = App.sharedInstance
+            app.getDeviceInfo(1) {
+                () -> Void in
+                Log.info("Get Device Info request sent")
+                dispatch_async(dispatch_get_main_queue()) {                
+                    app.setBrightnessLevel(7) {
+                        () -> Void in
+                        Log.info("Brightness set")
+                    }
+                }
+            }
+        }
+    }
+}    
+
+class CommandDeviceInfoResponse : Command {
+    var brightness_level: UInt16 = 0
+    var battery_level: UInt16 = 0
+
+    init(stream: MessageStream) {
+        self.brightness_level = stream.readUInt16()
+        self.battery_level = stream.readUInt16()
+    }
+    
+    override func dump() {
+        Log.info("Device Info Response  brightness: \(self.brightness_level)  battery: \(self.battery_level)")
     }
 }
-
-
 
 
 //--------------------------------------------------------------------------------
@@ -284,15 +350,9 @@ class CommandEnable : Command {
     }
     
     override func make() -> NSData? {
-//        var flagsL: UInt8 = ( (shifterLen32 & 0x0F) )
-//        var flagsH: UInt8 = ( (rows == 8 ? 0 : 1) << 4)
-        
         let flags: UInt8 = ( (shifterLen32 & 0x0F) | ((rows == 8 ? 0 : 1) << 4) )
         let packet: [UInt8] = [0x1E, flags]
         
-//        let flagsHex = String(flags, radix: 16, uppercase: false)
-//        let flagsHexL = String(flags, radix: 16, uppercase: false)
-//        let flagsHexH = String(flags, radix: 16, uppercase: false)
         // Log.info("matrixEnable \(shifterLen32)  \(rows)  \(flagsHex)  \(flagsHexH)  \(flagsHexL)")
         
         let data = NSData(bytes: packet, length: packet.count)
@@ -348,6 +408,41 @@ class CommandWriteFile : Command {
 
         let packet: [UInt8] = [0x20, delay0, delay1, flags]
 
+        let data = NSData(bytes: packet, length: packet.count)
+        return data
+    }
+}
+
+
+class CommandGetDeviceInfo : Command {
+    var version: UInt16 = 0
+
+    init(version: UInt16) {
+        self.version = version
+    }
+    
+    override func make() -> NSData? {
+        let versionL: UInt8 = UInt8( self.version & 0x00ff )
+        let versionH: UInt8 = UInt8( (self.version & 0xff00) >> 8 )
+
+        //let packet: [UInt8] = [OutgoingMessageType.API2_IN_GET_DEVICE_INFO, versionL, versionH]
+        let packet: [UInt8] = [0x21, versionL, versionH]
+        let data = NSData(bytes: packet, length: packet.count)
+        return data
+    }
+}
+
+
+class CommandSetBrightnessLevel : Command {
+    var level: UInt8 = 0
+
+    init(level: UInt8) {
+        self.level = level
+    }
+    
+    override func make() -> NSData? {
+        //let packet: [UInt8] = [OutgoingMessageType.API2_IN_SET_DEVICE_BRIGHTNESS, self.level]
+        let packet: [UInt8] = [0x22, self.level]
         let data = NSData(bytes: packet, length: packet.count)
         return data
     }

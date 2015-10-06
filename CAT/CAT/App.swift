@@ -166,6 +166,20 @@ class App {
         }
     }
 
+
+    func getDeviceInfo(version: Int, completionHandler: (() -> Void)? = nil) {
+        if let api = self.api {
+            api.getDeviceInfo(version, completionHandler: completionHandler)
+        }
+    }
+
+    func setBrightnessLevel(level: Int, completionHandler: (() -> Void)? = nil) {
+        if let api = self.api {
+            api.setBrightnessLevel(level, completionHandler: completionHandler)
+        }
+    }
+
+
     func sendWriteFile() {
 //        self.api!.matrixWriteFile(10.0, shifterLen32: 0x01, rows: 8) {
 //            () -> Void in
