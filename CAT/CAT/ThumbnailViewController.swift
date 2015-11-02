@@ -206,13 +206,21 @@ class ThumbnailViewController: UIViewController {
     }
 
     let thumbOrder = [
+        "Balloons_Straight",
+        "Jack-O-Lantern",
+        "Kaleidoscope",
+        "RADIAL-COLOR",
+        "Shifting-Lines",
+        "Spiral",
+        "Spiral_colors",
+
         "0catandfish16",
         "0line-game",
-        "barber_shop",
+        "Barber_Shop_Pole",
         "deuces",
-        "diagonals",
-        "equalizer1",
-        "equalizer2",
+        "Color-Changing-Chevron",
+        "EQ_Visualizer_Multi_bar",
+        "EQ_Visualizer_Single_Bar",
         "merging-arrows16",
         "octopus16",
         "0apaulrgreenmonster16",

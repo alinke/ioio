@@ -22,17 +22,31 @@ class Thumbnail {
         return frame.image()
     }
 
+
+
     static let thumbIndex = [
+               // "barber_shop":                       6,
+               // "diagonals":                         0,
+               // "equalizer1":                        0,
+               // "equalizer2":                       23,
+
+               "Balloons_Straight":                 0,
+               "Jack-O-Lantern":                    0,
+               "Kaleidoscope":                      0,
+               "RADIAL-COLOR":                      0,
+               "Shifting-Lines":                    0,
+               "Spiral":                            0,
+               "Spiral_colors":                     0,
+
                "0catandfish16":                    18,
                "0line-game":                       14,
-               "barber_shop":                       6,
+               "Barber_Shop_Pole":                  6,
                "deuces":                           27,
-               "diagonals":                         0,
-               "equalizer1":                        0,
-               "equalizer2":                       23,
+               "Color-Changing-Chevron":            0,
+               "EQ_Visualizer_Multi_bar":           0,
+               "EQ_Visualizer_Single_Bar":         23,
                "merging-arrows16":                 10,
                "octopus16":                         0,
-
                "0apaulrgreenmonster16":             0,
                "0apaulrkanji16":                    0,
                "0apaulrkanji216":                   0,
