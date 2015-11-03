@@ -17,6 +17,14 @@
 		26841C3A1BC047F40081C03F /* equalizer2.gif in Resources */ = {isa = PBXBuildFile; fileRef = 26841C311BC047F40081C03F /* equalizer2.gif */; };
 		26841C3B1BC047F40081C03F /* merging-arrows16.gif in Resources */ = {isa = PBXBuildFile; fileRef = 26841C321BC047F40081C03F /* merging-arrows16.gif */; };
 		26841C3C1BC047F40081C03F /* octopus16.gif in Resources */ = {isa = PBXBuildFile; fileRef = 26841C331BC047F40081C03F /* octopus16.gif */; };
+		268B48141BE856F0009E4CC1 /* 0adata16.gif in Resources */ = {isa = PBXBuildFile; fileRef = 268B480C1BE856F0009E4CC1 /* 0adata16.gif */; };
+		268B48151BE856F0009E4CC1 /* 0anightmare16.gif in Resources */ = {isa = PBXBuildFile; fileRef = 268B480D1BE856F0009E4CC1 /* 0anightmare16.gif */; };
+		268B48161BE856F0009E4CC1 /* 0apaulr16.gif in Resources */ = {isa = PBXBuildFile; fileRef = 268B480E1BE856F0009E4CC1 /* 0apaulr16.gif */; };
+		268B48171BE856F0009E4CC1 /* 0apaulrbear16.gif in Resources */ = {isa = PBXBuildFile; fileRef = 268B480F1BE856F0009E4CC1 /* 0apaulrbear16.gif */; };
+		268B48181BE856F0009E4CC1 /* 0apaulrcats16.gif in Resources */ = {isa = PBXBuildFile; fileRef = 268B48101BE856F0009E4CC1 /* 0apaulrcats16.gif */; };
+		268B48191BE856F0009E4CC1 /* 0apaulrpatterns16.gif in Resources */ = {isa = PBXBuildFile; fileRef = 268B48111BE856F0009E4CC1 /* 0apaulrpatterns16.gif */; };
+		268B481A1BE856F0009E4CC1 /* 0clockworks16.gif in Resources */ = {isa = PBXBuildFile; fileRef = 268B48121BE856F0009E4CC1 /* 0clockworks16.gif */; };
+		268B481B1BE856F0009E4CC1 /* 0hermippe_color16.gif in Resources */ = {isa = PBXBuildFile; fileRef = 268B48131BE856F0009E4CC1 /* 0hermippe_color16.gif */; };
 		26A1FDC71BE8194200B74D2C /* Balloons_Straight.gif in Resources */ = {isa = PBXBuildFile; fileRef = 26A1FDBC1BE8194200B74D2C /* Balloons_Straight.gif */; };
 		26A1FDC81BE8194200B74D2C /* Barber_Shop_Pole.gif in Resources */ = {isa = PBXBuildFile; fileRef = 26A1FDBD1BE8194200B74D2C /* Barber_Shop_Pole.gif */; };
 		26A1FDC91BE8194200B74D2C /* Color-Changing-Chevron.gif in Resources */ = {isa = PBXBuildFile; fileRef = 26A1FDBE1BE8194200B74D2C /* Color-Changing-Chevron.gif */; };
@@ -142,6 +150,14 @@
 		26841C311BC047F40081C03F /* equalizer2.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = equalizer2.gif; sourceTree = "<group>"; };
 		26841C321BC047F40081C03F /* merging-arrows16.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = "merging-arrows16.gif"; sourceTree = "<group>"; };
 		26841C331BC047F40081C03F /* octopus16.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = octopus16.gif; sourceTree = "<group>"; };
+		268B480C1BE856F0009E4CC1 /* 0adata16.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = 0adata16.gif; sourceTree = "<group>"; };
+		268B480D1BE856F0009E4CC1 /* 0anightmare16.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = 0anightmare16.gif; sourceTree = "<group>"; };
+		268B480E1BE856F0009E4CC1 /* 0apaulr16.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = 0apaulr16.gif; sourceTree = "<group>"; };
+		268B480F1BE856F0009E4CC1 /* 0apaulrbear16.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = 0apaulrbear16.gif; sourceTree = "<group>"; };
+		268B48101BE856F0009E4CC1 /* 0apaulrcats16.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = 0apaulrcats16.gif; sourceTree = "<group>"; };
+		268B48111BE856F0009E4CC1 /* 0apaulrpatterns16.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = 0apaulrpatterns16.gif; sourceTree = "<group>"; };
+		268B48121BE856F0009E4CC1 /* 0clockworks16.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = 0clockworks16.gif; sourceTree = "<group>"; };
+		268B48131BE856F0009E4CC1 /* 0hermippe_color16.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = 0hermippe_color16.gif; sourceTree = "<group>"; };
 		26A1FDBC1BE8194200B74D2C /* Balloons_Straight.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = Balloons_Straight.gif; sourceTree = "<group>"; };
 		26A1FDBD1BE8194200B74D2C /* Barber_Shop_Pole.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = Barber_Shop_Pole.gif; sourceTree = "<group>"; };
 		26A1FDBE1BE8194200B74D2C /* Color-Changing-Chevron.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = "Color-Changing-Chevron.gif"; sourceTree = "<group>"; };
@@ -303,6 +319,14 @@
 		26DF71931B966FE000E3CED6 /* gifs */ = {
 			isa = PBXGroup;
 			children = (
+				268B480C1BE856F0009E4CC1 /* 0adata16.gif */,
+				268B480D1BE856F0009E4CC1 /* 0anightmare16.gif */,
+				268B480E1BE856F0009E4CC1 /* 0apaulr16.gif */,
+				268B480F1BE856F0009E4CC1 /* 0apaulrbear16.gif */,
+				268B48101BE856F0009E4CC1 /* 0apaulrcats16.gif */,
+				268B48111BE856F0009E4CC1 /* 0apaulrpatterns16.gif */,
+				268B48121BE856F0009E4CC1 /* 0clockworks16.gif */,
+				268B48131BE856F0009E4CC1 /* 0hermippe_color16.gif */,
 				26A1FDBC1BE8194200B74D2C /* Balloons_Straight.gif */,
 				26A1FDBD1BE8194200B74D2C /* Barber_Shop_Pole.gif */,
 				26A1FDBE1BE8194200B74D2C /* Color-Changing-Chevron.gif */,
@@ -551,6 +575,7 @@
 				26DF71DC1B966FE000E3CED6 /* arrowfinal16.gif in Resources */,
 				26DF71E31B966FE000E3CED6 /* firehalf16.gif in Resources */,
 				26DF71F61B966FE000E3CED6 /* paulrpackages_right16.gif in Resources */,
+				268B481A1BE856F0009E4CC1 /* 0clockworks16.gif in Resources */,
 				264DE70F1B98EFBB00F71F82 /* 1adata16.gif in Resources */,
 				26A1FDCE1BE8194200B74D2C /* RADIAL-COLOR.gif in Resources */,
 				26DF71F01B966FE000E3CED6 /* paulrainbow16.gif in Resources */,
@@ -587,6 +612,7 @@
 				26DF71E71B966FE000E3CED6 /* float16.gif in Resources */,
 				26DF71EC1B966FE000E3CED6 /* lines16.gif in Resources */,
 				26DF71D61B966FE000E3CED6 /* 0matrix16.gif in Resources */,
+				268B48141BE856F0009E4CC1 /* 0adata16.gif in Resources */,
 				26DF71F81B966FE000E3CED6 /* paulrteeth16.gif in Resources */,
 				26DF71FE1B966FE000E3CED6 /* rshifter16.gif in Resources */,
 				26DF71DA1B966FE000E3CED6 /* Angled_100_Perc.gif in Resources */,
@@ -596,6 +622,7 @@
 				26841C351BC047F40081C03F /* 0line-game.gif in Resources */,
 				26E943311B953E6400BC1395 /* LaunchScreen.xib in Resources */,
 				26DF72001B966FE000E3CED6 /* rstarburst16.gif in Resources */,
+				268B48151BE856F0009E4CC1 /* 0anightmare16.gif in Resources */,
 				26DF71EB1B966FE000E3CED6 /* Lattice_Color_Change_100_Perc.gif in Resources */,
 				26841C3A1BC047F40081C03F /* equalizer2.gif in Resources */,
 				26841C381BC047F40081C03F /* diagonals.gif in Resources */,
@@ -604,6 +631,7 @@
 				26DF71DB1B966FE000E3CED6 /* Angled_Color-Change_100_Perc_2.gif in Resources */,
 				26DF72051B966FE000E3CED6 /* Trill_Animation_100_perc.gif in Resources */,
 				26841C341BC047F40081C03F /* 0catandfish16.gif in Resources */,
+				268B48171BE856F0009E4CC1 /* 0apaulrbear16.gif in Resources */,
 				26A1FDCF1BE8194200B74D2C /* Shifting-Lines.gif in Resources */,
 				26A1FDCD1BE8194200B74D2C /* Kaleidoscope.gif in Resources */,
 				26DF71DD1B966FE000E3CED6 /* bike16.gif in Resources */,
@@ -613,13 +641,16 @@
 				26DF71EE1B966FE000E3CED6 /* pauldots16.gif in Resources */,
 				26DF71E01B966FE000E3CED6 /* Circles_100_Perc_2.gif in Resources */,
 				26DF71E81B966FE000E3CED6 /* flow16.gif in Resources */,
+				268B48191BE856F0009E4CC1 /* 0apaulrpatterns16.gif in Resources */,
 				26841C3B1BC047F40081C03F /* merging-arrows16.gif in Resources */,
 				26A1FDC81BE8194200B74D2C /* Barber_Shop_Pole.gif in Resources */,
 				26DF71E51B966FE000E3CED6 /* Fleek_100_Perc_2.gif in Resources */,
+				268B48181BE856F0009E4CC1 /* 0apaulrcats16.gif in Resources */,
 				26A1FDCB1BE8194200B74D2C /* EQ_Visualizer_Single_Bar.gif in Resources */,
 				26DF71FD1B966FE000E3CED6 /* quest16.gif in Resources */,
 				26DF71FC1B966FE000E3CED6 /* postman_dog16.gif in Resources */,
 				26DF71D41B966FE000E3CED6 /* 0glitter16.gif in Resources */,
+				268B48161BE856F0009E4CC1 /* 0apaulr16.gif in Resources */,
 				26DF72141B98330600E3CED6 /* launch-1024x1024.png in Resources */,
 				26DF72061B966FE000E3CED6 /* triopy16.gif in Resources */,
 				26DF72041B966FE000E3CED6 /* squid16.gif in Resources */,
@@ -628,6 +659,7 @@
 				26DF72101B98323000E3CED6 /* iTunesArtwork in Resources */,
 				26DF72081B966FE000E3CED6 /* waterflow16.gif in Resources */,
 				26DF71EA1B966FE000E3CED6 /* gousa.gif in Resources */,
+				268B481B1BE856F0009E4CC1 /* 0hermippe_color16.gif in Resources */,
 				26DF71DF1B966FE000E3CED6 /* bubbles16.gif in Resources */,
 				26DF71F71B966FE000E3CED6 /* paulrpurpleguy.gif in Resources */,
 			);

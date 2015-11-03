@@ -214,6 +214,15 @@ class ThumbnailViewController: UIViewController {
         "Spiral",
         "Spiral_colors",
 
+        "0adata16",
+        "0anightmare16",
+        "0apaulr16",
+        "0apaulrbear16",
+        "0apaulrcats16",
+        "0apaulrpatterns16",
+        "0clockworks16",
+        "0hermippe_color16",
+
         "0catandfish16",
         "0line-game",
         "Barber_Shop_Pole",

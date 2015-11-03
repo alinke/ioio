@@ -38,6 +38,15 @@ class Thumbnail {
                "Spiral":                            0,
                "Spiral_colors":                     0,
 
+               "0adata16":                          0,
+               "0anightmare16":                     0,
+               "0apaulr16":                         0,
+               "0apaulrbear16":                     0,
+               "0apaulrcats16":                     0,
+               "0apaulrpatterns16":                 0,
+               "0clockworks16":                     0,
+               "0hermippe_color16":                 0,
+
                "0catandfish16":                    18,
                "0line-game":                       14,
                "Barber_Shop_Pole":                  6,
