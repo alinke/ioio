@@ -80,8 +80,17 @@
         <platform>3</platform>
       </toolsSet>
       <compileType>
+        <linkerTool>
+          <linkerLibItems>
+          </linkerLibItems>
+        </linkerTool>
         <archiverTool>
         </archiverTool>
+        <loading>
+          <useAlternateLoadableFile>false</useAlternateLoadableFile>
+          <parseOnProdLoad>false</parseOnProdLoad>
+          <alternateLoadableFile></alternateLoadableFile>
+        </loading>
       </compileType>
       <makeCustomizationType>
         <makeCustomizationPreStepEnabled>false</makeCustomizationPreStepEnabled>
@@ -250,8 +259,6 @@
         <property key="legacy-libc" value="false"/>
         <property key="output-file-format" value="coff"/>
       </C30Global>
-      <PICkit3PlatformTool>
-      </PICkit3PlatformTool>
       <item path="usb_descriptors.c" ex="true" overriding="false">
         <C30>
         </C30>
@@ -285,8 +292,17 @@
         <platform>3</platform>
       </toolsSet>
       <compileType>
+        <linkerTool>
+          <linkerLibItems>
+          </linkerLibItems>
+        </linkerTool>
         <archiverTool>
         </archiverTool>
+        <loading>
+          <useAlternateLoadableFile>false</useAlternateLoadableFile>
+          <parseOnProdLoad>false</parseOnProdLoad>
+          <alternateLoadableFile></alternateLoadableFile>
+        </loading>
       </compileType>
       <makeCustomizationType>
         <makeCustomizationPreStepEnabled>false</makeCustomizationPreStepEnabled>
@@ -456,8 +472,6 @@
         <property key="legacy-libc" value="false"/>
         <property key="output-file-format" value="coff"/>
       </C30Global>
-      <PICkit3PlatformTool>
-      </PICkit3PlatformTool>
       <item path="usb_descriptors.c" ex="true" overriding="false">
         <C30>
         </C30>
@@ -501,8 +515,17 @@
         <platform>3</platform>
       </toolsSet>
       <compileType>
+        <linkerTool>
+          <linkerLibItems>
+          </linkerLibItems>
+        </linkerTool>
         <archiverTool>
         </archiverTool>
+        <loading>
+          <useAlternateLoadableFile>false</useAlternateLoadableFile>
+          <parseOnProdLoad>false</parseOnProdLoad>
+          <alternateLoadableFile></alternateLoadableFile>
+        </loading>
       </compileType>
       <makeCustomizationType>
         <makeCustomizationPreStepEnabled>false</makeCustomizationPreStepEnabled>
@@ -768,8 +791,17 @@
         <platform>3</platform>
       </toolsSet>
       <compileType>
+        <linkerTool>
+          <linkerLibItems>
+          </linkerLibItems>
+        </linkerTool>
         <archiverTool>
         </archiverTool>
+        <loading>
+          <useAlternateLoadableFile>false</useAlternateLoadableFile>
+          <parseOnProdLoad>false</parseOnProdLoad>
+          <alternateLoadableFile></alternateLoadableFile>
+        </loading>
       </compileType>
       <makeCustomizationType>
         <makeCustomizationPreStepEnabled>false</makeCustomizationPreStepEnabled>
@@ -1046,8 +1078,17 @@
         <platform>3</platform>
       </toolsSet>
       <compileType>
+        <linkerTool>
+          <linkerLibItems>
+          </linkerLibItems>
+        </linkerTool>
         <archiverTool>
         </archiverTool>
+        <loading>
+          <useAlternateLoadableFile>false</useAlternateLoadableFile>
+          <parseOnProdLoad>false</parseOnProdLoad>
+          <alternateLoadableFile></alternateLoadableFile>
+        </loading>
       </compileType>
       <makeCustomizationType>
         <makeCustomizationPreStepEnabled>false</makeCustomizationPreStepEnabled>
@@ -1216,8 +1257,6 @@
         <property key="legacy-libc" value="false"/>
         <property key="output-file-format" value="coff"/>
       </C30Global>
-      <PICkit3PlatformTool>
-      </PICkit3PlatformTool>
       <item path="usb_descriptors.c" ex="true" overriding="false">
         <C30>
         </C30>
@@ -1251,8 +1290,17 @@
         <platform>3</platform>
       </toolsSet>
       <compileType>
+        <linkerTool>
+          <linkerLibItems>
+          </linkerLibItems>
+        </linkerTool>
         <archiverTool>
         </archiverTool>
+        <loading>
+          <useAlternateLoadableFile>false</useAlternateLoadableFile>
+          <parseOnProdLoad>false</parseOnProdLoad>
+          <alternateLoadableFile></alternateLoadableFile>
+        </loading>
       </compileType>
       <makeCustomizationType>
         <makeCustomizationPreStepEnabled>false</makeCustomizationPreStepEnabled>
@@ -1422,8 +1470,6 @@
         <property key="legacy-libc" value="false"/>
         <property key="output-file-format" value="coff"/>
       </C30Global>
-      <PICkit3PlatformTool>
-      </PICkit3PlatformTool>
       <item path="usb_descriptors.c" ex="true" overriding="false">
         <C30>
         </C30>
@@ -1467,8 +1513,17 @@
         <platform>4</platform>
       </toolsSet>
       <compileType>
+        <linkerTool>
+          <linkerLibItems>
+          </linkerLibItems>
+        </linkerTool>
         <archiverTool>
         </archiverTool>
+        <loading>
+          <useAlternateLoadableFile>false</useAlternateLoadableFile>
+          <parseOnProdLoad>false</parseOnProdLoad>
+          <alternateLoadableFile></alternateLoadableFile>
+        </loading>
       </compileType>
       <makeCustomizationType>
         <makeCustomizationPreStepEnabled>false</makeCustomizationPreStepEnabled>
@@ -1600,8 +1655,6 @@
         <property key="legacy-libc" value="false"/>
         <property key="output-file-format" value="coff"/>
       </C30Global>
-      <PICkit3PlatformTool>
-      </PICkit3PlatformTool>
       <item path="usb_device_dummy.c" ex="true" overriding="false">
         <C30>
         </C30>
@@ -1625,8 +1678,17 @@
         <platform>4</platform>
       </toolsSet>
       <compileType>
+        <linkerTool>
+          <linkerLibItems>
+          </linkerLibItems>
+        </linkerTool>
         <archiverTool>
         </archiverTool>
+        <loading>
+          <useAlternateLoadableFile>false</useAlternateLoadableFile>
+          <parseOnProdLoad>false</parseOnProdLoad>
+          <alternateLoadableFile></alternateLoadableFile>
+        </loading>
       </compileType>
       <makeCustomizationType>
         <makeCustomizationPreStepEnabled>false</makeCustomizationPreStepEnabled>
@@ -1776,8 +1838,6 @@
         <property key="legacy-libc" value="false"/>
         <property key="output-file-format" value="coff"/>
       </C30Global>
-      <PICkit3PlatformTool>
-      </PICkit3PlatformTool>
       <item path="usb_descriptors.c" ex="true" overriding="false">
         <C30>
         </C30>
@@ -1831,8 +1891,17 @@
         <platform>3</platform>
       </toolsSet>
       <compileType>
+        <linkerTool>
+          <linkerLibItems>
+          </linkerLibItems>
+        </linkerTool>
         <archiverTool>
         </archiverTool>
+        <loading>
+          <useAlternateLoadableFile>false</useAlternateLoadableFile>
+          <parseOnProdLoad>false</parseOnProdLoad>
+          <alternateLoadableFile></alternateLoadableFile>
+        </loading>
       </compileType>
       <makeCustomizationType>
         <makeCustomizationPreStepEnabled>false</makeCustomizationPreStepEnabled>

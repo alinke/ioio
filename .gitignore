@@ -26,3 +26,4 @@ xcshareddata
 ## Development files
 cpp.sh
 *.E
+/builds/clutch11.X/nbproject/private/
