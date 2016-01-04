@@ -79,7 +79,9 @@ public interface RgbLedMatrix extends Closeable {
 		ADAFRUIT_32x128(32,128),
 		ADAFRUIT_64x16(64,16),
 		ADAFRUIT_128x16(128,16),
-		ADAFRUIT_256x16(256,16);
+		ADAFRUIT_256x16(256,16),
+		ADAFRUIT_64x32_ColorSwap(64,32),
+		ADAFRUIT_64x64_ColorSwap(64,64);
 		
 		public final int width;
 		public final int height;
