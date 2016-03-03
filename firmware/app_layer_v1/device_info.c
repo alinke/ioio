@@ -25,7 +25,7 @@ static DEVICE_INFO_STATE device_info;
 
 
 void DeviceInfoInit() {
-  sprintf(device_info.display_name, "C.A.T (00:00)");
+  sprintf(device_info.display_name, "CAT (00:00)");
   device_info.brightness_level = 7;
   device_info.battery_level = 85;
 }

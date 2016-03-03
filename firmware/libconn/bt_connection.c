@@ -76,8 +76,9 @@ const uint8_t adv_data[] = {
     // Service
     0x11, 0x06, 0xF5, 0x1E, 0x6B, 0xD5, 0x2D, 0x04, 0x39, 0x89, 0x2A, 0x42, 0x61, 0x6D, 0xD0, 0xFB, 0x30, 0x11,
     // Name
-    0x06, 0x09, 'C', '.', 'A', '.', 'T',
+    //0x06, 0x09, 'C', '.', 'A', '.', 'T',
     //0x09, 0x09, 'C', 'A', 'T', ' ', '0', '0', '0', '0'
+    0x04, 0x09, 'C', 'A', 'T',
 };
 /* LISTING_END */
 uint8_t adv_data_len = sizeof(adv_data);
@@ -142,7 +143,7 @@ static uint8_t    spp_service_buffer[128] __attribute__((aligned(__alignof(servi
 static uint8_t    rfcomm_send_credit = 0;
 
 //static char       local_name[] = "PIXEL (00:00)";  // the digits will be replaced by the MSB of the BD-ADDR
-static char       local_name[] = "C.A.T (00:00)";  // the digits will be replaced by the MSB of the BD-ADDR
+static char       local_name[] = "CAT (00:00)";  // the digits will be replaced by the MSB of the BD-ADDR
 
 //
 // Channel
@@ -262,7 +263,7 @@ static void PacketHandler(int l2cap_event, void * connection, uint8_t packet_typ
         LogConn("PacketHandler - BD-ADDR: %s", bd_addr_to_str(event_addr));
 
         //sprintf(local_name, "PIXEL (%02X:%02X)", event_addr[4], event_addr[5]);
-        sprintf(local_name, "C.A.T (%02X:%02X)", event_addr[4], event_addr[5]);
+        sprintf(local_name, "CAT (%02X:%02X)", event_addr[4], event_addr[5]);
 
         // modify LE database
         LogConn( "Update LE database   %02x %02x     %s", event_addr[4], event_addr[5], bd_addr_to_str(event_addr) );
