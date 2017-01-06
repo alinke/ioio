@@ -1,5 +1,4 @@
-/*
- * Copyright 2011 Ytai Ben-Tsvi. All rights reserved.
+/* Copyright 2011 Ytai Ben-Tsvi. All rights reserved.
  *
  *
  * Redistribution and use in source and binary forms, with or without modification, are
@@ -31,7 +30,9 @@ package ioio.lib.android.bluetooth;
 
 import ioio.lib.api.IOIOConnection;
 import ioio.lib.api.exception.ConnectionLostException;
+import ioio.lib.impl.FixedReadBufferedInputStream;
 
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -51,6 +52,8 @@ public class BluetoothIOIOConnection implements IOIOConnection {
 	private final String name_;
 	private final String address_;
 	private final BluetoothAdapter adapter_;
+	private InputStream inputStream_;
+	private OutputStream outputStream_;
 
 	public BluetoothIOIOConnection(BluetoothDevice device, BluetoothAdapter adapter) {
 		device_ = device;
@@ -76,6 +79,8 @@ public class BluetoothIOIOConnection implements IOIOConnection {
 			try {
 				//adapter_.cancelDiscovery();    //having this here stopped bluetooth from connecting
 				Log.v(TAG, "Attempting to connect to Bluetooth device: " + name_);
+				inputStream_ = socket_.getInputStream();
+				outputStream_ = socket_.getOutputStream();
 				socket_.connect();
 				Log.v(TAG, "Established connection to device " + name_
 						+ " address: " + address_);
@@ -90,6 +95,10 @@ public class BluetoothIOIOConnection implements IOIOConnection {
 				}
 			}
 		}
+		
+		// Success! Wrap the streams with a properly sized buffers.
+				inputStream_ = new FixedReadBufferedInputStream(inputStream_, 64);
+				outputStream_ = new BufferedOutputStream(outputStream_, 1024);
 	}
 
 	public static BluetoothSocket createSocket(final BluetoothDevice device)
@@ -100,6 +109,9 @@ public class BluetoothIOIOConnection implements IOIOConnection {
 			// which is in API 7 and up.
 			return device.createInsecureRfcommSocketToServiceRecord(UUID
 					.fromString("00001101-0000-1000-8000-00805F9B34FB"));
+			
+			
+			
 		} else {
 			return device.createRfcommSocketToServiceRecord(UUID
 					.fromString("00001101-0000-1000-8000-00805F9B34FB"));

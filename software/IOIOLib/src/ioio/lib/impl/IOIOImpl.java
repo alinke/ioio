@@ -109,7 +109,9 @@ public class IOIOImpl implements IOIO, DisconnectListener {
 			}
 			Log.v(TAG, "Waiting for handshake");
 			incomingState_.waitConnectionEstablished();
+			Log.v(TAG, "Made it past incoming state");
 			initBoard();
+			Log.v(TAG, "Made it past initBoard");
 			Log.v(TAG, "Querying for required interface ID");
 			checkInterfaceVersion();
 			Log.v(TAG, "Required interface ID is supported");

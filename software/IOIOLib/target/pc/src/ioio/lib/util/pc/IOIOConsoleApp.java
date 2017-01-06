@@ -91,7 +91,7 @@ import ioio.lib.util.IOIOLooperProvider;
  * </pre>
  */
 public abstract class IOIOConsoleApp implements IOIOLooperProvider {
-	protected final void go(String[] args) throws Exception {
+	public final void go(String[] args) throws Exception {
 		IOIOPcApplicationHelper helper = new IOIOPcApplicationHelper(this);
 		helper.start();
 		try {
