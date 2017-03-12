@@ -186,7 +186,8 @@ int RgbLedMatrixFrameSize() {
 
 static unsigned int times[] = { //15, 30, 60, 150   133 to 122.5 refresh rate 37.5%, this is the normal one for pixel V2
  // 8, 15, 30, 100  //this has something to do with brightness levels  original 20, 40, 80, 100 , if you make the last number bigger, you'll have a longer black gap between every two frames so you'd both reduce the average brightness and the frame rate (frequency). 33% brightness
-  8, 15, 30, 250
+  //8, 15, 30, 250
+    4, 8, 8, 250  //works good for 64x32
 };                // for original pixel  8, 16, 32, 250 this one was not a good refresh rate/ bad
                   // 15,30,60,150 //150 is the black frame time, increase this number to make it
                   // for lower power, reduce the first three by a factor of x and multiple the fourth by x
