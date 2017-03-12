@@ -69,6 +69,8 @@
   #define PLATFORM_ID "PIXLC025"
 #elif BOARD_VER ==  BOARD_PIXLQ025
   #define PLATFORM_ID "PIXLQ025"
+#elif BOARD_VER ==  BOARD_PIXLR025
+  #define PLATFORM_ID "PIXLR025"
 #else
   #error Unknown board version - cannot determine platform ID
 #endif
