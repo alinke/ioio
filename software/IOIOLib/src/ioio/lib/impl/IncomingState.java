@@ -137,7 +137,9 @@ class IncomingState implements IncomingHandler {
 	synchronized public void waitConnectionEstablished()
 			throws InterruptedException, ConnectionLostException {
 		while (connection_ == ConnectionState.INIT) {
+			Log.v(TAG, "Waiting to init");
 			wait();
+			//Thread.sleep(1000);
 		}
 		if (connection_ == ConnectionState.DISCONNECTED) {
 			throw new ConnectionLostException();
