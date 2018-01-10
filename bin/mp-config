@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# config
+source "config.sh"
+
+
+# copy private configurationss.xml files
+
+cp -a $DIR_CONFIGS/libbtstack/private firmware/libbtstack/nbproject
+echo "firmware/libbtstack DONE"
+
+cp -a $DIR_CONFIGS/libconn/private firmware/libconn/nbproject
+echo "firmware/libconn DONE"
+
+cp -a $DIR_CONFIGS/libadb/private firmware/libadb/nbproject
+echo "firmware/libadb DONE"
+
+cp -a $DIR_CONFIGS/libsdcard/private firmware/libsdcard/nbproject
+echo "firmware/libsdcard DONE"
+
+cp -a $DIR_CONFIGS/libusb/private firmware/libusb/nbproject
+echo "firmware/libusb DONE"
+
+cp -a $DIR_CONFIGS/app_layer_v1/private firmware/app_layer_v1/nbproject
+echo "firmware/app_layer_v1 DONE"
+
+cp -a $DIR_CONFIGS/device_bootloader/private firmware/device_bootloader/nbproject
+echo "firmware/device_bootloader DONE"
+
+
+
+

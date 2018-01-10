@@ -1,0 +1,43 @@
+#!/bin/bash
+
+
+# Read the release version
+relVersion=$(/usr/libexec/PlistBuddy -c "Print relVersion" relVersion.plist)
+echo "rel version = " $relVersion
+
+# Increment the dev version
+devVersion=$(/usr/libexec/PlistBuddy -c "Print devVersion" devVersion.plist)
+devVersion=$(($devVersion + 1))
+/usr/libexec/PlistBuddy -c "Set :devVersion $devVersion" devVersion.plist
+
+echo "dev version = " $devVersion
+
+
+echo "Clean"
+mp-clean
+echo "Make"
+mp-make
+
+
+echo "Creating firmware.ioio"
+./tools/make-ioio-firmware firmware/app_layer_v1/dist lat PIXL0025
+# Rename the output to the image name
+mv lat firmware.ioio
+
+
+#
+# Create the firmware.json file
+#
+echo "{ \"rel\": $relVersion, \"dev\": $devVersion, \"fp\": \"`md5 firmware.ioio | awk '{print $4}'`\" }" > firmware.json
+cat firmware.json
+
+
+#
+# Copy to iOS app
+#
+#echo "Copy to iOS app"
+#cp firmware.ioio firmware.json ../cat-ios/CAT/firmware
+
+
+
+

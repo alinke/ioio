@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# config
+source "config.sh"
+
+# Read the release version
+relVersion=$(/usr/libexec/PlistBuddy -c "Print relVersion" relVersion.plist)
+echo "rel version = " $relVersion
+# Read the dev version
+devVersion=$(/usr/libexec/PlistBuddy -c "Print devVersion" devVersion.plist)
+#devVersion=$(($devVersion + 1))
+#/usr/libexec/PlistBuddy -c "Set :devVersion $devVersion" devVersion.plist
+echo "dev version = " $devVersion
+
+echo "Creating seeed-cat-clutch.hex  release: $relVersion  dev: $devVersion"
+
+#OUT=full-$relVersion-$devVersion.hex
+OUT=seeed-cat-clutch.hex
+
+./tools/merge-hex firmware/device_bootloader/dist/PIXLI025/production/device_bootloader.production.hex firmware/app_layer_v1/dist/PIXL0025/production/app_layer_v1.production.hex > $OUT

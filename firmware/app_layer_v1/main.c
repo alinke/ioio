@@ -34,6 +34,9 @@
 #include "logging.h"
 #include "pixel.h"
 
+#include "log.h"
+#include "build_number.h"
+
 
 // define in non-const arrays to ensure data space
 static char descManufacturer[] = "IOIO Open Source Project";
@@ -111,9 +114,23 @@ int main() {
   log_printf("***** Hello from app-layer! *******");
 
   SoftReset();
+
+  LogBoot("\n");
+  LogBoot("#-------------------------------------------------------------\n");
+  LogBoot("# PIXEL - REL: %d  DEV: %d\n", REL_VERSION, DEV_VERSION);
+  LogBoot("#\n");
+  LogBoot("# @@ dev 145\n");
+  LogBoot("#\n");
+
+
   ConnectionInit();
+
+  LogBoot(" Start main loop  state: %d\n", state);
+  
   while (1) {
-    PixelTasks();
+      UART1Tasks();
+
+      PixelTasks();
     ConnectionTasks();
     switch (state) {
       case STATE_INIT:

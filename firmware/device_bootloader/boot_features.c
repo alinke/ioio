@@ -33,9 +33,19 @@
 #include "flash.h"
 #include "logging.h"
 
+
+#define LogBootloader(f, ...) printf("[boot_features.c:%d] " f "", __LINE__, ##__VA_ARGS__)
+#define LogBootloaderRaw(f, ...) printf(f, ##__VA_ARGS__)
+//#define LogBootloader(f, ...)
+//#define LogBootloaderRaw(f, ...)
+
+
 void BootProtocolSendMessage(const OUTGOING_MESSAGE* msg);
 
-static void ReadFingerprintToBuffer(BYTE* buffer) {
+//
+// Fingerprint
+//
+void ReadFingerprintToBuffer(BYTE* buffer) {
   int i;
   DWORD addr = BOOTLOADER_FINGERPRINT_ADDRESS;
   for (i = 0; i < FINGERPRINT_SIZE / 2; ++i) {
@@ -54,6 +64,7 @@ static bool IsFingerprintErased(const BYTE *fp) {
   return true;
 }
 
+// send fingerprint protocol message
 bool ReadFingerprint() {
   log_printf("ReadFingerprint()");
   OUTGOING_MESSAGE msg;
@@ -63,6 +74,39 @@ bool ReadFingerprint() {
   return true;
 }
 
+
+
+//--------------------------------------------------------------------------------
+//
+// Debug
+//
+void DumpConfigPage()
+{
+    LogBootloaderRaw(" Config Page\n");
+
+    int row, i;
+    DWORD addr = BOOTLOADER_CONFIG_PAGE;
+    for ( row = 0; row < 4; row++ ) {
+        LogBootloaderRaw("   row[%d] ", row);
+        
+        for (i = 0; i < DEVICE_UUID_SIZE / 2; ++i) {
+            DWORD_VAL dw = {FlashReadDWORD(addr)};
+//            *buffer++ = dw.byte.LB;
+//            *buffer++ = dw.byte.HB;
+            LogBootloaderRaw(" %02X %02X", dw.byte.LB, dw.byte.HB);
+            
+            addr += 2;
+        }
+        LogBootloaderRaw("\n");
+    }
+    LogBootloaderRaw("\n");
+}
+
+
+//--------------------------------------------------------------------------------
+//
+// OscTun
+//
 BYTE ReadOscTun() {
   return FlashReadDWORD(BOOTLOADER_OSCTUN_ADDRESS) & 0xFF;
 }
@@ -72,16 +116,98 @@ bool WriteOscTun(BYTE tun) {
   return FlashWriteDWORD(BOOTLOADER_OSCTUN_ADDRESS, dw);
 }
 
+
+//--------------------------------------------------------------------------------
+//
+// UUID
+//
+void ReadDeviceUUIDToBuffer(BYTE* buffer) {
+  int i;
+  DWORD addr = BOOTLOADER_DEVICE_UUID_ADDRESS;
+  for (i = 0; i < DEVICE_UUID_SIZE / 2; ++i) {
+    DWORD_VAL dw = {FlashReadDWORD(addr)};
+    *buffer++ = dw.byte.LB;
+    *buffer++ = dw.byte.HB;
+    addr += 2;
+  }
+}
+
+bool WriteDeviceUUID(BYTE uuid[FINGERPRINT_SIZE]) {
+  log_printf("WriteDeviceUUID()");
+
+  if (!EraseFingerprint()) return false;
+  int i;
+  DWORD addr = BOOTLOADER_DEVICE_UUID_ADDRESS;
+  BYTE* p = uuid;
+  for (i = 0; i < DEVICE_UUID_SIZE / 2; ++i) {
+    DWORD_VAL dw = {0};
+    dw.byte.LB = *p++;
+    dw.byte.HB = *p++;
+
+    LogBootloader("    WriteDeviceUUID  i: %d  addr: %lx\n", i, addr);
+    if (!FlashWriteDWORD(addr, dw.Val)) return false;
+    addr += 2;
+  }
+  return true;
+}
+
+
+//--------------------------------------------------------------------------------
+//
+// Brand
+//
+void ReadDeviceBrandToBuffer(BYTE* buffer) {
+  int i;
+  DWORD addr = BOOTLOADER_DEVICE_BRAND_ADDRESS;
+  for (i = 0; i < DEVICE_UUID_SIZE / 2; ++i) {
+    DWORD_VAL dw = {FlashReadDWORD(addr)};
+    *buffer++ = dw.byte.LB;
+    *buffer++ = dw.byte.HB;
+    addr += 2;
+  }
+}
+
+bool WriteDeviceBrand(BYTE uuid[FINGERPRINT_SIZE]) {
+  log_printf("WriteDeviceBrand()");
+
+  if (!EraseFingerprint()) return false;
+  int i;
+  DWORD addr = BOOTLOADER_DEVICE_BRAND_ADDRESS;
+  BYTE* p = uuid;
+  for (i = 0; i < DEVICE_UUID_SIZE / 2; ++i) {
+    DWORD_VAL dw = {0};
+    dw.byte.LB = *p++;
+    dw.byte.HB = *p++;
+
+    LogBootloader("    WriteDeviceBrand  i: %d  addr: %lx\n", i, addr);
+    if (!FlashWriteDWORD(addr, dw.Val)) return false;
+    addr += 2;
+  }
+  return true;
+}
+
+
+//--------------------------------------------------------------------------------
+//
+// Erase fingerprint, preserving other config data
+//
+
 bool EraseFingerprint() {
   // First, read the fingerprint. Avoid a Flash cycle if already erased.
   BYTE fp[FINGERPRINT_SIZE];
   ReadFingerprintToBuffer(fp);
   if (IsFingerprintErased(fp)) return true;
 
-  // We actually need to erase. Backup OscTun, erase, rewrite OscTun.
+  // We actually need to erase. Backup OscTun, Device UUID, and Device brand UUID, erase, rewrite OscTun, Device UUID, and Device brand UUID
   BYTE tun = ReadOscTun();
-  return FlashErasePage(BOOTLOADER_CONFIG_PAGE)
-      && WriteOscTun(tun);
+  BYTE uuid[DEVICE_UUID_SIZE];
+  ReadDeviceUUIDToBuffer(uuid);
+  BYTE brand[DEVICE_UUID_SIZE];
+  ReadDeviceBrandToBuffer(brand);
+    return (FlashErasePage(BOOTLOADER_CONFIG_PAGE)
+            && WriteOscTun(tun)
+            && WriteDeviceUUID(uuid)
+            && WriteDeviceBrand(brand));
 }
 
 bool EraseConfig() {
@@ -99,11 +225,21 @@ bool WriteFingerprint(BYTE fp[FINGERPRINT_SIZE]) {
     DWORD_VAL dw = {0};
     dw.byte.LB = *p++;
     dw.byte.HB = *p++;
+
+    LogBootloader("    WriteFP  i: %d  addr: %lx\n", i, addr);
     if (!FlashWriteDWORD(addr, dw.Val)) return false;
     addr += 2;
   }
   return true;
 }
+
+
+
+
+//--------------------------------------------------------------------------------
+//
+// Protocol messages
+//
 
 void SendChecksum(WORD checksum) {
   log_printf("SendChecksum()");

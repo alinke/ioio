@@ -1,0 +1,27 @@
+Memeory map for PIC24FJxxxDAxxx
+===============================
+RAM
+---
+ORIGIN              LENGTH              PURPOSE
+----------------------------------------------------------------------------------------------------------------
+0x0                 0x800               SFR
+0x800               0x17FE              For app and bootloader usage (near).
+0x1FFE              0x2                 Reserved for bootloader.
+0x2000              0x4800/0x16000(*)   For app and bootloader usage (far).
+
+(*) PIC24FJxxxDA1xx / PIC24FJxxxDA2xx
+
+ROM
+---
+ORIGIN              LENGTH              PURPOSE
+----------------------------------------------------------------------------------------------------------------
+0x0                 0x4                 Reset instruction
+0x4                 0xFC                Bootloader IVT
+0x104               0xFC                Bootloader AIVT
+0x200               0x3C80              Bootloader code
+0x3F80              0x80                BLAPI table
+0x4000              0x110               Application IVT
+0x4110              0x111F0/0x265F0(*)  Application code
+0x15300/0x2A700(*)  0x100               Application fingerprint
+
+(*) PIC24FJ128DAxxx / PIC24FJ256DAxxx

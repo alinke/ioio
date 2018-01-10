@@ -32,3 +32,6 @@ pixeltest.txt
 /tools/64k.X/nbproject/private/
 /tools/64l.X/nbproject/private/
 /tools/64m.X/nbproject/private/
+
+# Emacs auto-save files
+*~

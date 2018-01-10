@@ -33,6 +33,12 @@
 #include "GenericTypeDefs.h"
 
 #define FINGERPRINT_SIZE 16
+#define DEVICE_UUID_SIZE 16
+
+
+void DumpConfigPage();
+
+void ReadFingerprintToBuffer(BYTE* buffer);
 
 void HardReset();
 bool EraseFingerprint();

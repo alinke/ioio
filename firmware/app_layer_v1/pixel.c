@@ -11,6 +11,9 @@
 #include "pixel.h"
 #include <stdio.h>
 
+#include "log.h"
+
+
 #define ANIMATION_FILENAME "artdata.bin"
 #define METADATA_FILENAME "fps.bin"
 #define SHIFTER_LENGTH_FILENAME "matrixtp.bin"
@@ -41,9 +44,12 @@ static FSFILE *shifter_length_file;
 // PlayFile stuff
 
 static void StartPlayFile() {
-  
+    LogPixel("StartPlayFile\n");
+
+    
   if (!FSInit()) {
     // Failed to initialize FAT16 ? do something?
+      LogPixel(" FSInit failed\n");
     return;
   }
 
@@ -95,7 +101,8 @@ static void StartPlayFile() {
  // }
  // else return; //empty file so return
 
- 
+  LogPixel(" Matrix Enable  shifter: %d  rows: %d\n", shifter_len_32, rows);
+  
   // Initialize the matrix.
   RgbLedMatrixEnable(shifter_len_32, rows);
 
@@ -234,6 +241,8 @@ static void StopInteractive() {
 // External API
 
 void PixelInit() {
+    LogPixel("PixelInit\n");
+    
   StartPlayFile();
 }
 

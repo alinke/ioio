@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# config
+source "config.sh"
+
+
+./tools/make-ioio-bundle firmware/app_layer_v1/dist lat PIXL0025
+
+# Read the release version
+relVersion=$(/usr/libexec/PlistBuddy -c "Print relVersion" relVersion.plist)
+echo "rel version = " $relVersion
+# Read the dev version
+devVersion=$(/usr/libexec/PlistBuddy -c "Print devVersion" devVersion.plist)
+echo "dev version = " $devVersion
+
+
+echo "Creating cat-clutch.ioioapp  release: $relVersion  dev: $devVersion"
+
+# Rename the output to the image name
+mv lat.zip cat-clutch.ioioapp
+

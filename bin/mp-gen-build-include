@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# config
+source "config.sh"
+
+
+# Read the release version
+relVersion=$(/usr/libexec/PlistBuddy -c "Print relVersion" relVersion.plist)
+echo "rel version = " $relVersion
+
+# Read the dev version
+devVersion=$(/usr/libexec/PlistBuddy -c "Print devVersion" devVersion.plist)
+#devVersion=$(($devVersion + 1))
+#/usr/libexec/PlistBuddy -c "Set :devVersion $devVersion" devVersion.plist
+
+echo "dev version = " $devVersion
+
+# output build_number.h file
+FILENAME=firmware/app_layer_v1/build_number.h
+
+echo "" > $FILENAME
+echo "#ifndef __BUILD_NUMBER_H__" >> $FILENAME
+echo "#define __BUILD_NUMBER_H__" >> $FILENAME
+echo "" >> $FILENAME
+echo "#define REL_VERSION $relVersion" >> $FILENAME
+echo "#define DEV_VERSION $devVersion" >> $FILENAME
+echo "" >> $FILENAME
+echo "#endif // __BUILD_NUMBER_H__" >> $FILENAME
+echo "" >> $FILENAME
+
+
+echo ""
+echo "BUILD NUMBER"
+cat firmware/app_layer_v1/build_number.h
+echo ""
+echo ""
+
+
+

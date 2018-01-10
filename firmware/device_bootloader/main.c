@@ -46,6 +46,28 @@
 #include "USB/usb_device.h"
 #include "boot_features.h"
 
+#include "sdcard/FSIO.h"
+#include "sdcard/SD-SPI.h"
+
+
+#define LogBootloader(f, ...) printf("[bootloader.c:%d] " f "", __LINE__, ##__VA_ARGS__)
+#define LogBootloaderRaw(f, ...) printf(f, ##__VA_ARGS__)
+//#define LogBootloader(f, ...)
+//#define LogBootloaderRaw(f, ...)
+
+
+void bl_hexdump(const void *data, int size)
+{
+    if (size <= 0) return;
+    int i;
+    for (i=0; i<size;i++){
+      LogBootloaderRaw("%02X ", ((uint8_t *)data)[i]);
+    }
+}
+
+
+
+
 // Desired behavior:
 // 1. Read the status of the "boot" pin (LED). If high, skip the bootloader
 //    and run the app.
@@ -145,6 +167,7 @@ static void OscCalibrate() {
   led_off();
 
   log_printf("Connected to host. Starting calibration.");
+  LogBootloader("Connected to host. Starting calibration.\n");
 
   // Start from 0 (redundant, but better be explicit).
   _TUN = 0;
@@ -166,6 +189,7 @@ static void OscCalibrate() {
     }
   }
   log_printf("Duration: %lu, TUN=%d", MeasureSOF(), _TUN);
+  LogBootloader("Duration: %lu, TUN=%d\n", MeasureSOF(), _TUN);
 
   // Undo side-effects.
   T2CON = 0x0000;
@@ -179,8 +203,10 @@ static void OscCalibrate() {
 // start the tuning process and store the result.
 void OscCalibrateCached() {
   BYTE tun = ReadOscTun();
+  LogBootloader("Read tune value 0x%X.\n", tun);
   log_printf("Read tune value 0x%X.", tun);
   if (tun > 0x3F) {
+    LogBootloader("Entering oscillator calibration process.\n");
     log_printf("Entering oscillator calibration process.");
     OscCalibrate();
     WriteOscTun(_TUN);  // Write result to flash.
@@ -207,12 +233,289 @@ static bool ShouldEnterBootloader() {
 #endif
 }
 
+
+
+
+void UART1Init(void)
+{
+  // UART 1 on pins 3 and 4
+  RPINR18 = 0x3f04;   // RX on RP4   PIN4
+  RPOR1 = ( 0x0300 | ( RPOR1 & 0x00ff ) );    // TX on RP3    U1TX output function 3   PIN5
+  // Setup
+  //  UARTConfig(0, 34, 1, 0, 0);   // 115k  114285.7
+  //  AssignUxRXIE(0, 0);  // disable RX int.
+  //  AssignUxTXIE(0, 0);  // disable TX int.
+  U1MODE = 0;          // disable UART
+  U1BRG = 34;
+
+  //  AssignUxRXIF(0, 0);  // clear RX int.
+  //  AssignUxTXIF(0, 1);  // set TX int, since the hardware FIFO is empty.
+  //  AssignUxRXIE(0, 1);  // enable RX int.
+  U1MODEbits.BRGH = BRGH2;
+  U1STA = 0;
+  U1MODEbits.UARTEN = 1;
+  U1STAbits.UTXEN = 1;
+  IFS0bits.U1RXIF = 0;
+}
+
+
+
+
+//--------------------------------------------------------------------------------
+//
+// Firmware update
+//
+
+// Firmware Fingerprint
+typedef struct __attribute__ ((packed))
+{
+  BYTE data[16];
+} FirmwareFingerprint;
+
+// Firmware Header
+typedef struct __attribute__ ((packed))
+{
+  WORD rel_version;
+  WORD dev_version;
+  WORD num_blocks;
+  WORD crc;
+  FirmwareFingerprint fingerprint;
+  BYTE imgHeader[8];
+} FirmwareHeader;
+
+static const BYTE ioio_img_header[8] = { 'I', 'O', 'I', 'O', '\1', '\0', '\0', '\0' };
+static FirmwareHeader fwHeader;
+
+int FirmwareUpdateImage()
+{
+  //
+  FSFILE *file = FSfopen("FW.IMG", "r");
+  if ( file != NULL ) {
+    LogBootloader("-- image file FOUND\n");
+    
+    BYTE img_header[8];
+    int num = FSfread(img_header, 1, 8, file);
+    if ( num != 8 ) {
+      LogBootloader("-- image file ERROR reading image header\n");
+    } else {
+      //      if ( memcmp(img_header, ioio_img_header, 8) != 0 ) {
+      //	LogBootloader("-- image file INVALID HEADER\n");
+      //      } else {
+	LogBootloader("-- image file header = '");
+	bl_hexdump(img_header, 8);
+	LogBootloaderRaw("'\n");
+	
+	// write image
+	static DWORD img_last_page = BOOTLOADER_INVALID_ADDRESS;
+	DWORD address, page_address;
+	int block_num = 0;
+	BYTE block_buffer[196];
+	num = FSfread(block_buffer, 1, 196, file);
+	while ( num == 196 ) {
+	  //LogBootloader("-- read block % 5d  num: %d\n", block_num, num);
+	  
+	  address = *((const DWORD *) block_buffer);
+	  if (address & 0x7F) {
+	    LogBootloader("-- Misaligned block: 0x%lx\n", address);
+	    // bail out
+	    num = 0;
+	  }
+	  if (address < BOOTLOADER_MIN_APP_ADDRESS || address >= BOOTLOADER_MAX_APP_ADDRESS) {
+	    LogBootloader("-- Adderess outside of permitted range: 0x%lx\n", address);
+	    // bail out
+	    num = 0;
+	  }
+	  if (img_last_page != BOOTLOADER_INVALID_ADDRESS && address < img_last_page) {
+	    LogBootloader("Out-of-order address: 0x%lx\n", address);
+	    // bail out
+	    num = 0;
+	  }
+	  
+	  if ( num != 0 ) {
+	    page_address = address & 0xFFFFFFC00ull;
+	    if (page_address != img_last_page) {
+		LogBootloader("    -- Erasing Flash page: 0x%lx  page: %lx\n", address, page_address);
+	      if (!FlashErasePage(page_address)) {
+		  LogBootloader("    -- Erasing Flash page: 0x%lx -- ERROR\n", address);		      
+		num = 0;
+	      }
+	      img_last_page = page_address;
+	    }
+	    LogBootloader("    --   Writing Flash block: 0x%lx  page: %lx\n", address, page_address);
+	    if (!FlashWriteBlock(address, (block_buffer + 4))) {
+		LogBootloader("    --   Writing Flash block: 0x%lx -- ERROR\n", address);
+	      num = 0;
+	    }
+	    
+	    if ( num != 0 ) {
+	      block_num++;
+	      num = FSfread(block_buffer, 1, 196, file);
+	    }
+	  }
+	}
+	LogBootloader("-- wrote final block: %d   num: %d\n", block_num, num);
+	//      }
+    }
+    // close image file
+    FSfclose(file);
+  } else {
+    LogBootloader("-- image file NOT FOUND\n");	  
+    return 1;
+  }
+
+  return 0;
+}
+
+
+void DumpConfigPage2()
+{
+    LogBootloaderRaw("[bootloader.c:%d] Config Page\n", __LINE__);
+
+    int row, i;
+    DWORD addr = BOOTLOADER_CONFIG_PAGE;
+    for ( row = 0; row < 5; row++ ) {
+        LogBootloaderRaw("[bootloader.c:%d]   row[%d]  addr: 0x%lx", __LINE__, row, addr);
+        
+        for (i = 0; i < DEVICE_UUID_SIZE / 2; ++i) {
+            DWORD_VAL dw = {FlashReadDWORD(addr)};
+//            *buffer++ = dw.byte.LB;
+//            *buffer++ = dw.byte.HB;
+            LogBootloaderRaw(" %02X %02X", dw.byte.LB, dw.byte.HB);
+            
+            addr += 2;
+        }
+        LogBootloaderRaw("\n");
+    }
+    LogBootloaderRaw("[bootloader.c:%d]\n", __LINE__);
+}
+
+void MaybeUpdateFirmware()
+{
+    LogBootloader("---- MaybeUpdateFirmware\n");
+    
+{
+    LogBootloaderRaw("[bootloader.c:%d] Config Page\n", __LINE__);
+
+    int row, i;
+    DWORD addr = BOOTLOADER_CONFIG_PAGE;
+    for ( row = 0; row < 5; row++ ) {
+        LogBootloaderRaw("[bootloader.c:%d]   row[%d]  addr: 0x%lx", __LINE__, row, addr);
+        
+        for (i = 0; i < DEVICE_UUID_SIZE / 2; ++i) {
+            DWORD_VAL dw = {FlashReadDWORD(addr)};
+//            *buffer++ = dw.byte.LB;
+//            *buffer++ = dw.byte.HB;
+            LogBootloaderRaw(" %02X %02X", dw.byte.LB, dw.byte.HB);
+            
+            addr += 2;
+        }
+        LogBootloaderRaw("\n");
+    }
+    LogBootloaderRaw("[bootloader.c:%d]\n", __LINE__);
+}
+//    DumpConfigPage2();
+    LogBootloader("\n");
+    
+    BYTE fp[FINGERPRINT_SIZE];
+    ReadFingerprintToBuffer(fp);
+    LogBootloader("-- current fingerprint: '");
+    bl_hexdump(fp, FINGERPRINT_SIZE);
+    LogBootloaderRaw("'\n");
+
+    // wait for SD card to power up
+    __delay_ms(200);
+
+    int res = FSInit();
+    LogBootloader("-- FSinit -> %d\n", res);
+    if ( res ) {
+        FSFILE *file = FSfopen("FW.HDR","r");
+        LogBootloader("-- file = %p\n", file);
+        if ( file != NULL ) {
+            // install image
+            LogBootloader("-- fingerprint file found\n");
+            int num = FSfread(&fwHeader, 1, sizeof(FirmwareHeader), file);
+            FSfclose(file);
+            if ( num != sizeof(FirmwareHeader) ) {
+                LogBootloader("-- error reading FirmwareHeader num: %d\n", num);
+                return;
+            }
+
+            if ( fwHeader.rel_version == 0 ) {
+                LogBootloader("-- error rel_version == 0   rel: %d  dev: %d\n:", fwHeader.rel_version, fwHeader.dev_version);
+                return;
+            }
+	
+            LogBootloader("FW Header   rel: %d  dev: %d  num: %d  crc: 0x%04x  fp: '",
+                          fwHeader.rel_version,
+                          fwHeader.dev_version,
+                          fwHeader.num_blocks,
+                          fwHeader.crc);
+            bl_hexdump(fwHeader.fingerprint.data, FINGERPRINT_SIZE);
+            LogBootloaderRaw("'\n");
+
+            if ( memcmp(fp, fwHeader.fingerprint.data, FINGERPRINT_SIZE) != 0 ) {
+                LogBootloader("-- fingerprint mismatch\n");
+	
+                // update from image file
+                int err = FirmwareUpdateImage();
+                if ( !err ) {
+                    LogBootloader("-- UPDATE fingerprint: ");
+                    bl_hexdump(fwHeader.fingerprint.data, FINGERPRINT_SIZE);
+                    LogBootloaderRaw("'\n");
+
+                    LogBootloader("-- FP addr: %lx\n", BOOTLOADER_FINGERPRINT_ADDRESS );
+                    bool res = WriteFingerprint(fwHeader.fingerprint.data);
+
+                    BYTE fp2[FINGERPRINT_SIZE];
+                    ReadFingerprintToBuffer(fp2);
+                    LogBootloader("-- new fingerprint: '");
+                    bl_hexdump(fp2, FINGERPRINT_SIZE);
+                    LogBootloaderRaw("'\n");
+                }
+            }
+
+        } else {
+            LogBootloader("-- fingerprint file not found\n");
+        }
+    }
+
+{
+    LogBootloaderRaw("[bootloader.c:%d] Config Page\n", __LINE__);
+
+    int row, i;
+    DWORD addr = BOOTLOADER_CONFIG_PAGE;
+    for ( row = 0; row < 5; row++ ) {
+        LogBootloaderRaw("[bootloader.c:%d]   row[%d]  addr: 0x%lx", __LINE__, row, addr);
+        
+        for (i = 0; i < DEVICE_UUID_SIZE / 2; ++i) {
+            DWORD_VAL dw = {FlashReadDWORD(addr)};
+//            *buffer++ = dw.byte.LB;
+//            *buffer++ = dw.byte.HB;
+            LogBootloaderRaw(" %02X %02X", dw.byte.LB, dw.byte.HB);
+            
+            addr += 2;
+        }
+        LogBootloaderRaw("\n");
+    }
+    LogBootloaderRaw("[bootloader.c:%d]\n", __LINE__);
+}
+//    DumpConfigPage2();
+    LogBootloader("\n");
+}
+
 int main() {
   log_init();
+  UART1Init();
+  LogBootloader("BOOTLOADER   3   ***  RCON: %04x\n", RCON);
 
   // If bootloader mode not requested, go immediately to app.
   if (!ShouldEnterBootloader()) {
     OscCalibrateCached();
+    // check for firmware update
+    MaybeUpdateFirmware();
+
+    LogBootloader("Running app\n");
+
     log_printf("Running app...");
     __asm__("goto __APP_RESET");
   }

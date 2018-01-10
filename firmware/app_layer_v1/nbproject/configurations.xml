@@ -23,6 +23,7 @@
       <itemPath>i2c.h</itemPath>
       <itemPath>icsp.h</itemPath>
       <itemPath>incap.h</itemPath>
+      <itemPath>log.h</itemPath>
       <itemPath>pins.h</itemPath>
       <itemPath>../common/platform.h</itemPath>
       <itemPath>pp_util.h</itemPath>
@@ -64,6 +65,7 @@
       <itemPath>i2c.c</itemPath>
       <itemPath>icsp.c</itemPath>
       <itemPath>incap.c</itemPath>
+      <itemPath>log.c</itemPath>
       <itemPath>main.c</itemPath>
       <itemPath>pins.c</itemPath>
       <itemPath>protocol.c</itemPath>
@@ -448,7 +450,7 @@
         <targetPluginBoard></targetPluginBoard>
         <platformTool>Simulator</platformTool>
         <languageToolchain>C30</languageToolchain>
-        <languageToolchainVersion></languageToolchainVersion>
+        <languageToolchainVersion>3_30</languageToolchainVersion>
         <platform>4</platform>
       </toolsSet>
       <compileType>
