@@ -5,7 +5,11 @@
   <confs>
     <conf name="PIXL0020" type="2">
       <platformToolSN></platformToolSN>
-      <languageToolchainDir>/Applications/microchip/mplabc30/v3.30c/bin</languageToolchainDir>
+      <languageToolchainDir></languageToolchainDir>
+      <mdbdebugger version="1">
+        <placeholder1>place holder 1</placeholder1>
+        <placeholder2>place holder 2</placeholder2>
+      </mdbdebugger>
       <runprofile version="6">
         <args></args>
         <rundir></rundir>
@@ -19,7 +23,11 @@
     </conf>
     <conf name="PIXL0025" type="2">
       <platformToolSN></platformToolSN>
-      <languageToolchainDir>/Applications/microchip/mplabc30/v3.30c/bin</languageToolchainDir>
+      <languageToolchainDir></languageToolchainDir>
+      <mdbdebugger version="1">
+        <placeholder1>place holder 1</placeholder1>
+        <placeholder2>place holder 2</placeholder2>
+      </mdbdebugger>
       <runprofile version="6">
         <args></args>
         <rundir></rundir>
@@ -33,7 +41,11 @@
     </conf>
     <conf name="PIXLI025" type="2">
       <platformToolSN></platformToolSN>
-      <languageToolchainDir>/Applications/microchip/mplabc30/v3.30c/bin</languageToolchainDir>
+      <languageToolchainDir></languageToolchainDir>
+      <mdbdebugger version="1">
+        <placeholder1>place holder 1</placeholder1>
+        <placeholder2>place holder 2</placeholder2>
+      </mdbdebugger>
       <runprofile version="6">
         <args></args>
         <rundir></rundir>
@@ -47,7 +59,11 @@
     </conf>
     <conf name="PIXLT025" type="2">
       <platformToolSN></platformToolSN>
-      <languageToolchainDir>/Applications/microchip/mplabc30/v3.30c/bin</languageToolchainDir>
+      <languageToolchainDir></languageToolchainDir>
+      <mdbdebugger version="1">
+        <placeholder1>place holder 1</placeholder1>
+        <placeholder2>place holder 2</placeholder2>
+      </mdbdebugger>
       <runprofile version="6">
         <args></args>
         <rundir></rundir>
@@ -61,7 +77,11 @@
     </conf>
     <conf name="PIXLC025" type="2">
       <platformToolSN></platformToolSN>
-      <languageToolchainDir>/Applications/microchip/mplabc30/v3.30c/bin</languageToolchainDir>
+      <languageToolchainDir></languageToolchainDir>
+      <mdbdebugger version="1">
+        <placeholder1>place holder 1</placeholder1>
+        <placeholder2>place holder 2</placeholder2>
+      </mdbdebugger>
       <runprofile version="6">
         <args></args>
         <rundir></rundir>
@@ -75,7 +95,11 @@
     </conf>
     <conf name="PIXLQ025" type="2">
       <platformToolSN></platformToolSN>
-      <languageToolchainDir>/Applications/microchip/mplabc30/v3.30c/bin</languageToolchainDir>
+      <languageToolchainDir></languageToolchainDir>
+      <mdbdebugger version="1">
+        <placeholder1>place holder 1</placeholder1>
+        <placeholder2>place holder 2</placeholder2>
+      </mdbdebugger>
       <runprofile version="6">
         <args></args>
         <rundir></rundir>

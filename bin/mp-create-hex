@@ -18,10 +18,3 @@ OUT=pixel.hex
 echo "Creating $OUT  release: $relVersion  dev: $devVersion"
 
 ./tools/merge-hex firmware/device_bootloader/dist/PIXL0025/production/device_bootloader.production.hex firmware/app_layer_v1/dist/PIXL0025/production/app_layer_v1.production.hex config.hex > $OUT
-
-
-#./tools/merge-hex firmware/device_bootloader/dist/PIXLI025/production/device_bootloader.production.hex firmware/app_layer_v1/dist/PIXL0025/production/app_layer_v1.production.hex config.hex > $OUT
-
-#./tools/merge-hex firmware/device_bootloader/dist/PIXLI025/production/device_bootloader.production.hex firmware/app_layer_v1/dist/PIXL0025/production/app_layer_v1.production.hex > $OUT
-
-#./tools/merge-hex firmware/device_bootloader/dist/PIXLI025/production/device_bootloader.production.hex firmware/app_layer_v1/dist/PIXL0025/production/app_layer_v1.production.hex config.hex > full-$relVersion-$devVersion.hex

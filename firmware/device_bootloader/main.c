@@ -49,11 +49,13 @@
 #include "sdcard/FSIO.h"
 #include "sdcard/SD-SPI.h"
 
+#include "blapi/version.h"
 
-#define LogBootloader(f, ...) printf("[bootloader.c:%d] " f "", __LINE__, ##__VA_ARGS__)
-#define LogBootloaderRaw(f, ...) printf(f, ##__VA_ARGS__)
-//#define LogBootloader(f, ...)
-//#define LogBootloaderRaw(f, ...)
+
+//#define LogBootloader(f, ...) printf("[bootloader.c:%d] " f "", __LINE__, ##__VA_ARGS__)
+//#define LogBootloaderRaw(f, ...) printf(f, ##__VA_ARGS__)
+#define LogBootloader(f, ...)
+#define LogBootloaderRaw(f, ...)
 
 
 void bl_hexdump(const void *data, int size)
@@ -440,11 +442,6 @@ void MaybeUpdateFirmware()
                 return;
             }
 
-            if ( fwHeader.rel_version == 0 ) {
-                LogBootloader("-- error rel_version == 0   rel: %d  dev: %d\n:", fwHeader.rel_version, fwHeader.dev_version);
-                return;
-            }
-	
             LogBootloader("FW Header   rel: %d  dev: %d  num: %d  crc: 0x%04x  fp: '",
                           fwHeader.rel_version,
                           fwHeader.dev_version,
@@ -453,6 +450,21 @@ void MaybeUpdateFirmware()
             bl_hexdump(fwHeader.fingerprint.data, FINGERPRINT_SIZE);
             LogBootloaderRaw("'\n");
 
+            if ( fwHeader.rel_version == 0 ) {
+                LogBootloader("-- error rel_version == 0   rel: %d  dev: %d\n:", fwHeader.rel_version, fwHeader.dev_version);
+                return;
+            }
+	
+/*
+            LogBootloader("FW Header   rel: %d  dev: %d  num: %d  crc: 0x%04x  fp: '",
+                          fwHeader.rel_version,
+                          fwHeader.dev_version,
+                          fwHeader.num_blocks,
+                          fwHeader.crc);
+            bl_hexdump(fwHeader.fingerprint.data, FINGERPRINT_SIZE);
+            LogBootloaderRaw("'\n");
+*/
+            
             if ( memcmp(fp, fwHeader.fingerprint.data, FINGERPRINT_SIZE) != 0 ) {
                 LogBootloader("-- fingerprint mismatch\n");
 	
@@ -514,6 +526,24 @@ int main() {
     // check for firmware update
     MaybeUpdateFirmware();
 
+    char str[9];
+    _prog_addressT p;
+    _init_prog_address(p, hardware_version);
+    _memcpy_p2d16(str, p, 8);
+    str[8] = 0;
+    LogBootloader("  HW: '%s'\n", str);    
+
+    _init_prog_address(p, bootloader_version);
+    _memcpy_p2d16(str, p, 8);
+    str[8] = 0;
+    LogBootloader("  BL: '%s'\n", str);    
+
+/*
+    memcpy(str, FW_IMPL_VER, 8);
+    str[8] = 0;
+    LogBootloader("  FW: '%s'\n", str);        
+*/    
+    LogBootloader("\n");
     LogBootloader("Running app\n");
 
     log_printf("Running app...");

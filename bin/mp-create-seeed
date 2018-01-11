@@ -15,6 +15,6 @@ echo "dev version = " $devVersion
 echo "Creating seeed-cat-clutch.hex  release: $relVersion  dev: $devVersion"
 
 #OUT=full-$relVersion-$devVersion.hex
-OUT=seeed-cat-clutch.hex
+OUT=seeed-pixel.hex
 
-./tools/merge-hex firmware/device_bootloader/dist/PIXLI025/production/device_bootloader.production.hex firmware/app_layer_v1/dist/PIXL0025/production/app_layer_v1.production.hex > $OUT
+./tools/merge-hex firmware/device_bootloader/dist/PIXL0025/production/device_bootloader.production.hex firmware/app_layer_v1/dist/PIXL0025/production/app_layer_v1.production.hex > $OUT
