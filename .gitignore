@@ -35,3 +35,4 @@ pixeltest.txt
 
 # Emacs auto-save files
 *~
+/seeed-pixelmultios.X/nbproject/private/
