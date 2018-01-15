@@ -202,7 +202,8 @@ void AppProtocolInit(CHANNEL_HANDLE h) {
   _init_prog_address(p, bootloader_version);
   _memcpy_p2d16(msg.args.establish_connection.bl_impl_ver, p, 8);
 
-  memcpy(msg.args.establish_connection.fw_impl_ver, FW_IMPL_VER, 8);
+//  memcpy(msg.args.establish_connection.fw_impl_ver, FW_IMPL_VER, 8);
+  sprintf(msg.args.establish_connection.fw_impl_ver, "PIX00008");
 
   AppProtocolSendMessage(&msg);
 }

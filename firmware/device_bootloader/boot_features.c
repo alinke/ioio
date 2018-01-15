@@ -34,10 +34,10 @@
 #include "logging.h"
 
 
-#define LogBootloader(f, ...) printf("[boot_features.c:%d] " f "", __LINE__, ##__VA_ARGS__)
-#define LogBootloaderRaw(f, ...) printf(f, ##__VA_ARGS__)
-//#define LogBootloader(f, ...)
-//#define LogBootloaderRaw(f, ...)
+//#define LogBootloader(f, ...) printf("[boot_features.c:%d] " f "", __LINE__, ##__VA_ARGS__)
+//#define LogBootloaderRaw(f, ...) printf(f, ##__VA_ARGS__)
+#define LogBootloader(f, ...)
+#define LogBootloaderRaw(f, ...)
 
 
 void BootProtocolSendMessage(const OUTGOING_MESSAGE* msg);
