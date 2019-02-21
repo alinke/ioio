@@ -11,6 +11,40 @@
             <sourceEncoding>UTF-8</sourceEncoding>
             <asminc-extensions/>
             <make-dep-projects/>
+            <sourceRootList/>
+            <confList>
+                <confElem>
+                    <name>PIXL0020</name>
+                    <type>2</type>
+                </confElem>
+                <confElem>
+                    <name>PIXL0025</name>
+                    <type>2</type>
+                </confElem>
+                <confElem>
+                    <name>PIXLI025</name>
+                    <type>2</type>
+                </confElem>
+                <confElem>
+                    <name>PIXLT025</name>
+                    <type>2</type>
+                </confElem>
+                <confElem>
+                    <name>PIXLC025</name>
+                    <type>2</type>
+                </confElem>
+                <confElem>
+                    <name>PIXLQ025</name>
+                    <type>2</type>
+                </confElem>
+                <confElem>
+                    <name>PIXLR025</name>
+                    <type>2</type>
+                </confElem>
+            </confList>
+            <formatting>
+                <project-formatting-style>false</project-formatting-style>
+            </formatting>
         </data>
     </configuration>
 </project>

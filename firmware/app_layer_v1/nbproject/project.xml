@@ -11,6 +11,20 @@
             <sourceEncoding>UTF-8</sourceEncoding>
             <asminc-extensions/>
             <make-dep-projects/>
+            <sourceRootList/>
+            <confList>
+                <confElem>
+                    <name>IOIO0030</name>
+                    <type>2</type>
+                </confElem>
+                <confElem>
+                    <name>PIXL0025</name>
+                    <type>2</type>
+                </confElem>
+            </confList>
+            <formatting>
+                <project-formatting-style>false</project-formatting-style>
+            </formatting>
         </data>
     </configuration>
 </project>

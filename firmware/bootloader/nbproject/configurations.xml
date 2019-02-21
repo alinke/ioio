@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="62">
+<configurationDescriptor version="65">
   <logicalFolder name="root" displayName="root" projectFiles="true">
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
@@ -87,6 +87,9 @@
         <languageToolchainVersion>3_31</languageToolchainVersion>
         <platform>3</platform>
       </toolsSet>
+      <packs>
+        <pack name="PIC24F-DA-GB_DFP" vendor="Microchip" version="1.0.6"/>
+      </packs>
       <compileType>
         <linkerTool>
           <linkerLibItems>
@@ -99,6 +102,8 @@
           <parseOnProdLoad>false</parseOnProdLoad>
           <alternateLoadableFile></alternateLoadableFile>
         </loading>
+        <subordinates>
+        </subordinates>
       </compileType>
       <makeCustomizationType>
         <makeCustomizationPreStepEnabled>false</makeCustomizationPreStepEnabled>
@@ -264,6 +269,9 @@
         <languageToolchainVersion>3_31</languageToolchainVersion>
         <platform>3</platform>
       </toolsSet>
+      <packs>
+        <pack name="PIC24F-DA-GB_DFP" vendor="Microchip" version="1.0.6"/>
+      </packs>
       <compileType>
         <linkerTool>
           <linkerLibItems>
@@ -276,6 +284,8 @@
           <parseOnProdLoad>false</parseOnProdLoad>
           <alternateLoadableFile></alternateLoadableFile>
         </loading>
+        <subordinates>
+        </subordinates>
       </compileType>
       <makeCustomizationType>
         <makeCustomizationPreStepEnabled>false</makeCustomizationPreStepEnabled>
@@ -441,6 +451,9 @@
         <languageToolchainVersion>3_31</languageToolchainVersion>
         <platform>3</platform>
       </toolsSet>
+      <packs>
+        <pack name="PIC24F-DA-GB_DFP" vendor="Microchip" version="1.0.6"/>
+      </packs>
       <compileType>
         <linkerTool>
           <linkerLibItems>
@@ -453,6 +466,8 @@
           <parseOnProdLoad>false</parseOnProdLoad>
           <alternateLoadableFile></alternateLoadableFile>
         </loading>
+        <subordinates>
+        </subordinates>
       </compileType>
       <makeCustomizationType>
         <makeCustomizationPreStepEnabled>false</makeCustomizationPreStepEnabled>
@@ -608,6 +623,9 @@
         <languageToolchainVersion>3_31</languageToolchainVersion>
         <platform>3</platform>
       </toolsSet>
+      <packs>
+        <pack name="PIC24F-DA-GB_DFP" vendor="Microchip" version="1.0.6"/>
+      </packs>
       <compileType>
         <linkerTool>
           <linkerLibItems>
@@ -620,6 +638,8 @@
           <parseOnProdLoad>false</parseOnProdLoad>
           <alternateLoadableFile></alternateLoadableFile>
         </loading>
+        <subordinates>
+        </subordinates>
       </compileType>
       <makeCustomizationType>
         <makeCustomizationPreStepEnabled>false</makeCustomizationPreStepEnabled>
@@ -785,6 +805,9 @@
         <languageToolchainVersion>3_31</languageToolchainVersion>
         <platform>3</platform>
       </toolsSet>
+      <packs>
+        <pack name="PIC24F-DA-GB_DFP" vendor="Microchip" version="1.0.6"/>
+      </packs>
       <compileType>
         <linkerTool>
           <linkerLibItems>
@@ -797,6 +820,8 @@
           <parseOnProdLoad>false</parseOnProdLoad>
           <alternateLoadableFile></alternateLoadableFile>
         </loading>
+        <subordinates>
+        </subordinates>
       </compileType>
       <makeCustomizationType>
         <makeCustomizationPreStepEnabled>false</makeCustomizationPreStepEnabled>
@@ -952,6 +977,9 @@
         <languageToolchainVersion>3_31</languageToolchainVersion>
         <platform>3</platform>
       </toolsSet>
+      <packs>
+        <pack name="PIC24F-DA-GB_DFP" vendor="Microchip" version="1.0.6"/>
+      </packs>
       <compileType>
         <linkerTool>
           <linkerLibItems>
@@ -964,6 +992,8 @@
           <parseOnProdLoad>false</parseOnProdLoad>
           <alternateLoadableFile></alternateLoadableFile>
         </loading>
+        <subordinates>
+        </subordinates>
       </compileType>
       <makeCustomizationType>
         <makeCustomizationPreStepEnabled>false</makeCustomizationPreStepEnabled>
@@ -1119,6 +1149,9 @@
         <languageToolchainVersion>3_31</languageToolchainVersion>
         <platform>3</platform>
       </toolsSet>
+      <packs>
+        <pack name="PIC24F-DA-GB_DFP" vendor="Microchip" version="1.0.6"/>
+      </packs>
       <compileType>
         <linkerTool>
           <linkerLibItems>
@@ -1131,6 +1164,8 @@
           <parseOnProdLoad>false</parseOnProdLoad>
           <alternateLoadableFile></alternateLoadableFile>
         </loading>
+        <subordinates>
+        </subordinates>
       </compileType>
       <makeCustomizationType>
         <makeCustomizationPreStepEnabled>false</makeCustomizationPreStepEnabled>

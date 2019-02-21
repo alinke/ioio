@@ -11,6 +11,30 @@
             <sourceEncoding>ISO-8859-1</sourceEncoding>
             <asminc-extensions/>
             <make-dep-projects/>
+            <sourceRootList>
+                <sourceRootElem>.</sourceRootElem>
+            </sourceRootList>
+            <confList>
+                <confElem>
+                    <name>PIC24FJ128DA106</name>
+                    <type>3</type>
+                </confElem>
+                <confElem>
+                    <name>PIC24FJ128DA206</name>
+                    <type>3</type>
+                </confElem>
+                <confElem>
+                    <name>PIC24FJ256DA206</name>
+                    <type>3</type>
+                </confElem>
+                <confElem>
+                    <name>PIC24FJ256GB206</name>
+                    <type>3</type>
+                </confElem>
+            </confList>
+            <formatting>
+                <project-formatting-style>false</project-formatting-style>
+            </formatting>
         </data>
     </configuration>
 </project>

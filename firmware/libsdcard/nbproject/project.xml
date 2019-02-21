@@ -12,6 +12,23 @@
             <sourceEncoding>ISO-8859-1</sourceEncoding>
             <asminc-extensions/>
             <make-dep-projects/>
+            <sourceRootList>
+                <sourceRootElem>include/sdcard</sourceRootElem>
+                <sourceRootElem>src</sourceRootElem>
+            </sourceRootList>
+            <confList>
+                <confElem>
+                    <name>PIXL0010</name>
+                    <type>3</type>
+                </confElem>
+                <confElem>
+                    <name>PIXL0025</name>
+                    <type>3</type>
+                </confElem>
+            </confList>
+            <formatting>
+                <project-formatting-style>false</project-formatting-style>
+            </formatting>
         </data>
     </configuration>
 </project>
