@@ -1,0 +1,14 @@
+PIXEL Maker's Kit 2.5
+Firmware Version: PIXL0010
+Hardware Version: PIXL0025
+Bootloader Version: IOIO0401
+Library Version: PIXL0025
+
+PIXEL 32x32 Frame
+
+CAT Clutch 32x16
+Firmware Version: PIXL0009
+Hardware Version: PIXLI025
+Bootloader Version: IOIO0401
+Library Version: PIXL0025
+iOS Hardware Version: 5.128
