@@ -137,7 +137,7 @@ class IncomingState implements IncomingHandler {
 	synchronized public void waitConnectionEstablished()
 			throws InterruptedException, ConnectionLostException {
 		while (connection_ == ConnectionState.INIT) {
-			Log.v(TAG, "Waiting to init");
+			//Log.v(TAG, "Waiting to init");
 			wait();
 			//Thread.sleep(1000);
 		}
@@ -335,7 +335,7 @@ class IncomingState implements IncomingHandler {
 		bootloaderId_ = new String(bootloaderId);
 		firmwareId_ = new String(firmwareId);
 
-		Log.i(TAG, "IOIO Connection established. Hardware ID: "
+		Log.i(TAG, "PIXEL Connection established. Hardware ID: "
 				+ hardwareId_ + " Bootloader ID: " + bootloaderId_
 				+ " Firmware ID: " + firmwareId_);
 		try {

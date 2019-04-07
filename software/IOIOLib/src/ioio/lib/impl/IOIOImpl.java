@@ -91,7 +91,7 @@ public class IOIOImpl implements IOIO, DisconnectListener {
 			throw new ConnectionLostException();
 		}
 		addDisconnectListener(this);
-		Log.d(TAG, "Waiting for IOIO connection");
+		Log.d(TAG, "Waiting for PIXEL connection");
 		try {
 			try {
 				Log.v(TAG, "Waiting for underlying connection");
@@ -111,14 +111,14 @@ public class IOIOImpl implements IOIO, DisconnectListener {
 			}
 			Log.v(TAG, "Waiting for handshake");
 			incomingState_.waitConnectionEstablished();
-			Log.v(TAG, "Made it past incoming state");
+			//Log.v(TAG, "Made it past incoming state");
 			initBoard();
-			Log.v(TAG, "Made it past initBoard");
+			//Log.v(TAG, "Made it past initBoard");
 			Log.v(TAG, "Querying for required interface ID");
 			checkInterfaceVersion();
 			Log.v(TAG, "Required interface ID is supported");
 			state_ = State.CONNECTED;
-			Log.i(TAG, "IOIO connection established");
+			Log.i(TAG, "PIXEL connection established");
 		} catch (ConnectionLostException e) {
 			Log.d(TAG, "Connection lost / aborted");
 			state_ = State.DEAD;

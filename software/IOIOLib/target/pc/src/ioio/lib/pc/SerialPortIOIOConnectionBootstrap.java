@@ -56,10 +56,10 @@ public class SerialPortIOIOConnectionBootstrap implements
 		if (ports == null) {
 			Log.w(TAG, "ioio.SerialPorts not defined.\n"
 					+ "Will attempt to enumerate all possible ports (slow) "
-					+ "and connect to a IOIO over each one.\n"
+					+ "and connect to PIXEL over each one.\n"
 					+ "To fix, add the -Dioio.SerialPorts=xyz argument to "
 					+ "the java command line, where xyz is a colon-separated "
-					+ "list of port identifiers, e.g. COM1:COM2.");
+					+ "list of port identifiers, e.g. COM1:COM2. for Windows or /dev/tty.usbmodem1411 on Mac OSX");
 			ports = getAllOpenablePorts();
 		}
 		
