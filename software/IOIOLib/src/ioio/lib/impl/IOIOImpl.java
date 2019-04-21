@@ -50,8 +50,13 @@ import ioio.lib.api.exception.IncompatibilityException;
 import ioio.lib.impl.IOIOProtocol.PwmScale;
 import ioio.lib.impl.IncomingState.DisconnectListener;
 import ioio.lib.spi.Log;
+import com.ledpixelart.console.*;
+
 
 import java.io.IOException;
+
+//import com.ledpixelart.console.PIXELConsole;
+
 
 public class IOIOImpl implements IOIO, DisconnectListener {
 	private static final String TAG = "IOIOImpl";
@@ -91,10 +96,10 @@ public class IOIOImpl implements IOIO, DisconnectListener {
 			throw new ConnectionLostException();
 		}
 		addDisconnectListener(this);
-		Log.d(TAG, "Waiting for PIXEL connection");
+		if (!com.ledpixelart.console.PIXELConsole.silentMode_) Log.d(TAG, "Waiting for PIXEL connection");
 		try {
 			try {
-				Log.v(TAG, "Waiting for underlying connection");
+				if (!com.ledpixelart.console.PIXELConsole.silentMode_) Log.v(TAG, "Waiting for underlying connection");
 				connection_.waitForConnect();
 				synchronized (this) {
 					if (disconnect_) {
@@ -109,18 +114,20 @@ public class IOIOImpl implements IOIO, DisconnectListener {
 				incomingState_.handleConnectionLost();
 				throw e;
 			}
-			Log.v(TAG, "Waiting for handshake");
+			if (!com.ledpixelart.console.PIXELConsole.silentMode_) Log.v(TAG, "Waiting for handshake");
 			incomingState_.waitConnectionEstablished();
 			//Log.v(TAG, "Made it past incoming state");
 			initBoard();
 			//Log.v(TAG, "Made it past initBoard");
-			Log.v(TAG, "Querying for required interface ID");
+			
+			
+			if (!com.ledpixelart.console.PIXELConsole.silentMode_) Log.v(TAG, "Querying for required interface ID");
 			checkInterfaceVersion();
-			Log.v(TAG, "Required interface ID is supported");
+			if (!com.ledpixelart.console.PIXELConsole.silentMode_) Log.v(TAG, "Required interface ID is supported");
 			state_ = State.CONNECTED;
-			Log.i(TAG, "PIXEL connection established");
+			if (!com.ledpixelart.console.PIXELConsole.silentMode_) Log.i(TAG, "PIXEL connection established");
 		} catch (ConnectionLostException e) {
-			Log.d(TAG, "Connection lost / aborted");
+			if (!com.ledpixelart.console.PIXELConsole.silentMode_) Log.d(TAG, "Connection lost / aborted");
 			state_ = State.DEAD;
 			throw e;
 		} catch (IncompatibilityException e) {
@@ -132,7 +139,7 @@ public class IOIOImpl implements IOIO, DisconnectListener {
 
 	@Override
 	public synchronized void disconnect() {
-		Log.d(TAG, "Client requested disconnect.");
+		if (!com.ledpixelart.console.PIXELConsole.silentMode_) Log.d(TAG, "Client requested disconnect.");
 		if (disconnect_) {
 			return;
 		}
@@ -153,7 +160,7 @@ public class IOIOImpl implements IOIO, DisconnectListener {
 		if (disconnect_) {
 			return;
 		}
-		Log.d(TAG, "Physical disconnect.");
+		if (!com.ledpixelart.console.PIXELConsole.silentMode_) Log.d(TAG, "Physical disconnect.");
 		disconnect_ = true;
 		// The IOIOConnection doesn't necessarily know about the disconnect
 		connection_.disconnect();
@@ -196,7 +203,7 @@ public class IOIOImpl implements IOIO, DisconnectListener {
 		}
 		if (!incomingState_.waitForInterfaceSupport()) {
 			state_ = State.INCOMPATIBLE;
-			Log.e(TAG, "Required interface ID is not supported");
+			if (!com.ledpixelart.console.PIXELConsole.silentMode_) Log.e(TAG, "Required interface ID is not supported");
 			throw new IncompatibilityException(
 					"IOIO firmware does not support required firmware: "
 							+ new String(REQUIRED_INTERFACE_ID));

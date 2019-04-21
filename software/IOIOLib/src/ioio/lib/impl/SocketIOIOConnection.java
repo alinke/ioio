@@ -59,13 +59,13 @@ public class SocketIOIOConnection implements IOIOConnection {
 				if (disconnect_) {
 					throw new ConnectionLostException();
 				}
-				Log.v(TAG, "Creating server socket");
+				if (!com.ledpixelart.console.PIXELConsole.silentMode_) Log.v(TAG, "Creating server socket");
 				server_ = new ServerSocket(port_);
 				server_owned_by_connect_ = false;
 			}
-			Log.v(TAG, "Waiting for TCP connection");
+			if (!com.ledpixelart.console.PIXELConsole.silentMode_) Log.v(TAG, "Waiting for TCP connection");
 			socket_ = server_.accept();
-			Log.v(TAG, "TCP connected");
+			if (!com.ledpixelart.console.PIXELConsole.silentMode_) Log.v(TAG, "TCP connected");
 			synchronized (this) {
 				if (disconnect_) {
 					socket_.close();
@@ -103,7 +103,7 @@ public class SocketIOIOConnection implements IOIOConnection {
 		if (disconnect_) {
 			return;
 		}
-		Log.v(TAG, "Client initiated disconnect");
+		if (!com.ledpixelart.console.PIXELConsole.silentMode_) Log.v(TAG, "Client initiated disconnect");
 		disconnect_ = true;
 		if (!server_owned_by_connect_) {
 			try {

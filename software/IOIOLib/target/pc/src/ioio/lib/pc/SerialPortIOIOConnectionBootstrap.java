@@ -54,7 +54,7 @@ public class SerialPortIOIOConnectionBootstrap implements
 	public void getFactories(Collection<IOIOConnectionFactory> result) {
 		Collection<String> ports = getExplicitPorts();
 		if (ports == null) {
-			Log.w(TAG, "ioio.SerialPorts not defined.\n"
+			if (!com.ledpixelart.console.PIXELConsole.silentMode_) Log.w(TAG, "ioio.SerialPorts not defined.\n"
 					+ "Will attempt to enumerate all possible ports (slow) "
 					+ "and connect to PIXEL over each one.\n"
 					+ "To fix, add the -Dioio.SerialPorts=xyz argument to "
@@ -64,7 +64,7 @@ public class SerialPortIOIOConnectionBootstrap implements
 		}
 		
 		for (final String port : ports) {
-			Log.w(TAG, "Adding serial port " + port); //al changed from log.d to log.w
+			if (!com.ledpixelart.console.PIXELConsole.silentMode_) Log.w(TAG, "Adding serial port " + port); //al changed from log.d to log.w
 			result.add(new IOIOConnectionFactory() {
 				@Override
 				public String getType() {
@@ -93,10 +93,10 @@ public class SerialPortIOIOConnectionBootstrap implements
 			final CommPortIdentifier identifier = identifiers.nextElement();
 			if (identifier.getPortType() == CommPortIdentifier.PORT_SERIAL) {
 				if (checkIdentifier(identifier)) {
-					Log.w(TAG, "Adding serial port " + identifier.getName()); // al changed from log.d to log.w
+					if (!com.ledpixelart.console.PIXELConsole.silentMode_) Log.w(TAG, "Adding serial port " + identifier.getName()); // al changed from log.d to log.w
 					result.add(identifier.getName());
 				} else {
-					Log.w(TAG, "Serial port " + identifier.getName()
+					if (!com.ledpixelart.console.PIXELConsole.silentMode_) Log.w(TAG, "Serial port " + identifier.getName()
 							+ " cannot be opened. Not adding.");
 				}
 			}

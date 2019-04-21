@@ -335,7 +335,7 @@ class IncomingState implements IncomingHandler {
 		bootloaderId_ = new String(bootloaderId);
 		firmwareId_ = new String(firmwareId);
 
-		Log.i(TAG, "PIXEL Connection established. Hardware ID: "
+		if (!com.ledpixelart.console.PIXELConsole.silentMode_) Log.i(TAG, "PIXEL Connection established. Hardware ID: "
 				+ hardwareId_ + " Bootloader ID: " + bootloaderId_
 				+ " Firmware ID: " + firmwareId_);
 		try {

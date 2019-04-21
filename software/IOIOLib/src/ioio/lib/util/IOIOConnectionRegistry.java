@@ -112,14 +112,14 @@ public class IOIOConnectionRegistry {
 					.forName(className).asSubclass(
 							IOIOConnectionBootstrap.class);
 			bootstraps_.add(bootstrapClass.newInstance());
-			Log.d(TAG, "Successfully added bootstrap class: " + className);
+			if (!com.ledpixelart.console.PIXELConsole.silentMode_) Log.d(TAG, "Successfully added bootstrap class: " + className);
 		} catch (ClassNotFoundException e) {
-			Log.d(TAG, "Bootstrap class not found: " + className
+			if (!com.ledpixelart.console.PIXELConsole.silentMode_) Log.d(TAG, "Bootstrap class not found: " + className
 					+ ". Not adding.");
 		} catch (NoRuntimeSupportException e) {
-			Log.d(TAG, "No runtime support for: " + className + ". Not adding.");
+			if (!com.ledpixelart.console.PIXELConsole.silentMode_) Log.d(TAG, "No runtime support for: " + className + ". Not adding.");
 		} catch (Throwable e) {
-			Log.e(TAG,
+			if (!com.ledpixelart.console.PIXELConsole.silentMode_) Log.e(TAG,
 					"Exception caught while attempting to initialize connection factory",
 					e);
 		}
