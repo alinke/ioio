@@ -52,7 +52,8 @@ public class SerialPortIOIOConnectionBootstrap implements
 
 	@Override
 	public void getFactories(Collection<IOIOConnectionFactory> result) {
-		Collection<String> ports = getExplicitPorts();
+		Collection<String> ports = getExplicitPorts(); //this is if the user put -dIoio.Serialports=
+		
 		if (ports == null) {
 			if (!com.ledpixelart.console.PIXELConsole.silentMode_) Log.w(TAG, "ioio.SerialPorts not defined.\n"
 					+ "Will attempt to enumerate all possible ports (slow) "
@@ -104,17 +105,30 @@ public class SerialPortIOIOConnectionBootstrap implements
 		return result;
 	}
 
-	static Collection<String> getExplicitPorts() {
-		String property = System.getProperty("ioio.SerialPorts");
-		if (property == null) {
-			return null;
-		}
+	static Collection<String> getExplicitPorts() {                     //let's first check if --port= was specified and if not let's check if the java command argument was specified, adding this because for the windows .exe version there is no way to specify the jvm parameter at run time
 		List<String> result = new LinkedList<String>();
-		String[] portNames = property.split(":");
-		for (String portName : portNames) {
-			result.add(portName);
+		
+		if (com.ledpixelart.console.PIXELConsole.port_ != null) {
+			result.add(com.ledpixelart.console.PIXELConsole.port_);
+			return result;
 		}
-		return result;
+		
+		else {
+		
+			String property = System.getProperty("ioio.SerialPorts");
+			if (property == null) {
+				return null;
+			}
+			//List<String> result = new LinkedList<String>();
+			result = new LinkedList<String>();
+			
+			String[] portNames = property.split(":");
+			for (String portName : portNames) {
+				result.add(portName);
+			}
+			return result;
+		}
+		
 	}
 
 	static boolean checkIdentifier(CommPortIdentifier id) {
