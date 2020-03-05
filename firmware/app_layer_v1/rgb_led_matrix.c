@@ -191,7 +191,9 @@ static unsigned int times[] = { //15, 30, 60, 150   133 to 122.5 refresh rate 37
    // 6,12,36,250 original
     //20, 40, 80, 100 
     //15,30,60,150 pixel 2.5 default
-    15,30,60,30 //this removes all the lines!
+    15,30,60,30 //this removes all the lines!, this is the pixl0010 release
+    //15,30,60,60 //pixl0011
+    //15,30,60,120 //pixl0012
 };                // for original pixel  8, 16, 32, 250 this one was not a good refresh rate/ bad
                   // 15,30,60,150 //150 is the black frame time, increase this number to make it
                   // for lower power, reduce the first three by a factor of x and multiple the fourth by x
