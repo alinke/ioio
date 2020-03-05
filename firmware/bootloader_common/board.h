@@ -51,6 +51,8 @@
 #define BOARD_PIXLC025 BOARD_MINT_BASE + 40
 #define BOARD_PIXLQ025 BOARD_MINT_BASE + 45
 #define BOARD_PIXLR025 BOARD_MINT_BASE + 50
+#define BOARD_PIXLA025 BOARD_MINT_BASE + 55
+#define BOARD_PIXLP025 BOARD_MINT_BASE + 60
 
 // add more boards here!
 
@@ -107,6 +109,15 @@
   #ifndef __PIC24FJ256GB206__
     #error Board and MCU mismatch - expecting PIC24FJ256GB206
   #endif
+#elif BOARD_VER == BOARD_PIXLA025
+  #ifndef __PIC24FJ256GB206__
+    #error Board and MCU mismatch - expecting PIC24FJ256GB206
+  #endif
+#elif BOARD_VER == BOARD_PIXLP025
+  #ifndef __PIC24FJ256GB206__
+    #error Board and MCU mismatch - expecting PIC24FJ256GB206
+  #endif
+
 #else
   #error Unknown board
 #endif
@@ -146,6 +157,10 @@
   #define HW_IMPL_VER "PIXLQ025"
 #elif BOARD_VER == BOARD_PIXLR025
   #define HW_IMPL_VER "PIXLR025"
+#elif BOARD_VER == BOARD_PIXLA025
+  #define HW_IMPL_VER "PIXLA025"
+#elif BOARD_VER == BOARD_PIXLP025
+  #define HW_IMPL_VER "PIXLP025"
 
 #else
   #error Unknown board
@@ -167,7 +182,7 @@
 #define led_on()         led  = 0;
 #define led_off()        led  = 1;
 #define led_toggle()     led  = !led;
-#elif BOARD_VER == BOARD_SPRK0020 || BOARD_VER == BOARD_PIXL0020 || BOARD_VER == BOARD_PIXL0025 || BOARD_VER == BOARD_PIXLI025 || BOARD_VER == BOARD_PIXLT025 || BOARD_VER == BOARD_PIXLC025 || BOARD_VER == BOARD_PIXLQ025 || BOARD_VER == BOARD_PIXLR025
+#elif BOARD_VER == BOARD_SPRK0020 || BOARD_VER == BOARD_PIXL0020 || BOARD_VER == BOARD_PIXL0025 || BOARD_VER == BOARD_PIXLI025 || BOARD_VER == BOARD_PIXLT025 || BOARD_VER == BOARD_PIXLC025 || BOARD_VER == BOARD_PIXLQ025 || BOARD_VER == BOARD_PIXLR025 || BOARD_VER == BOARD_PIXLA025 || BOARD_VER == BOARD_PIXLP025
 #define led_init()       { _ODC12 = 1; _LATC12 = 1; _TRISC12 = 0; }
 #define led_read()       _RC12
 #define led              _LATC12
