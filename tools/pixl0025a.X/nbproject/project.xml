@@ -3,27 +3,20 @@
     <type>com.microchip.mplab.nbide.embedded.makeproject</type>
     <configuration>
         <data xmlns="http://www.netbeans.org/ns/make-project/1">
-            <name>AppLayerV1-6432</name>
+            <name>pixl0025a</name>
+            <creation-uuid>4d63dd2d-0d98-4bbd-aa2e-ec60f2cec56c</creation-uuid>
             <make-project-type>0</make-project-type>
-            <c-extensions>c</c-extensions>
+            <c-extensions/>
             <cpp-extensions/>
-            <header-extensions>h</header-extensions>
-            <sourceEncoding>UTF-8</sourceEncoding>
+            <header-extensions/>
             <asminc-extensions/>
+            <sourceEncoding>ISO-8859-1</sourceEncoding>
             <make-dep-projects/>
             <sourceRootList/>
             <confList>
                 <confElem>
-                    <name>IOIO0030</name>
-                    <type>2</type>
-                </confElem>
-                <confElem>
-                    <name>PIXL0025</name>
-                    <type>2</type>
-                </confElem>
-                <confElem>
-                    <name>PIXL0025_USB_Device_Only</name>
-                    <type>2</type>
+                    <name>default</name>
+                    <type>4</type>
                 </confElem>
             </confList>
             <formatting>

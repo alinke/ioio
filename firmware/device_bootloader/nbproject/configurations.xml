@@ -74,7 +74,7 @@
         <targetPluginBoard></targetPluginBoard>
         <platformTool>Simulator</platformTool>
         <languageToolchain>C30</languageToolchain>
-        <languageToolchainVersion></languageToolchainVersion>
+        <languageToolchainVersion>3_30</languageToolchainVersion>
         <platform>4</platform>
       </toolsSet>
       <packs>
@@ -2560,7 +2560,7 @@
         <targetPluginBoard></targetPluginBoard>
         <platformTool>Simulator</platformTool>
         <languageToolchain>C30</languageToolchain>
-        <languageToolchainVersion></languageToolchainVersion>
+        <languageToolchainVersion>3_30</languageToolchainVersion>
         <platform>4</platform>
       </toolsSet>
       <packs>
