@@ -36,9 +36,9 @@
 #include "connection_private.h"
 #include "USB/usb_common.h"
 #include "logging.h"
-#include "bt_connection.h"
-#include "adb_connection.h"
-#include "accessory_connection.h"
+//#include "bt_connection.h"
+//#include "adb_connection.h"
+//#include "accessory_connection.h"
 #include "cdc_connection.h"
 
 #define BUF_SIZE 1024
@@ -47,9 +47,9 @@ static uint8_t buf[BUF_SIZE];  // shared between Bluetooth and Accessory, as
                                // conveniently ignores this.
 
 static const CONNECTION_FACTORY *factories[CHANNEL_TYPE_MAX] = {
-  &adb_connection_factory,
-  &accessory_connection_factory,
-  &bt_connection_factory,
+//  &adb_connection_factory,
+//  &accessory_connection_factory,
+//  &bt_connection_factory,
   &cdc_connection_factory
 };
 
@@ -90,6 +90,7 @@ static CHANNEL_HANDLE ConnectionOpenChannel(CHANNEL_TYPE t,
   return (t << 12) | h;
 }
 
+/*
 CHANNEL_HANDLE ConnectionOpenChannelAdb(const char *name, ChannelCallback cb,
                                         int_or_ptr_t cb_arg) {
   int_or_ptr_t open_arg = { .p = (void *) name };
@@ -107,6 +108,7 @@ CHANNEL_HANDLE ConnectionOpenChannelAccessory(ChannelCallback cb,
   int_or_ptr_t open_arg = { .i = 0 };
   return ConnectionOpenChannel(CHANNEL_TYPE_ACC, cb, open_arg, cb_arg);
 }
+*/
 
 CHANNEL_HANDLE ConnectionOpenChannelCdc(ChannelCallback cb,
                                         int_or_ptr_t cb_arg) {

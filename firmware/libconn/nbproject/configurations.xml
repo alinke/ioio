@@ -6,9 +6,6 @@
                    projectFiles="true">
       <itemPath>connection.h</itemPath>
       <itemPath>connection_private.h</itemPath>
-      <itemPath>bt_connection.h</itemPath>
-      <itemPath>accessory_connection.h</itemPath>
-      <itemPath>adb_connection.h</itemPath>
       <itemPath>cdc_connection.h</itemPath>
     </logicalFolder>
     <logicalFolder name="f1" displayName="New Folder 1" projectFiles="true">
@@ -19,9 +16,6 @@
                    displayName="Source Files"
                    projectFiles="true">
       <itemPath>connection.c</itemPath>
-      <itemPath>bt_connection.c</itemPath>
-      <itemPath>accessory_connection.c</itemPath>
-      <itemPath>adb_connection.c</itemPath>
       <itemPath>cdc_connection.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
@@ -1640,7 +1634,7 @@
         <property key="enable-symbols" value="true"/>
         <property key="enable-unroll-loops" value="false"/>
         <property key="extra-include-directories"
-                  value=".;../common;../microchip/include;../libusb;../libbtstack;../libbtstack/include;../libbtstack/src;../libadb"/>
+                  value=".;../common;../microchip/include;../libusb;../libadb"/>
         <property key="isolate-each-function" value="true"/>
         <property key="optimization-level" value="s"/>
         <property key="post-instruction-scheduling" value="default"/>

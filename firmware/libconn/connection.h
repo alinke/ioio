@@ -43,9 +43,9 @@ typedef int CHANNEL_HANDLE;
 #define INVALID_CHANNEL_HANDLE (-1)
 
 typedef enum {
-  CHANNEL_TYPE_ADB,
-  CHANNEL_TYPE_ACC,
-  CHANNEL_TYPE_BT,
+//  CHANNEL_TYPE_ADB,
+//  CHANNEL_TYPE_ACC,
+//  CHANNEL_TYPE_BT,
   CHANNEL_TYPE_CDC_DEVICE,
   CHANNEL_TYPE_MAX
 } CHANNEL_TYPE;
@@ -70,12 +70,14 @@ void ConnectionShutdownAll();
 
 BOOL ConnectionTypeSupported(CHANNEL_TYPE con);
 BOOL ConnectionCanOpenChannel(CHANNEL_TYPE con);
+/*
 CHANNEL_HANDLE ConnectionOpenChannelAdb(const char *name, ChannelCallback cb,
                                         int_or_ptr_t cb_arg);
 CHANNEL_HANDLE ConnectionOpenChannelBtServer(ChannelCallback cb,
                                              int_or_ptr_t cb_arg);
 CHANNEL_HANDLE ConnectionOpenChannelAccessory(ChannelCallback cb,
                                               int_or_ptr_t cb_arg);
+*/
 CHANNEL_HANDLE ConnectionOpenChannelCdc(ChannelCallback cb,
                                         int_or_ptr_t cb_arg);
 void ConnectionSend(CHANNEL_HANDLE ch, const void *data, int size);

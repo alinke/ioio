@@ -67,6 +67,7 @@ void AppCallback(const void* data, UINT32 data_len, int_or_ptr_t arg);
 
 static inline CHANNEL_HANDLE OpenAvailableChannel() {
   int_or_ptr_t arg = { .i = 0 };
+/*
   if (ConnectionTypeSupported(CHANNEL_TYPE_ADB)) {
     if (ConnectionCanOpenChannel(CHANNEL_TYPE_ADB)) {
       return ConnectionOpenChannelAdb("tcp:4545", &AppCallback, arg);
@@ -79,7 +80,9 @@ static inline CHANNEL_HANDLE OpenAvailableChannel() {
     if (ConnectionCanOpenChannel(CHANNEL_TYPE_BT)) {
       return ConnectionOpenChannelBtServer(&AppCallback, arg);
     }
-  } else if (ConnectionTypeSupported(CHANNEL_TYPE_CDC_DEVICE)) {
+  } else
+*/
+  if (ConnectionTypeSupported(CHANNEL_TYPE_CDC_DEVICE)) {
     if (ConnectionCanOpenChannel(CHANNEL_TYPE_CDC_DEVICE)) {
       return ConnectionOpenChannelCdc(&AppCallback, arg);
     }
