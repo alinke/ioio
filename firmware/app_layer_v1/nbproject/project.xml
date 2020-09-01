@@ -21,10 +21,6 @@
                     <name>PIXL0025</name>
                     <type>2</type>
                 </confElem>
-                <confElem>
-                    <name>PIXL0025_USB_Device_Only</name>
-                    <type>2</type>
-                </confElem>
             </confList>
             <formatting>
                 <project-formatting-style>false</project-formatting-style>
